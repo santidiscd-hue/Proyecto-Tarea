@@ -3,947 +3,1440 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title x-text="config.platformName || 'TaskCult'">TaskCult</title>
+  <title x-text="cfg.platformName + ' — Academia'">TaskCult</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --bg: #fafaf9;
-      --bg-2: #f5f4f2;
-      --bg-3: #eeede9;
-      --line: #e5e3de;
-      --line-2: #d5d2cb;
-      --ink: #1a1917;
-      --ink-2: #57534e;
-      --ink-3: #a8a29e;
-      --accent: #2563eb;
-      --accent-bg: #eff6ff;
-      --accent-line: #bfdbfe;
-      --red: #dc2626;
-      --red-bg: #fef2f2;
-      --green: #16a34a;
-      --green-bg: #f0fdf4;
-      --amber: #d97706;
-      --amber-bg: #fffbeb;
+      --bg:        #0a0a0b;
+      --bg-1:      #111113;
+      --bg-2:      #18181b;
+      --bg-3:      #222226;
+      --bg-4:      #2a2a2f;
+      --border:    rgba(255,255,255,0.07);
+      --border-2:  rgba(255,255,255,0.12);
+      --ink:       #f4f4f5;
+      --ink-2:     #a1a1aa;
+      --ink-3:     #52525b;
+      --accent:    #6366f1;
+      --accent-2:  #818cf8;
+      --accent-bg: rgba(99,102,241,0.12);
+      --accent-glow: rgba(99,102,241,0.25);
+      --green:     #22c55e;
+      --green-bg:  rgba(34,197,94,0.1);
+      --amber:     #f59e0b;
+      --amber-bg:  rgba(245,158,11,0.1);
+      --red:       #ef4444;
+      --red-bg:    rgba(239,68,68,0.1);
+      --cyan:      #06b6d4;
+      --cyan-bg:   rgba(6,182,212,0.1);
+      --radius:    10px;
+      --radius-sm: 6px;
+      --radius-lg: 14px;
+      --font:      'Sora', sans-serif;
+      --font-head: 'Space Grotesk', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --shadow:    0 4px 24px rgba(0,0,0,0.4);
+      --shadow-lg: 0 8px 48px rgba(0,0,0,0.6);
+      --transition: 0.18s cubic-bezier(0.4,0,0.2,1);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg); color: var(--ink); font-family: 'Geist', sans-serif; font-size: 14px; line-height: 1.6; min-height: 100vh; }
-    h1,h2,h3 { font-family: 'Instrument Serif', serif; font-weight: 400; letter-spacing: -0.01em; }
-    code, .mono { font-family: 'Geist Mono', monospace; }
-    ::-webkit-scrollbar { width: 4px; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font);
+      font-size: 13.5px;
+      line-height: 1.6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1,h2,h3,h4 { font-family: var(--font-head); font-weight: 600; letter-spacing: -0.02em; }
+    code,.mono { font-family: var(--font-mono); }
+    a { color: inherit; text-decoration: none; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 2px; }
-
-    /* Layout */
-    .sidebar { width: 220px; background: var(--bg); border-right: 1px solid var(--line); position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; }
-    .main { flex: 1; min-width: 0; }
-
-    /* Nav */
-    .nav-link { display: flex; align-items: center; gap: 10px; padding: 7px 12px; border-radius: 6px; color: var(--ink-2); font-size: 13.5px; font-weight: 400; cursor: pointer; transition: all 0.12s; user-select: none; }
-    .nav-link:hover { background: var(--bg-2); color: var(--ink); }
-    .nav-link.active { background: var(--bg-3); color: var(--ink); font-weight: 500; }
-    .nav-icon { width: 16px; height: 16px; opacity: 0.6; flex-shrink: 0; }
-    .nav-link.active .nav-icon { opacity: 1; }
-
-    /* Buttons */
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 7px 16px; border-radius: 6px; font-size: 13.5px; font-weight: 500; cursor: pointer; transition: all 0.12s; border: none; font-family: 'Geist', sans-serif; white-space: nowrap; }
-    .btn-primary { background: var(--ink); color: white; }
-    .btn-primary:hover { background: #2d2a27; }
-    .btn-primary:disabled { background: var(--ink-3); cursor: not-allowed; }
-    .btn-outline { background: transparent; border: 1px solid var(--line-2); color: var(--ink-2); }
-    .btn-outline:hover { border-color: var(--ink-3); color: var(--ink); background: var(--bg-2); }
-    .btn-ghost { background: transparent; color: var(--ink-2); border: none; }
-    .btn-ghost:hover { color: var(--ink); background: var(--bg-2); }
-    .btn-danger { background: var(--red-bg); color: var(--red); border: 1px solid #fecaca; }
-    .btn-danger:hover { background: #fee2e2; }
-    .btn-success { background: var(--green-bg); color: var(--green); border: 1px solid #bbf7d0; }
-    .btn-sm { padding: 4px 10px; font-size: 12px; }
-
-    /* Inputs */
-    .input { background: white; border: 1px solid var(--line-2); color: var(--ink); border-radius: 6px; padding: 8px 12px; font-family: 'Geist', sans-serif; font-size: 13.5px; width: 100%; outline: none; transition: border-color 0.12s, box-shadow 0.12s; }
-    .input:focus { border-color: var(--ink-3); box-shadow: 0 0 0 3px rgba(0,0,0,0.06); }
-    .input::placeholder { color: var(--ink-3); }
-    textarea.input { resize: vertical; min-height: 80px; }
-    select.input option { background: white; }
-
-    /* Cards */
-    .card { background: white; border: 1px solid var(--line); border-radius: 8px; }
-    .card-hover { transition: border-color 0.15s, box-shadow 0.15s; cursor: pointer; }
-    .card-hover:hover { border-color: var(--line-2); box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-
-    /* Tags / badges */
-    .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; letter-spacing: 0.02em; }
-    .badge-default { background: var(--bg-3); color: var(--ink-2); border: 1px solid var(--line); }
-    .badge-blue { background: var(--accent-bg); color: var(--accent); border: 1px solid var(--accent-line); }
-    .badge-green { background: var(--green-bg); color: var(--green); border: 1px solid #bbf7d0; }
-    .badge-amber { background: var(--amber-bg); color: var(--amber); border: 1px solid #fde68a; }
-    .badge-red { background: var(--red-bg); color: var(--red); border: 1px solid #fecaca; }
-
-    /* Subject pills */
-    .pill { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
-    .pill-math    { background: #eff6ff; color: #1d4ed8; }
-    .pill-physics { background: #ecfeff; color: #0e7490; }
-    .pill-chem    { background: #fffbeb; color: #b45309; }
-    .pill-hist    { background: #fef2f2; color: #b91c1c; }
-    .pill-lit     { background: #faf5ff; color: #7e22ce; }
-    .pill-bio     { background: #f0fdf4; color: #15803d; }
-    .pill-prog    { background: #f0fdfa; color: #0f766e; }
-    .pill-eng     { background: #fff7ed; color: #c2410c; }
-    .pill-other   { background: var(--bg-3); color: var(--ink-2); }
-
-    /* Points */
-    .pts { font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 500; color: var(--ink-2); }
-
-    /* Divider */
-    hr { border: none; border-top: 1px solid var(--line); }
-
-    /* Toast */
-    .toast { position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: var(--ink); color: white; border-radius: 8px; padding: 10px 16px; font-size: 13px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); animation: slideUp 0.2s ease; max-width: 300px; }
-    .toast.success { background: #14532d; }
-    .toast.error   { background: #7f1d1d; }
-    .toast.warning { background: #78350f; }
-    @keyframes slideUp { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-    /* Modal */
-    .overlay { position: fixed; inset: 0; background: rgba(26,25,23,0.5); backdrop-filter: blur(4px); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 16px; }
-    .modal { background: white; border: 1px solid var(--line); border-radius: 10px; width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; animation: popIn 0.18s ease; }
-    @keyframes popIn { from { transform: scale(0.97); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-    /* Loading */
-    .loader { position: fixed; inset: 0; background: var(--bg); z-index: 9998; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
-    .spin { width: 20px; height: 20px; border: 2px solid var(--line-2); border-top-color: var(--ink); border-radius: 50%; animation: spin 0.7s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Welcome screen */
-    .welcome-screen { min-height: 100vh; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 24px; }
-
-    /* Table */
-    table { width: 100%; border-collapse: collapse; }
-    th { text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-3); padding: 8px 12px; border-bottom: 1px solid var(--line); }
-    td { padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 13px; }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: var(--bg); }
-
-    /* Auth screen */
-    .auth-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: var(--bg); }
-
-    /* Mobile */
-    @media (max-width: 768px) {
-      .sidebar { display: none; }
-    }
-    @media (min-width: 769px) {
-      .mobile-nav { display: none; }
-    }
-
-    /* Stat number */
-    .stat-num { font-family: 'Instrument Serif', serif; font-size: 28px; line-height: 1; color: var(--ink); }
-
-    /* Section label */
-    .label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
-
-    /* Tab */
-    .tab { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--ink-2); transition: all 0.12s; border: none; background: transparent; font-family: 'Geist', sans-serif; }
-    .tab.active { background: var(--bg-3); color: var(--ink); }
-    .tab:hover:not(.active) { background: var(--bg-2); }
-
-    /* Progress */
-    .progress { background: var(--line); border-radius: 99px; height: 3px; overflow: hidden; }
-    .progress-bar { height: 100%; background: var(--ink); border-radius: 99px; transition: width 0.4s ease; }
-
+    ::-webkit-scrollbar-thumb { background: var(--bg-4); border-radius: 2px; }
     [x-cloak] { display: none !important; }
 
-    /* Welcome hero */
-    .welcome-line { width: 32px; height: 1px; background: var(--ink-3); display: inline-block; vertical-align: middle; margin-right: 10px; }
+    /* ═══ LAYOUT ═══ */
+    .app-layout { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: 236px;
+      background: var(--bg-1);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      transition: transform var(--transition);
+    }
+    .main-content { margin-left: 236px; flex: 1; min-width: 0; }
 
-    /* Scrollable content */
-    .page-content { padding: 32px 40px; max-width: 920px; }
-    @media (max-width: 900px) { .page-content { padding: 24px 20px; } }
+    /* ═══ NAV ═══ */
+    .sidebar-logo {
+      padding: 22px 20px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo-text {
+      font-family: var(--font-head);
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #e0e7ff 0%, var(--accent-2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .logo-sub { font-size: 11px; color: var(--ink-3); margin-top: 1px; }
+    .nav-section { padding: 12px 10px; }
+    .nav-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      padding: 6px 10px 4px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      color: var(--ink-2);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition);
+      user-select: none;
+      position: relative;
+    }
+    .nav-item:hover { background: var(--bg-3); color: var(--ink); }
+    .nav-item.active { background: var(--accent-bg); color: var(--accent-2); }
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 4px; bottom: 4px;
+      width: 2px;
+      background: var(--accent);
+      border-radius: 0 2px 2px 0;
+    }
+    .nav-icon { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.7; }
+    .nav-item.active .nav-icon { opacity: 1; }
+    .nav-badge {
+      margin-left: auto;
+      font-size: 10px;
+      font-weight: 600;
+      background: var(--accent-bg);
+      color: var(--accent-2);
+      padding: 1px 6px;
+      border-radius: 20px;
+      border: 1px solid var(--accent-glow);
+    }
+
+    /* Sidebar user footer */
+    .sidebar-footer {
+      padding: 12px 10px;
+      border-top: 1px solid var(--border);
+      margin-top: auto;
+    }
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    .user-card:hover { background: var(--bg-3); }
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: var(--bg-3);
+      flex-shrink: 0;
+    }
+    .avatar-lg { width: 48px; height: 48px; border-radius: 12px; }
+    .user-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+    .user-pts {
+      font-size: 11px;
+      color: var(--accent-2);
+      font-family: var(--font-mono);
+      font-weight: 500;
+    }
+
+    /* Points chip in sidebar */
+    .pts-chip {
+      margin: 0 10px 12px;
+      background: var(--accent-bg);
+      border: 1px solid var(--accent-glow);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+    }
+    .pts-chip-label { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 2px; }
+    .pts-chip-value { font-family: var(--font-head); font-size: 22px; font-weight: 700; color: var(--accent-2); }
+
+    /* ═══ PAGE HEADER ═══ */
+    .page-header {
+      background: var(--bg-1);
+      border-bottom: 1px solid var(--border);
+      padding: 28px 40px 24px;
+    }
+    .page-title { font-size: 26px; font-weight: 700; color: var(--ink); letter-spacing: -0.03em; }
+    .page-sub { font-size: 13px; color: var(--ink-2); margin-top: 4px; }
+    .page-body { padding: 28px 40px; max-width: 1100px; }
+
+    /* ═══ BUTTONS ═══ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 8px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      font-family: var(--font);
+      cursor: pointer;
+      border: none;
+      transition: all var(--transition);
+      white-space: nowrap;
+    }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .btn-primary:not(:disabled):hover { background: #5154d6; box-shadow: 0 0 28px var(--accent-glow); transform: translateY(-1px); }
+    .btn-secondary {
+      background: var(--bg-3);
+      color: var(--ink);
+      border: 1px solid var(--border-2);
+    }
+    .btn-secondary:not(:disabled):hover { background: var(--bg-4); }
+    .btn-ghost { background: transparent; color: var(--ink-2); border: none; }
+    .btn-ghost:hover { color: var(--ink); background: var(--bg-3); }
+    .btn-danger { background: var(--red-bg); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+    .btn-danger:hover { background: rgba(239,68,68,0.18); }
+    .btn-success { background: var(--green-bg); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+    .btn-success:hover { background: rgba(34,197,94,0.18); }
+    .btn-sm { padding: 5px 12px; font-size: 12px; }
+    .btn-icon { padding: 7px; border-radius: var(--radius-sm); }
+
+    /* ═══ INPUTS ═══ */
+    .input {
+      background: var(--bg-2);
+      border: 1px solid var(--border-2);
+      color: var(--ink);
+      border-radius: var(--radius-sm);
+      padding: 9px 13px;
+      font-family: var(--font);
+      font-size: 13.5px;
+      width: 100%;
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg); }
+    .input::placeholder { color: var(--ink-3); }
+    textarea.input { resize: vertical; min-height: 90px; }
+    select.input { cursor: pointer; }
+    select.input option { background: var(--bg-2); color: var(--ink); }
+    .input-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 6px;
+    }
+
+    /* ═══ CARDS ═══ */
+    .card {
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .card-hover { cursor: pointer; }
+    .card-hover:hover {
+      border-color: var(--border-2);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+      transform: translateY(-1px);
+      transition: all var(--transition);
+    }
+    .card-pad { padding: 20px; }
+    .card-inner { background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+
+    /* ═══ BADGES ═══ */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .badge-default { background: var(--bg-3); color: var(--ink-2); border: 1px solid var(--border); }
+    .badge-accent  { background: var(--accent-bg); color: var(--accent-2); border: 1px solid rgba(99,102,241,0.3); }
+    .badge-green   { background: var(--green-bg); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+    .badge-amber   { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
+    .badge-red     { background: var(--red-bg); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+    .badge-cyan    { background: var(--cyan-bg); color: var(--cyan); border: 1px solid rgba(6,182,212,0.3); }
+
+    /* Subject pills */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+    .s-mat  { background: rgba(99,102,241,0.15); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.2); }
+    .s-fis  { background: rgba(6,182,212,0.12); color: #67e8f9; border: 1px solid rgba(6,182,212,0.2); }
+    .s-qui  { background: rgba(245,158,11,0.12); color: #fcd34d; border: 1px solid rgba(245,158,11,0.2); }
+    .s-his  { background: rgba(239,68,68,0.1); color: #fca5a5; border: 1px solid rgba(239,68,68,0.2); }
+    .s-lit  { background: rgba(168,85,247,0.12); color: #d8b4fe; border: 1px solid rgba(168,85,247,0.2); }
+    .s-bio  { background: rgba(34,197,94,0.1); color: #86efac; border: 1px solid rgba(34,197,94,0.2); }
+    .s-pro  { background: rgba(20,184,166,0.1); color: #5eead4; border: 1px solid rgba(20,184,166,0.2); }
+    .s-ing  { background: rgba(249,115,22,0.1); color: #fdba74; border: 1px solid rgba(249,115,22,0.2); }
+    .s-geo  { background: rgba(16,185,129,0.1); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.2); }
+    .s-fil  { background: rgba(236,72,153,0.1); color: #f9a8d4; border: 1px solid rgba(236,72,153,0.2); }
+    .s-art  { background: rgba(234,179,8,0.1); color: #fde047; border: 1px solid rgba(234,179,8,0.2); }
+    .s-eco  { background: rgba(59,130,246,0.1); color: #93c5fd; border: 1px solid rgba(59,130,246,0.2); }
+    .s-def  { background: var(--bg-3); color: var(--ink-2); border: 1px solid var(--border); }
+
+    /* ═══ STATS ═══ */
+    .stat-card {
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+    }
+    .stat-num {
+      font-family: var(--font-head);
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      color: var(--ink);
+    }
+    .stat-label { font-size: 11px; color: var(--ink-3); margin-top: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* ═══ LOADER ═══ */
+    .loader {
+      position: fixed; inset: 0;
+      background: var(--bg);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+    .loader-logo { font-family: var(--font-head); font-size: 24px; font-weight: 700; letter-spacing: -0.04em; color: var(--ink-2); }
+    .spin {
+      width: 22px; height: 22px;
+      border: 2px solid var(--bg-3);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-msg { font-size: 12px; color: var(--ink-3); }
+
+    /* ═══ TOAST ═══ */
+    .toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+    .toast {
+      background: var(--bg-2);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow);
+      min-width: 260px;
+      max-width: 360px;
+      animation: toastIn 0.2s ease;
+    }
+    .toast-success { border-color: rgba(34,197,94,0.3); }
+    .toast-error   { border-color: rgba(239,68,68,0.3); }
+    .toast-warning { border-color: rgba(245,158,11,0.3); }
+    .toast-icon { font-size: 14px; flex-shrink: 0; }
+    @keyframes toastIn { from { transform: translateX(16px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    /* ═══ MODAL ═══ */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(6px);
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal {
+      background: var(--bg-1);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 560px;
+      max-height: 92vh;
+      overflow-y: auto;
+      animation: modalIn 0.2s ease;
+      box-shadow: var(--shadow-lg);
+    }
+    @keyframes modalIn { from { transform: scale(0.96) translateY(8px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+    .modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 22px 24px 0;
+      margin-bottom: 18px;
+    }
+    .modal-body { padding: 0 24px 24px; }
+    .modal-title { font-size: 20px; font-weight: 700; letter-spacing: -0.03em; }
+
+    /* ═══ AUTH ═══ */
+    .auth-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: var(--bg);
+      background-image:
+        radial-gradient(ellipse 80% 60% at 50% -20%, rgba(99,102,241,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(139,92,246,0.08) 0%, transparent 50%);
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 400px;
+      background: var(--bg-1);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      box-shadow: var(--shadow-lg);
+    }
+    .auth-tabs {
+      display: flex;
+      background: var(--bg-2);
+      border-radius: var(--radius-sm);
+      padding: 3px;
+      margin-bottom: 26px;
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 7px 12px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: calc(var(--radius-sm) - 2px);
+      cursor: pointer;
+      transition: all var(--transition);
+      color: var(--ink-2);
+      border: none;
+      background: transparent;
+      font-family: var(--font);
+    }
+    .auth-tab.active { background: var(--bg-4); color: var(--ink); }
+    .auth-tab:hover:not(.active) { color: var(--ink); }
+
+    /* ═══ TABLE ═══ */
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; font-size: 10.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-3); padding: 10px 14px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    td { padding: 11px 14px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: var(--bg-2); }
+
+    /* ═══ PROGRESS ═══ */
+    .progress { background: var(--bg-3); border-radius: 99px; height: 3px; overflow: hidden; }
+    .progress-bar { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.5s ease; }
+
+    /* ═══ DIVIDER ═══ */
+    hr { border: none; border-top: 1px solid var(--border); }
+
+    /* ═══ SECTION TABS ═══ */
+    .tabs { display: flex; gap: 2px; background: var(--bg-2); padding: 3px; border-radius: var(--radius-sm); width: fit-content; }
+    .tab { padding: 6px 14px; border-radius: calc(var(--radius-sm) - 2px); font-size: 12.5px; font-weight: 500; cursor: pointer; color: var(--ink-2); transition: all var(--transition); border: none; background: transparent; font-family: var(--font); }
+    .tab.active { background: var(--bg-4); color: var(--ink); }
+    .tab:hover:not(.active) { background: var(--bg-3); }
+
+    /* ═══ GRID ═══ */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .grid-tasks { display: grid; grid-template-columns: repeat(auto-fill, minmax(248px, 1fr)); gap: 12px; }
+
+    /* ═══ TASK CARD ═══ */
+    .task-card {
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .task-card:hover {
+      border-color: var(--border-2);
+      box-shadow: 0 6px 28px rgba(0,0,0,0.35);
+      transform: translateY(-2px);
+    }
+    .task-title { font-size: 13.5px; font-weight: 600; line-height: 1.4; color: var(--ink); margin: 8px 0 5px; }
+    .task-desc { font-size: 12px; color: var(--ink-2); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .task-price { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--accent-2); }
+
+    /* Skeleton */
+    .skeleton { background: var(--bg-3); border-radius: 4px; animation: pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    /* ═══ EMPTY STATE ═══ */
+    .empty-state { text-align: center; padding: 60px 24px; color: var(--ink-3); }
+    .empty-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.5; }
+    .empty-title { font-size: 15px; font-weight: 600; color: var(--ink-2); margin-bottom: 6px; }
+    .empty-sub { font-size: 13px; margin-bottom: 18px; }
+
+    /* ═══ LIST ROWS ═══ */
+    .list-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      transition: background var(--transition);
+    }
+    .list-row:hover { background: var(--bg-2); }
+    .list-row:last-child { border-bottom: none; }
+
+    /* ═══ FORM GROUP ═══ */
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+
+    /* ═══ GLOW ACCENT ═══ */
+    .glow-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); display: inline-block; flex-shrink: 0; }
+
+    /* ═══ UPLOAD ZONE ═══ */
+    .upload-zone {
+      border: 1.5px dashed var(--border-2);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .upload-zone:hover { border-color: var(--accent); background: var(--accent-bg); }
+    .upload-zone.has-file { border-color: var(--green); background: var(--green-bg); }
+
+    /* ═══ MOBILE ═══ */
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; }
+      .page-body, .page-header { padding-left: 20px; padding-right: 20px; }
+      .page-body { padding-top: 20px; }
+      .grid-4 { grid-template-columns: 1fr 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .mobile-bar {
+        display: flex;
+        position: fixed; bottom: 0; left: 0; right: 0;
+        background: var(--bg-1);
+        border-top: 1px solid var(--border);
+        padding: 8px 0 max(env(safe-area-inset-bottom),8px);
+        z-index: 90;
+      }
+      .main-content { padding-bottom: 72px; }
+    }
+    @media (min-width: 769px) {
+      .mobile-bar { display: none !important; }
+      .mobile-menu-btn { display: none !important; }
+    }
+    .mob-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-size: 10px;
+      color: var(--ink-3);
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: var(--font);
+      padding: 4px 0;
+    }
+    .mob-btn.active { color: var(--accent-2); }
+    .mob-btn-icon { font-size: 18px; }
+
+    /* Preview card */
+    .preview-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-top: 4px;
+    }
+
+    /* Admin colors */
+    .admin-accent { color: var(--amber); }
+
+    /* Inline helpers */
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: 8px; }
+    .gap-3 { gap: 12px; }
+    .gap-4 { gap: 16px; }
+    .gap-6 { gap: 24px; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-1 { flex: 1; min-width: 0; }
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
+    .truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .space-y > * + * { margin-top: 14px; }
+    .space-y-sm > * + * { margin-top: 10px; }
+
+    /* Section header */
+    .section-hd { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
+    .section-title { font-size: 18px; font-weight: 700; letter-spacing: -0.03em; }
+    .section-sub { font-size: 12px; color: var(--ink-3); }
   </style>
 </head>
 <body>
 
-<!-- ==================== LOADER ==================== -->
-<template x-if="isLoading">
+<!-- ════════════════════════ LOADER ════════════════════════ -->
+<template x-if="ui.loading">
   <div class="loader">
+    <div class="loader-logo" x-text="cfg.platformName||'TaskCult'"></div>
     <div class="spin"></div>
-    <span style="font-size:13px; color:var(--ink-3)" x-text="loadingMsg">Cargando...</span>
+    <div class="loader-msg" x-text="ui.loadingMsg">Conectando...</div>
   </div>
 </template>
 
-<!-- ==================== TOAST ==================== -->
-<template x-if="toast.show">
-  <div class="toast" :class="toast.type">
-    <span x-text="toast.type==='success'?'✓':toast.type==='error'?'✕':'·'"></span>
-    <span x-text="toast.message"></span>
-  </div>
-</template>
+<!-- ════════════════════════ TOASTS ════════════════════════ -->
+<div class="toast-wrap" x-cloak>
+  <template x-for="t in toasts" :key="t.id">
+    <div class="toast" :class="'toast-'+t.type">
+      <span class="toast-icon" x-text="t.type==='success'?'✓':t.type==='error'?'✕':'⚠'"></span>
+      <span x-text="t.msg"></span>
+    </div>
+  </template>
+</div>
 
-<!-- ==================== AUTH ==================== -->
-<div x-show="!currentUser && !isLoading" x-cloak class="auth-screen">
-  <div style="width:100%; max-width:360px;">
-
-    <!-- Logo -->
-    <div style="margin-bottom:40px;">
-      <h1 style="font-size:32px; color:var(--ink)" x-text="config.platformName||'TaskCult'"></h1>
-      <p style="color:var(--ink-3); font-size:13.5px; margin-top:4px" x-text="config.platformDescription||'La economía del conocimiento académico'"></p>
+<!-- ════════════════════════ AUTH ════════════════════════ -->
+<div x-show="!session && !ui.loading" x-cloak class="auth-screen">
+  <div class="auth-card">
+    <div style="margin-bottom:28px;">
+      <div class="logo-text" style="font-size:26px; margin-bottom:4px;" x-text="cfg.platformName||'TaskCult'"></div>
+      <div style="font-size:13px; color:var(--ink-3);" x-text="cfg.platformDescription||'Economía del conocimiento académico'"></div>
     </div>
 
-    <!-- Tab switcher -->
-    <div style="display:flex; gap:4px; margin-bottom:24px; background:var(--bg-2); padding:4px; border-radius:8px;">
-      <button @click="authMode='login'" class="tab" :class="authMode==='login'?'active':''" style="flex:1;">Iniciar sesión</button>
-      <button @click="authMode='register'" class="tab" :class="authMode==='register'?'active':''" style="flex:1;">Registrarse</button>
+    <div class="auth-tabs">
+      <button @click="ui.authMode='login'" class="auth-tab" :class="ui.authMode==='login'?'active':''">Iniciar sesión</button>
+      <button @click="ui.authMode='register'" class="auth-tab" :class="ui.authMode==='register'?'active':''">Registrarse</button>
     </div>
 
-    <!-- Login -->
-    <div x-show="authMode==='login'" class="space-y-3">
-      <div>
-        <div class="label" style="margin-bottom:6px">Usuario o email</div>
-        <input x-model="loginForm.username" type="text" placeholder="tu_usuario" class="input" @keydown.enter="doLogin()"/>
+    <!-- LOGIN -->
+    <div x-show="ui.authMode==='login'" class="space-y">
+      <div class="form-group">
+        <div class="input-label">Usuario o email</div>
+        <input x-model="forms.login.id" type="text" placeholder="tu_usuario" class="input" @keydown.enter="doLogin()"/>
       </div>
-      <div>
-        <div class="label" style="margin-bottom:6px">Contraseña</div>
-        <input x-model="loginForm.password" type="password" placeholder="••••••••" class="input" @keydown.enter="doLogin()"/>
+      <div class="form-group">
+        <div class="input-label">Contraseña</div>
+        <input x-model="forms.login.pw" type="password" placeholder="••••••••" class="input" @keydown.enter="doLogin()"/>
       </div>
-      <button @click="doLogin()" :disabled="isLoading" class="btn btn-primary" style="width:100%; margin-top:8px;">
-        <span x-show="!isLoading">Entrar</span>
-        <span x-show="isLoading">Verificando...</span>
+      <button @click="doLogin()" :disabled="ui.submitting" class="btn btn-primary" style="width:100%; margin-top:6px;">
+        <span x-show="!ui.submitting">Entrar</span>
+        <span x-show="ui.submitting" style="display:flex;align-items:center;gap:8px;"><div class="spin" style="width:14px;height:14px;border-width:1.5px;"></div> Verificando...</span>
       </button>
-      <p style="font-size:12px; color:var(--ink-3); text-align:center; margin-top:8px;">
-        Admin: <span class="mono" style="color:var(--ink-2)">admin / admin123</span>
-      </p>
+      <div style="font-size:11.5px; color:var(--ink-3); text-align:center; margin-top:10px;">
+        Demo: <span class="mono" style="color:var(--ink-2); background:var(--bg-3); padding:2px 6px; border-radius:4px;">admin / admin123</span>
+      </div>
     </div>
 
-    <!-- Register -->
-    <div x-show="authMode==='register'" class="space-y-3">
-      <div>
-        <div class="label" style="margin-bottom:6px">Nombre de usuario</div>
-        <input x-model="registerForm.username" type="text" placeholder="mi_usuario" class="input"/>
+    <!-- REGISTER -->
+    <div x-show="ui.authMode==='register'" class="space-y">
+      <div class="form-group">
+        <div class="input-label">Usuario <span style="color:var(--red)">*</span></div>
+        <input x-model="forms.reg.username" type="text" placeholder="mi_usuario" class="input"/>
       </div>
-      <div>
-        <div class="label" style="margin-bottom:6px">Email</div>
-        <input x-model="registerForm.email" type="email" placeholder="tu@email.com" class="input"/>
+      <div class="form-group">
+        <div class="input-label">Email <span style="color:var(--red)">*</span></div>
+        <input x-model="forms.reg.email" type="email" placeholder="tu@email.com" class="input"/>
       </div>
-      <div>
-        <div class="label" style="margin-bottom:6px">Nivel académico</div>
-        <select x-model="registerForm.level" class="input">
+      <div class="form-group">
+        <div class="input-label">Nivel académico <span style="color:var(--red)">*</span></div>
+        <select x-model="forms.reg.level" class="input">
           <option value="">Seleccionar...</option>
-          <template x-for="l in academicLevels" :key="l"><option :value="l" x-text="l"></option></template>
+          <template x-for="l in LEVELS" :key="l"><option :value="l" x-text="l"></option></template>
         </select>
       </div>
-      <div>
-        <div class="label" style="margin-bottom:6px">Contraseña</div>
-        <input x-model="registerForm.password" type="password" placeholder="mínimo 6 caracteres" class="input"/>
+      <div class="form-group">
+        <div class="input-label">Contraseña <span style="color:var(--red)">*</span></div>
+        <input x-model="forms.reg.pw" type="password" placeholder="mínimo 6 caracteres" class="input"/>
       </div>
-      <button @click="doRegister()" :disabled="isLoading" class="btn btn-primary" style="width:100%; margin-top:8px;">
-        <span x-show="!isLoading">Crear cuenta</span>
-        <span x-show="isLoading">Creando...</span>
+      <button @click="doRegister()" :disabled="ui.submitting" class="btn btn-primary" style="width:100%; margin-top:6px;">
+        <span x-show="!ui.submitting">Crear cuenta</span>
+        <span x-show="ui.submitting" style="display:flex;align-items:center;gap:8px;"><div class="spin" style="width:14px;height:14px;border-width:1.5px;"></div> Creando...</span>
       </button>
-      <p style="font-size:12px; color:var(--ink-3); text-align:center; margin-top:4px;">
-        Recibís <span style="color:var(--ink-2); font-weight:500" x-text="config.welcomePoints||100"></span> puntos de bienvenida
-      </p>
+      <div style="font-size:12px; color:var(--ink-3); text-align:center; margin-top:8px;">
+        Recibís <strong style="color:var(--accent-2);" x-text="cfg.welcomePoints||100"></strong> puntos de bienvenida ✨
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ==================== MAIN APP ==================== -->
-<div x-show="currentUser && !isLoading" x-cloak style="display:flex; min-height:100vh;">
+<!-- ════════════════════════ MAIN APP ════════════════════════ -->
+<div x-show="session && !ui.loading" x-cloak class="app-layout">
 
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div style="padding:20px 16px 16px;">
-      <h2 style="font-size:18px;" x-text="config.platformName||'TaskCult'"></h2>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" :class="ui.sidebarOpen?'open':''">
+    <div class="sidebar-logo">
+      <div class="logo-text" x-text="cfg.platformName||'TaskCult'"></div>
+      <div class="logo-sub" x-text="cfg.platformDescription||'Academia de conocimiento'"></div>
     </div>
 
-    <!-- Points display -->
-    <div style="padding:0 12px 16px;">
-      <div style="background:var(--bg-2); border:1px solid var(--line); border-radius:8px; padding:12px 14px;">
-        <div class="label" style="margin-bottom:4px;">Tus puntos</div>
-        <div class="stat-num" x-text="(currentUser?.points||0).toLocaleString()"></div>
-      </div>
+    <div class="pts-chip">
+      <div class="pts-chip-label">Tus puntos</div>
+      <div class="pts-chip-value" x-text="(session?.points||0).toLocaleString()"></div>
     </div>
 
-    <hr style="margin: 0 12px 12px;"/>
-
-    <nav style="padding:0 8px; display:flex; flex-direction:column; gap:1px;">
-      <div @click="setPage('home')" class="nav-link" :class="currentPage==='home'?'active':''">
-        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg>
-        Inicio
-      </div>
-      <div @click="setPage('explore')" class="nav-link" :class="currentPage==='explore'?'active':''">
-        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="1.8"/><path stroke-linecap="round" stroke-width="1.8" d="m21 21-4.35-4.35"/></svg>
-        Explorar
-      </div>
-      <div @click="setPage('upload')" class="nav-link" :class="currentPage==='upload'?'active':''">
-        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-        Subir tarea
-      </div>
-      <div @click="setPage('library')" class="nav-link" :class="currentPage==='library'?'active':''">
-        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-        Mi biblioteca
-      </div>
-      <div @click="setPage('leaderboard')" class="nav-link" :class="currentPage==='leaderboard'?'active':''">
-        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-        Leaderboard
-      </div>
-      <div @click="setPage('profile')" class="nav-link" :class="currentPage==='profile'?'active':''">
-        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-        Perfil
-      </div>
-      <template x-if="currentUser?.isAdmin">
-        <div>
-          <hr style="margin:8px 4px;"/>
-          <div @click="setPage('admin')" class="nav-link" :class="currentPage==='admin'?'active':''" style="color:var(--amber);">
-            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="opacity:1"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3" stroke-width="1.8"/></svg>
-            Admin
-          </div>
+    <nav class="nav-section" style="flex:1; overflow-y:auto;">
+      <div class="nav-label">Principal</div>
+      <template x-for="item in navItems" :key="item.id">
+        <div @click="goPage(item.id); ui.sidebarOpen=false;" class="nav-item" :class="ui.page===item.id?'active':''">
+          <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8" x-html="item.icon"></svg>
+          <span x-text="item.label"></span>
+          <span x-show="item.id==='admin' && pendingCount>0" class="nav-badge" x-text="pendingCount"></span>
         </div>
       </template>
     </nav>
 
-    <!-- User footer -->
-    <div style="margin-top:auto; padding:12px 8px; border-top:1px solid var(--line);">
-      <div style="display:flex; align-items:center; gap:10px; padding:8px; border-radius:6px; cursor:pointer;" class="nav-link" @click="setPage('profile')">
-        <img :src="currentUser?.avatar||avatarUrl(currentUser?.username)" style="width:28px; height:28px; border-radius:50%; object-fit:cover; flex-shrink:0; background:var(--bg-2);"/>
+    <div class="sidebar-footer">
+      <div class="user-card" @click="goPage('profile'); ui.sidebarOpen=false;">
+        <img :src="avatarUrl(session?.username)" class="avatar"/>
         <div style="flex:1; min-width:0;">
-          <div style="font-size:13px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" x-text="currentUser?.username"></div>
-          <div style="font-size:11px; color:var(--ink-3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" x-text="currentUser?.level||'Estudiante'"></div>
+          <div class="user-name truncate" x-text="session?.username"></div>
+          <div class="user-pts" x-text="session?.level||'Estudiante'"></div>
         </div>
-        <button @click.stop="doLogout()" style="color:var(--ink-3); font-size:12px; padding:2px 4px; background:none; border:none; cursor:pointer; border-radius:4px;" title="Salir">✕</button>
+        <button @click.stop="doLogout()" class="btn btn-ghost btn-icon" title="Salir" style="color:var(--ink-3); font-size:12px; padding:5px; flex-shrink:0;">✕</button>
       </div>
     </div>
   </aside>
 
-  <!-- Mobile bottom nav -->
-  <div class="mobile-nav" style="position:fixed; bottom:0; left:0; right:0; z-index:50; background:white; border-top:1px solid var(--line); display:flex; align-items:center; justify-content:space-around; padding:8px 0 calc(env(safe-area-inset-bottom) + 8px);">
-    <button @click="setPage('home')" style="display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px 12px; background:none; border:none; cursor:pointer; font-size:11px; color:var(--ink-2);" :style="currentPage==='home'?'color:var(--ink); font-weight:500':''">🏠 <span>Inicio</span></button>
-    <button @click="setPage('explore')" style="display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px 12px; background:none; border:none; cursor:pointer; font-size:11px; color:var(--ink-2);" :style="currentPage==='explore'?'color:var(--ink); font-weight:500':''">🔍 <span>Explorar</span></button>
-    <button @click="setPage('upload')" style="display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px 12px; background:var(--ink); border:none; cursor:pointer; font-size:11px; color:white; border-radius:8px;">⬆ <span>Subir</span></button>
-    <button @click="setPage('library')" style="display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px 12px; background:none; border:none; cursor:pointer; font-size:11px; color:var(--ink-2);" :style="currentPage==='library'?'color:var(--ink); font-weight:500':''">📚 <span>Biblio</span></button>
-    <button @click="setPage('profile')" style="display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px 12px; background:none; border:none; cursor:pointer; font-size:11px; color:var(--ink-2);" :style="currentPage==='profile'?'color:var(--ink); font-weight:500':''">👤 <span>Perfil</span></button>
-  </div>
+  <!-- Mobile overlay -->
+  <div x-show="ui.sidebarOpen" @click="ui.sidebarOpen=false" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:99;display:none;" class="mobile-menu-btn" x-cloak></div>
 
   <!-- MAIN CONTENT -->
-  <main class="main" style="padding-bottom: 80px;">
+  <main class="main-content">
 
-    <!-- ======== WELCOME (home) ======== -->
-    <div x-show="currentPage==='home'">
-      <!-- Welcome hero -->
-      <div style="background:var(--bg-2); border-bottom:1px solid var(--line); padding:32px 40px 28px;">
-        <div style="max-width:880px;">
-          <p class="label" style="margin-bottom:8px;"><span class="welcome-line"></span>Panel de inicio</p>
-          <h1 style="font-size:36px; color:var(--ink); margin-bottom:6px;">Bienvenido, <em x-text="currentUser?.username"></em></h1>
-          <p style="color:var(--ink-2); font-size:14px;" x-text="config.platformDescription||'La economía del conocimiento académico'"></p>
+    <!-- Mobile top bar -->
+    <div class="mobile-bar" style="display:none; position:sticky; top:0; z-index:80; background:var(--bg-1); border-bottom:1px solid var(--border); padding:12px 16px; align-items:center; justify-content:space-between;">
+      <button @click="ui.sidebarOpen=true" class="btn btn-ghost btn-icon" style="display:none;">☰</button>
+      <div class="logo-text" style="font-size:17px;" x-text="cfg.platformName||'TaskCult'"></div>
+      <div style="font-family:var(--font-mono); font-size:12px; color:var(--accent-2);" x-text="(session?.points||0).toLocaleString()+' pts'"></div>
+    </div>
 
-          <!-- Stats row -->
-          <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:24px;">
-            <div class="card" style="padding:16px 18px;">
-              <div class="label" style="margin-bottom:8px;">Tareas totales</div>
-              <div class="stat-num" x-text="db.tasks.length"></div>
-            </div>
-            <div class="card" style="padding:16px 18px;">
-              <div class="label" style="margin-bottom:8px;">Subidas por vos</div>
-              <div class="stat-num" style="color:var(--green)" x-text="currentUser?.tasksUploaded||0"></div>
-            </div>
-            <div class="card" style="padding:16px 18px;">
-              <div class="label" style="margin-bottom:8px;">Reclamadas</div>
-              <div class="stat-num" style="color:var(--amber)" x-text="currentUser?.tasksClaimed||0"></div>
-            </div>
-            <div class="card" style="padding:16px 18px;">
-              <div class="label" style="margin-bottom:8px;">Tus puntos</div>
-              <div class="stat-num" x-text="(currentUser?.points||0).toLocaleString()"></div>
-            </div>
+    <!-- ══════ HOME ══════ -->
+    <div x-show="ui.page==='home'">
+      <div class="page-header">
+        <div class="page-title">Bienvenido, <em style="font-style:normal; color:var(--accent-2);" x-text="session?.username"></em> 👋</div>
+        <div class="page-sub" x-text="cfg.platformDescription||'Tu plataforma de intercambio académico'"></div>
+
+        <div class="grid-4" style="margin-top:20px;">
+          <div class="stat-card">
+            <div class="stat-num" x-text="db.tasks.filter(t=>t.approved).length"></div>
+            <div class="stat-label">Tareas disponibles</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" style="color:var(--green);" x-text="session?.tasksUploaded||0"></div>
+            <div class="stat-label">Tus subidas</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" style="color:var(--amber);" x-text="session?.tasksClaimed||0"></div>
+            <div class="stat-label">Reclamadas</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" style="color:var(--accent-2);" x-text="(session?.points||0).toLocaleString()"></div>
+            <div class="stat-label">Tus puntos</div>
           </div>
         </div>
       </div>
 
-      <div class="page-content">
-
+      <div class="page-body">
         <!-- Featured -->
-        <div style="margin-bottom:36px;">
-          <div style="display:flex; align-items:baseline; justify-content:space-between; margin-bottom:16px;">
-            <h2 style="font-size:22px;">Destacadas</h2>
-            <button @click="setPage('explore')" class="btn btn-ghost btn-sm" style="font-size:12px;">Ver todo →</button>
+        <div style="margin-bottom:32px;">
+          <div class="section-hd">
+            <div class="section-title">Destacadas</div>
+            <button @click="goPage('explore')" class="btn btn-ghost btn-sm">Ver todo →</button>
           </div>
-          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:12px;">
+          <div class="grid-tasks">
             <template x-for="task in featuredTasks" :key="task.id">
-              <div class="card card-hover" style="padding:16px;" @click="openTask(task)">
-                <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:10px; gap:8px;">
-                  <span class="pill" :class="subjectClass(task.subject)" x-text="task.subject"></span>
-                  <span class="pts" x-text="task.price+' pts'"></span>
+              <div class="task-card" @click="openTask(task)">
+                <div class="flex items-center justify-between">
+                  <span class="pill" :class="subjectCls(task.subject)" x-text="task.subject"></span>
+                  <span class="task-price" x-text="task.price+' pts'"></span>
                 </div>
-                <div style="font-weight:500; font-size:13.5px; margin-bottom:4px; line-height:1.4;" x-text="task.title"></div>
-                <p style="font-size:12px; color:var(--ink-3); overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;" x-text="task.description"></p>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
-                  <span class="badge badge-default" style="font-size:10px;" x-text="task.level"></span>
-                  <span style="font-size:11px; color:var(--ink-3);">♡ <span x-text="task.likes||0"></span></span>
+                <div class="task-title" x-text="task.title"></div>
+                <div class="task-desc" x-text="task.description"></div>
+                <div class="flex items-center justify-between" style="margin-top:12px;">
+                  <span class="badge badge-default" x-text="task.level"></span>
+                  <span style="font-size:11px; color:var(--ink-3);">♥ <span x-text="task.likes||0"></span></span>
                 </div>
               </div>
             </template>
-            <div x-show="featuredTasks.length===0" style="grid-column:1/-1; text-align:center; padding:48px 0; color:var(--ink-3);">
-              <p style="font-size:15px; margin-bottom:8px;">Aún no hay tareas publicadas.</p>
-              <button @click="setPage('upload')" class="btn btn-primary btn-sm" style="margin-top:4px;">Subir la primera</button>
-            </div>
+            <template x-if="featuredTasks.length===0">
+              <div class="card" style="grid-column:1/-1;">
+                <div class="empty-state">
+                  <div class="empty-icon">📚</div>
+                  <div class="empty-title">Sin tareas aún</div>
+                  <div class="empty-sub">Sé el primero en subir una tarea</div>
+                  <button @click="goPage('upload')" class="btn btn-primary btn-sm">Subir tarea</button>
+                </div>
+              </div>
+            </template>
           </div>
         </div>
 
         <!-- Recent -->
         <div>
-          <h2 style="font-size:22px; margin-bottom:16px;">Recientes</h2>
+          <div class="section-hd">
+            <div class="section-title">Recientes</div>
+          </div>
           <div class="card" style="overflow:hidden;">
-            <template x-for="(task, i) in recentTasks" :key="task.id">
-              <div class="card-hover" style="display:flex; align-items:center; gap:12px; padding:12px 16px; border-bottom:1px solid var(--line);" @click="openTask(task)">
-                <span class="pill" :class="subjectClass(task.subject)" style="flex-shrink:0; width:88px; justify-content:center;" x-text="task.subject"></span>
-                <div style="flex:1; min-width:0;">
-                  <div style="font-weight:500; font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" x-text="task.title"></div>
+            <template x-for="task in recentTasks" :key="task.id">
+              <div class="list-row" style="cursor:pointer;" @click="openTask(task)">
+                <span class="pill" :class="subjectCls(task.subject)" style="flex-shrink:0; min-width:90px; justify-content:center;" x-text="task.subject"></span>
+                <div class="flex-1">
+                  <div style="font-weight:600; font-size:13px;" x-text="task.title"></div>
                   <div style="font-size:11px; color:var(--ink-3); margin-top:1px;">por <span x-text="task.authorName"></span> · <span x-text="timeAgo(task.createdAt)"></span></div>
                 </div>
-                <span class="pts" style="flex-shrink:0;" x-text="task.price+' pts'"></span>
+                <span class="task-price" style="flex-shrink:0;" x-text="task.price+' pts'"></span>
               </div>
             </template>
-            <div x-show="recentTasks.length===0" style="padding:32px; text-align:center; color:var(--ink-3);">Sin tareas recientes.</div>
+            <template x-if="recentTasks.length===0">
+              <div class="empty-state">Sin tareas recientes</div>
+            </template>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ======== EXPLORE ======== -->
-    <div x-show="currentPage==='explore'" class="page-content">
-      <h1 style="font-size:32px; margin-bottom:4px;">Explorar</h1>
-      <p style="color:var(--ink-2); margin-bottom:24px; font-size:13.5px;">Buscá tareas por materia, nivel o palabras clave.</p>
-
-      <!-- Filters -->
-      <div class="card" style="padding:16px; margin-bottom:20px; display:flex; flex-direction:column; gap:10px;">
-        <input x-model="exploreSearch" type="text" placeholder="Buscar tareas, materias, tags..." class="input"/>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <select x-model="exploreSubject" class="input" style="flex:1; min-width:120px;">
-            <option value="">Todas las materias</option>
-            <template x-for="s in subjects" :key="s"><option :value="s" x-text="s"></option></template>
-          </select>
-          <select x-model="exploreLevel" class="input" style="flex:1; min-width:120px;">
-            <option value="">Todos los niveles</option>
-            <template x-for="l in academicLevels" :key="l"><option :value="l" x-text="l"></option></template>
-          </select>
-          <select x-model="exploreSort" class="input" style="flex:1; min-width:120px;">
-            <option value="recent">Más recientes</option>
-            <option value="popular">Más populares</option>
-            <option value="price_asc">Menor precio</option>
-            <option value="price_desc">Mayor precio</option>
-          </select>
-        </div>
+    <!-- ══════ EXPLORE ══════ -->
+    <div x-show="ui.page==='explore'">
+      <div class="page-header">
+        <div class="page-title">Explorar</div>
+        <div class="page-sub">Buscá tareas por materia, nivel o palabras clave</div>
       </div>
-
-      <!-- Pill filters -->
-      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;">
-        <button @click="exploreSubject=''" class="pill" :class="exploreSubject===''?'pill-prog':'pill-other'" style="cursor:pointer;">Todas</button>
-        <template x-for="s in subjects" :key="s">
-          <button @click="exploreSubject=exploreSubject===s?'':s" class="pill" :class="exploreSubject===s?subjectClass(s):'pill-other'" style="cursor:pointer;" x-text="s"></button>
-        </template>
-      </div>
-
-      <p style="font-size:12px; color:var(--ink-3); margin-bottom:12px;"><span x-text="filteredTasks.length"></span> resultados</p>
-
-      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:12px;">
-        <template x-for="task in filteredTasks" :key="task.id">
-          <div class="card card-hover" style="padding:16px;" @click="openTask(task)">
-            <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:10px; gap:8px;">
-              <span class="pill" :class="subjectClass(task.subject)" x-text="task.subject"></span>
-              <span class="pts" x-text="task.price+' pts'"></span>
-            </div>
-            <div style="font-weight:500; font-size:13.5px; margin-bottom:4px; line-height:1.4;" x-text="task.title"></div>
-            <p style="font-size:12px; color:var(--ink-3); overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; margin-bottom:10px;" x-text="task.description"></p>
-            <div style="display:flex; flex-wrap:wrap; gap:4px; margin-bottom:10px;">
-              <template x-for="tag in (task.tags||[]).slice(0,3)" :key="tag">
-                <span class="badge badge-default" style="font-size:10px;" x-text="'#'+tag"></span>
-              </template>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span class="badge badge-default" style="font-size:10px;" x-text="task.level"></span>
-              <span style="font-size:11px; color:var(--ink-3);">♡ <span x-text="task.likes||0"></span> · <span x-text="task.authorName" style="font-weight:500;"></span></span>
-            </div>
+      <div class="page-body">
+        <!-- Filters -->
+        <div class="card card-pad" style="margin-bottom:18px;">
+          <div class="flex gap-2" style="flex-wrap:wrap;">
+            <input x-model="filters.q" type="text" placeholder="Buscar..." class="input" style="flex:2; min-width:180px;"/>
+            <select x-model="filters.subject" class="input" style="flex:1; min-width:120px;">
+              <option value="">Todas las materias</option>
+              <template x-for="s in SUBJECTS" :key="s"><option :value="s" x-text="s"></option></template>
+            </select>
+            <select x-model="filters.level" class="input" style="flex:1; min-width:110px;">
+              <option value="">Todos los niveles</option>
+              <template x-for="l in LEVELS" :key="l"><option :value="l" x-text="l"></option></template>
+            </select>
+            <select x-model="filters.sort" class="input" style="flex:1; min-width:120px;">
+              <option value="recent">Más recientes</option>
+              <option value="popular">Más populares</option>
+              <option value="cheap">Menor precio</option>
+              <option value="expensive">Mayor precio</option>
+            </select>
           </div>
-        </template>
-        <div x-show="filteredTasks.length===0" style="grid-column:1/-1; text-align:center; padding:48px 0; color:var(--ink-3);">
-          <p>Sin resultados para esos filtros.</p>
+          <!-- Subject pills -->
+          <div class="flex flex-wrap gap-2" style="margin-top:12px;">
+            <button @click="filters.subject=''" class="pill" :class="filters.subject===''?'s-pro':'s-def'" style="cursor:pointer;">Todas</button>
+            <template x-for="s in SUBJECTS" :key="s">
+              <button @click="filters.subject=filters.subject===s?'':s" class="pill" :class="filters.subject===s?subjectCls(s):'s-def'" style="cursor:pointer;" x-text="s"></button>
+            </template>
+          </div>
+        </div>
+        <div style="font-size:12px; color:var(--ink-3); margin-bottom:12px;"><span x-text="filteredTasks.length"></span> resultados</div>
+        <div class="grid-tasks">
+          <template x-for="task in filteredTasks" :key="task.id">
+            <div class="task-card" @click="openTask(task)">
+              <div class="flex items-center justify-between">
+                <span class="pill" :class="subjectCls(task.subject)" x-text="task.subject"></span>
+                <span class="task-price" x-text="task.price+' pts'"></span>
+              </div>
+              <div class="task-title" x-text="task.title"></div>
+              <div class="task-desc" x-text="task.description"></div>
+              <div class="flex flex-wrap gap-2" style="margin:8px 0 4px;">
+                <template x-for="tag in (task.tags||[]).slice(0,3)" :key="tag">
+                  <span class="badge badge-default" style="font-size:10px;" x-text="'#'+tag"></span>
+                </template>
+              </div>
+              <div class="flex items-center justify-between" style="margin-top:8px;">
+                <span class="badge badge-default" x-text="task.level"></span>
+                <span style="font-size:11px; color:var(--ink-3);">♥ <span x-text="task.likes||0"></span> · <span x-text="task.authorName"></span></span>
+              </div>
+            </div>
+          </template>
+          <template x-if="filteredTasks.length===0">
+            <div class="card" style="grid-column:1/-1;">
+              <div class="empty-state">
+                <div class="empty-icon">🔍</div>
+                <div class="empty-title">Sin resultados</div>
+                <div class="empty-sub">Probá otros filtros o términos</div>
+              </div>
+            </div>
+          </template>
         </div>
       </div>
     </div>
 
-    <!-- ======== UPLOAD ======== -->
-    <div x-show="currentPage==='upload'" class="page-content" style="max-width:600px;">
-      <h1 style="font-size:32px; margin-bottom:4px;">Subir tarea</h1>
-      <p style="color:var(--ink-2); margin-bottom:24px; font-size:13.5px;">Compartí tu trabajo y ganá puntos.</p>
-
-      <!-- Reward info -->
-      <div class="card" style="padding:14px 16px; margin-bottom:24px; display:flex; align-items:center; gap:12px; background:var(--bg-2);">
-        <div style="font-size:20px;">⟳</div>
-        <div>
-          <div style="font-size:13px; font-weight:500;">Al subir ganás <span x-text="config.baseUploadPoints||50"></span> puntos</div>
-          <div style="font-size:12px; color:var(--ink-3); margin-top:2px;">+ <span x-text="config.pointsPerClaim||10"></span> pts extra cada vez que alguien la reclame.</div>
-        </div>
+    <!-- ══════ UPLOAD ══════ -->
+    <div x-show="ui.page==='upload'">
+      <div class="page-header">
+        <div class="page-title">Subir tarea</div>
+        <div class="page-sub">Compartí tu trabajo y ganá puntos automáticamente</div>
       </div>
+      <div class="page-body" style="max-width:620px;">
+        <!-- Reward banner -->
+        <div class="card card-inner" style="padding:14px 16px; margin-bottom:20px; display:flex; align-items:center; gap:14px;">
+          <div style="font-size:22px;">💰</div>
+          <div>
+            <div style="font-size:13px; font-weight:600;">Ganás <span style="color:var(--accent-2);" x-text="cfg.baseUploadPoints||50"></span> pts al subir</div>
+            <div style="font-size:12px; color:var(--ink-3); margin-top:2px;">+ <span x-text="cfg.pointsPerClaim||10"></span> pts extra cada vez que alguien la reclame</div>
+          </div>
+        </div>
 
-      <div class="card" style="padding:24px;">
-        <div style="display:flex; flex-direction:column; gap:18px;">
-          <div>
-            <div class="label" style="margin-bottom:6px;">Título <span style="color:var(--red)">*</span></div>
-            <input x-model="uploadForm.title" type="text" placeholder="Ej: Resolución de integrales dobles" class="input"/>
+        <div class="card card-pad space-y">
+          <div class="form-group">
+            <div class="input-label">Título <span style="color:var(--red)">*</span></div>
+            <input x-model="forms.upload.title" type="text" placeholder="Ej: Resolución de integrales dobles" class="input"/>
           </div>
-          <div>
-            <div class="label" style="margin-bottom:6px;">Descripción <span style="color:var(--red)">*</span></div>
-            <textarea x-model="uploadForm.description" placeholder="Describí el contenido con detalle..." class="input" rows="4"></textarea>
+          <div class="form-group">
+            <div class="input-label">Descripción <span style="color:var(--red)">*</span></div>
+            <textarea x-model="forms.upload.description" placeholder="Describí el contenido con detalle..." class="input" rows="4"></textarea>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-            <div>
-              <div class="label" style="margin-bottom:6px;">Materia <span style="color:var(--red)">*</span></div>
-              <select x-model="uploadForm.subject" class="input">
+          <div class="grid-2">
+            <div class="form-group">
+              <div class="input-label">Materia <span style="color:var(--red)">*</span></div>
+              <select x-model="forms.upload.subject" class="input">
                 <option value="">Seleccionar...</option>
-                <template x-for="s in subjects" :key="s"><option :value="s" x-text="s"></option></template>
+                <template x-for="s in SUBJECTS" :key="s"><option :value="s" x-text="s"></option></template>
               </select>
             </div>
-            <div>
-              <div class="label" style="margin-bottom:6px;">Nivel <span style="color:var(--red)">*</span></div>
-              <select x-model="uploadForm.level" class="input">
+            <div class="form-group">
+              <div class="input-label">Nivel <span style="color:var(--red)">*</span></div>
+              <select x-model="forms.upload.level" class="input">
                 <option value="">Seleccionar...</option>
-                <template x-for="l in academicLevels" :key="l"><option :value="l" x-text="l"></option></template>
+                <template x-for="l in LEVELS" :key="l"><option :value="l" x-text="l"></option></template>
               </select>
             </div>
           </div>
-          <div>
-            <div class="label" style="margin-bottom:6px;">Precio en puntos <span style="color:var(--ink-3); font-size:10px;">(mín: <span x-text="config.minPrice||10"></span> — máx: <span x-text="config.maxPrice||500"></span>)</span></div>
-            <input x-model.number="uploadForm.price" type="number" :min="config.minPrice||10" :max="config.maxPrice||500" class="input"/>
+          <div class="form-group">
+            <div class="input-label">Precio en puntos <span style="color:var(--ink-3); font-weight:400; text-transform:none; font-size:11px;">(mín: <span x-text="cfg.minPrice||10"></span> — máx: <span x-text="cfg.maxPrice||500"></span>)</span></div>
+            <input x-model.number="forms.upload.price" type="number" :min="cfg.minPrice||10" :max="cfg.maxPrice||500" class="input"/>
           </div>
-          <div>
-            <div class="label" style="margin-bottom:6px;">Tags <span style="color:var(--ink-3);">(separados por coma)</span></div>
-            <input x-model="uploadForm.tagsStr" type="text" placeholder="integral, cálculo, ejercicios" class="input"/>
+          <div class="form-group">
+            <div class="input-label">Tags <span style="color:var(--ink-3); font-weight:400; text-transform:none; font-size:11px;">(separados por coma)</span></div>
+            <input x-model="forms.upload.tagsStr" type="text" placeholder="integral, cálculo, ejercicios" class="input"/>
           </div>
-          <div>
-            <div class="label" style="margin-bottom:6px;">Archivo adjunto</div>
-            <div style="border:1.5px dashed var(--line-2); border-radius:6px; padding:20px; text-align:center; cursor:pointer; transition:border-color 0.12s;" :style="uploadForm.hasFile?'border-color:var(--green);background:var(--green-bg)':''" @click="uploadForm.hasFile=!uploadForm.hasFile">
-              <div style="font-size:18px; margin-bottom:4px;" x-text="uploadForm.hasFile?'📎':'📁'"></div>
-              <div style="font-size:12px; color:var(--ink-3);" x-text="uploadForm.hasFile?'archivo_tarea.pdf adjunto — click para quitar':'Click para simular adjuntar archivo'"></div>
+          <div class="form-group">
+            <div class="input-label">Archivo</div>
+            <div class="upload-zone" :class="forms.upload.hasFile?'has-file':''" @click="forms.upload.hasFile=!forms.upload.hasFile">
+              <div style="font-size:24px; margin-bottom:6px;" x-text="forms.upload.hasFile?'📎':'📁'"></div>
+              <div style="font-size:12px; color:var(--ink-3);" x-text="forms.upload.hasFile?'archivo_tarea.pdf adjunto — clic para quitar':'Clic para simular adjuntar archivo'"></div>
             </div>
           </div>
 
           <!-- Preview -->
-          <div x-show="uploadForm.title" style="border-top:1px solid var(--line); padding-top:16px;">
-            <div class="label" style="margin-bottom:10px;">Vista previa</div>
-            <div class="card" style="padding:14px;">
-              <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                <span class="pill" :class="subjectClass(uploadForm.subject)" x-text="uploadForm.subject||'Materia'"></span>
-                <span class="pts" x-text="(uploadForm.price||0)+' pts'"></span>
+          <template x-if="forms.upload.title">
+            <div>
+              <div class="input-label" style="margin-bottom:8px;">Vista previa</div>
+              <div class="preview-card">
+                <div class="flex items-center justify-between">
+                  <span class="pill" :class="subjectCls(forms.upload.subject)" x-text="forms.upload.subject||'Materia'"></span>
+                  <span class="task-price" x-text="(forms.upload.price||0)+' pts'"></span>
+                </div>
+                <div class="task-title" x-text="forms.upload.title"></div>
+                <div class="task-desc" x-text="forms.upload.description||'Descripción...'"></div>
               </div>
-              <div style="font-weight:500; font-size:13.5px;" x-text="uploadForm.title||'Título'"></div>
-              <p style="font-size:12px; color:var(--ink-3); margin-top:4px;" x-text="uploadForm.description||'Descripción...'"></p>
             </div>
-          </div>
+          </template>
 
-          <button @click="doUploadTask()" :disabled="isLoading" class="btn btn-primary">
-            <span x-show="!isLoading">Subir y ganar puntos</span>
-            <span x-show="isLoading">Subiendo...</span>
+          <button @click="doUpload()" :disabled="ui.submitting" class="btn btn-primary" style="width:100%;">
+            <span x-show="!ui.submitting">Subir y ganar puntos ↑</span>
+            <span x-show="ui.submitting" style="display:flex;align-items:center;gap:8px;"><div class="spin" style="width:14px;height:14px;border-width:1.5px;border-top-color:white;border-color:rgba(255,255,255,0.3);"></div> Subiendo...</span>
           </button>
         </div>
       </div>
     </div>
 
-    <!-- ======== LIBRARY ======== -->
-    <div x-show="currentPage==='library'" class="page-content">
-      <h1 style="font-size:32px; margin-bottom:4px;">Mi biblioteca</h1>
-      <p style="color:var(--ink-2); margin-bottom:24px; font-size:13.5px;">Tus tareas subidas y las que reclamaste.</p>
-
-      <div style="display:flex; gap:4px; margin-bottom:20px; background:var(--bg-2); padding:4px; border-radius:8px; width:fit-content;">
-        <button @click="libraryTab='uploaded'" class="tab" :class="libraryTab==='uploaded'?'active':''">Subidas (<span x-text="myUploadedTasks.length"></span>)</button>
-        <button @click="libraryTab='claimed'" class="tab" :class="libraryTab==='claimed'?'active':''">Reclamadas (<span x-text="myClaimedTasks.length"></span>)</button>
+    <!-- ══════ LIBRARY ══════ -->
+    <div x-show="ui.page==='library'">
+      <div class="page-header">
+        <div class="page-title">Mi biblioteca</div>
+        <div class="page-sub">Tus tareas subidas y las que reclamaste</div>
       </div>
-
-      <div x-show="libraryTab==='uploaded'">
-        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:12px;">
-          <template x-for="task in myUploadedTasks" :key="task.id">
-            <div class="card" style="padding:16px;">
-              <div style="display:flex; justify-content:space-between; margin-bottom:10px; gap:6px; flex-wrap:wrap;">
-                <span class="pill" :class="subjectClass(task.subject)" x-text="task.subject"></span>
-                <span class="badge" :class="task.approved?'badge-green':'badge-amber'" x-text="task.approved?'Aprobada':'Pendiente'"></span>
-              </div>
-              <div style="font-weight:500; font-size:13.5px; margin-bottom:6px;" x-text="task.title"></div>
-              <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--ink-3);">
-                <span>♡ <span x-text="task.likes||0"></span> · 👁 <span x-text="task.views||0"></span></span>
-                <span style="color:var(--green); font-weight:500;" x-text="(task.earnedPoints||0)+' pts ganados'"></span>
-              </div>
-            </div>
-          </template>
-          <div x-show="myUploadedTasks.length===0" style="grid-column:1/-1; text-align:center; padding:48px 0; color:var(--ink-3);">
-            <p style="margin-bottom:12px;">No subiste tareas aún.</p>
-            <button @click="setPage('upload')" class="btn btn-primary btn-sm">Subir mi primera tarea</button>
-          </div>
+      <div class="page-body">
+        <div class="tabs" style="margin-bottom:20px;">
+          <button @click="ui.libTab='uploaded'" class="tab" :class="ui.libTab==='uploaded'?'active':''">Subidas (<span x-text="myUploaded.length"></span>)</button>
+          <button @click="ui.libTab='claimed'" class="tab" :class="ui.libTab==='claimed'?'active':''">Reclamadas (<span x-text="myClaimed.length"></span>)</button>
         </div>
-      </div>
 
-      <div x-show="libraryTab==='claimed'">
-        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:12px;">
-          <template x-for="task in myClaimedTasks" :key="task.id">
-            <div class="card card-hover" style="padding:16px;" @click="openTask(task)">
-              <div style="display:flex; justify-content:space-between; margin-bottom:10px; gap:6px; flex-wrap:wrap;">
-                <span class="pill" :class="subjectClass(task.subject)" x-text="task.subject"></span>
-                <span class="badge badge-green">Reclamada</span>
-              </div>
-              <div style="font-weight:500; font-size:13.5px; margin-bottom:4px;" x-text="task.title"></div>
-              <div style="font-size:12px; color:var(--ink-3);">por <span x-text="task.authorName"></span></div>
-            </div>
-          </template>
-          <div x-show="myClaimedTasks.length===0" style="grid-column:1/-1; text-align:center; padding:48px 0; color:var(--ink-3);">
-            <p style="margin-bottom:12px;">No reclamaste tareas aún.</p>
-            <button @click="setPage('explore')" class="btn btn-primary btn-sm">Explorar tareas</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ======== LEADERBOARD ======== -->
-    <div x-show="currentPage==='leaderboard'" class="page-content" style="max-width:680px;">
-      <h1 style="font-size:32px; margin-bottom:4px;">Leaderboard</h1>
-      <p style="color:var(--ink-2); margin-bottom:24px; font-size:13.5px;">Usuarios con más puntos acumulados.</p>
-
-      <div class="card" style="overflow:hidden;">
-        <template x-for="(user, i) in leaderboardUsers" :key="user.id">
-          <div style="display:flex; align-items:center; gap:14px; padding:14px 18px; border-bottom:1px solid var(--line);">
-            <div style="width:28px; text-align:center; font-weight:600; font-size:13px; color:var(--ink-3); flex-shrink:0;"
-              x-text="i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)"></div>
-            <img :src="user.avatar||avatarUrl(user.username)" style="width:32px; height:32px; border-radius:50%; object-fit:cover; flex-shrink:0;"/>
-            <div style="flex:1; min-width:0;">
-              <div style="font-weight:500; font-size:13.5px; display:flex; align-items:center; gap:6px;">
-                <span x-text="user.username"></span>
-                <template x-if="user.username===currentUser?.username">
-                  <span class="badge badge-blue" style="font-size:10px;">Tú</span>
-                </template>
-              </div>
-              <div style="font-size:11px; color:var(--ink-3); margin-top:1px;">
-                <span x-text="user.level||'Estudiante'"></span> · ↑<span x-text="user.tasksUploaded||0"></span> · ↓<span x-text="user.tasksClaimed||0"></span>
-              </div>
-            </div>
-            <div style="text-align:right;">
-              <div style="font-family:'Geist Mono', monospace; font-size:15px; font-weight:600;" :style="i===0?'color:var(--amber)':i===1?'color:#6b7280':i===2?'color:#b45309':'color:var(--ink)'" x-text="(user.points||0).toLocaleString()"></div>
-              <div style="font-size:11px; color:var(--ink-3);">pts</div>
-            </div>
-          </div>
-        </template>
-        <div x-show="leaderboardUsers.length===0" style="padding:40px; text-align:center; color:var(--ink-3);">Sin usuarios registrados.</div>
-      </div>
-    </div>
-
-    <!-- ======== PROFILE ======== -->
-    <div x-show="currentPage==='profile'" class="page-content" style="max-width:640px;">
-      <h1 style="font-size:32px; margin-bottom:24px;">Mi perfil</h1>
-
-      <!-- Profile card -->
-      <div class="card" style="padding:24px; margin-bottom:16px;">
-        <div style="display:flex; align-items:flex-start; gap:16px; margin-bottom:20px;">
-          <img :src="currentUser?.avatar||avatarUrl(currentUser?.username)" style="width:56px; height:56px; border-radius:8px; object-fit:cover; background:var(--bg-2);"/>
-          <div style="flex:1;">
-            <div style="font-size:20px; font-family:'Instrument Serif', serif;" x-text="currentUser?.username"></div>
-            <div style="font-size:13px; color:var(--ink-2); margin-top:2px;" x-text="currentUser?.bio||'Sin bio configurada.'"></div>
-            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">
-              <span class="badge badge-default" x-text="currentUser?.level||'Estudiante'"></span>
-              <template x-if="currentUser?.isAdmin">
-                <span class="badge badge-amber">Admin</span>
-              </template>
-              <span style="font-size:11px; color:var(--ink-3); display:flex; align-items:center;">desde <span style="margin-left:4px;" x-text="formatDate(currentUser?.createdAt)"></span></span>
-            </div>
-          </div>
-        </div>
-        <hr style="margin-bottom:16px;"/>
-        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; text-align:center;">
-          <div><div class="stat-num" x-text="(currentUser?.points||0).toLocaleString()"></div><div style="font-size:11px; color:var(--ink-3); margin-top:2px;">Puntos</div></div>
-          <div><div class="stat-num" style="color:var(--green);" x-text="currentUser?.tasksUploaded||0"></div><div style="font-size:11px; color:var(--ink-3); margin-top:2px;">Subidas</div></div>
-          <div><div class="stat-num" style="color:var(--amber);" x-text="currentUser?.tasksClaimed||0"></div><div style="font-size:11px; color:var(--ink-3); margin-top:2px;">Reclamadas</div></div>
-        </div>
-      </div>
-
-      <!-- Edit -->
-      <div class="card" style="padding:24px; margin-bottom:16px;">
-        <div style="font-size:16px; font-family:'Instrument Serif', serif; margin-bottom:16px;">Editar perfil</div>
-        <div style="display:flex; flex-direction:column; gap:14px;">
-          <div>
-            <div class="label" style="margin-bottom:6px;">Bio</div>
-            <textarea x-model="profileForm.bio" class="input" rows="2" placeholder="Contá algo sobre vos..."></textarea>
-          </div>
-          <div>
-            <div class="label" style="margin-bottom:6px;">Nivel académico</div>
-            <select x-model="profileForm.level" class="input">
-              <template x-for="l in academicLevels" :key="l"><option :value="l" x-text="l"></option></template>
-            </select>
-          </div>
-          <div>
-            <div class="label" style="margin-bottom:6px;">URL de avatar</div>
-            <input x-model="profileForm.avatar" type="url" placeholder="https://..." class="input"/>
-          </div>
-          <button @click="saveProfile()" :disabled="isLoading" class="btn btn-primary" style="width:fit-content;">Guardar cambios</button>
-        </div>
-      </div>
-
-      <!-- Transactions -->
-      <div class="card" style="padding:20px 0; overflow:hidden;">
-        <div style="padding:0 20px 12px; font-size:16px; font-family:'Instrument Serif', serif;">Historial de puntos</div>
-        <template x-for="tx in (currentUser?.transactions||[]).slice().reverse().slice(0,15)" :key="tx.id">
-          <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 20px; border-top:1px solid var(--line);">
-            <div>
-              <div style="font-size:13px;" x-text="tx.description"></div>
-              <div style="font-size:11px; color:var(--ink-3); margin-top:2px;" x-text="formatDate(tx.date)"></div>
-            </div>
-            <div style="font-family:'Geist Mono',monospace; font-size:13px; font-weight:600;" :class="tx.amount>0?'':''" :style="tx.amount>0?'color:var(--green)':'color:var(--red)'" x-text="(tx.amount>0?'+':'')+tx.amount+' pts'"></div>
-          </div>
-        </template>
-        <div x-show="!(currentUser?.transactions?.length)" style="padding:24px; text-align:center; color:var(--ink-3); font-size:13px;">Sin transacciones aún.</div>
-      </div>
-    </div>
-
-    <!-- ======== ADMIN ======== -->
-    <div x-show="currentPage==='admin' && currentUser?.isAdmin" class="page-content">
-      <h1 style="font-size:32px; margin-bottom:4px;">Admin</h1>
-      <p style="color:var(--ink-2); margin-bottom:24px; font-size:13.5px;">Gestión completa de la plataforma.</p>
-
-      <!-- Admin tabs -->
-      <div style="display:flex; gap:4px; margin-bottom:24px; background:var(--bg-2); padding:4px; border-radius:8px; width:fit-content; flex-wrap:wrap;">
-        <template x-for="tab in adminTabs" :key="tab.id">
-          <button @click="adminTab=tab.id" class="tab" :class="adminTab===tab.id?'active':''" x-text="tab.label"></button>
-        </template>
-      </div>
-
-      <!-- Dashboard tab -->
-      <div x-show="adminTab==='dashboard'">
-        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:12px; margin-bottom:24px;">
-          <div class="card" style="padding:16px; text-align:center;"><div class="stat-num" x-text="db.users.length"></div><div style="font-size:11px; color:var(--ink-3); margin-top:4px;">Usuarios</div></div>
-          <div class="card" style="padding:16px; text-align:center;"><div class="stat-num" x-text="db.tasks.length"></div><div style="font-size:11px; color:var(--ink-3); margin-top:4px;">Tareas</div></div>
-          <div class="card" style="padding:16px; text-align:center;"><div class="stat-num" style="color:var(--green);" x-text="db.tasks.filter(t=>t.approved).length"></div><div style="font-size:11px; color:var(--ink-3); margin-top:4px;">Aprobadas</div></div>
-          <div class="card" style="padding:16px; text-align:center;"><div class="stat-num" x-text="totalPointsInCirculation.toLocaleString()"></div><div style="font-size:11px; color:var(--ink-3); margin-top:4px;">Pts circulación</div></div>
-        </div>
-        <div class="card" style="overflow:hidden;">
-          <div style="padding:16px 18px 12px; font-size:16px; font-family:'Instrument Serif',serif;">Pendientes de aprobación</div>
-          <template x-for="task in pendingTasks" :key="task.id">
-            <div style="display:flex; align-items:center; gap:12px; padding:12px 18px; border-top:1px solid var(--line);">
-              <div style="flex:1; min-width:0;">
-                <div style="font-weight:500; font-size:13.5px;" x-text="task.title"></div>
-                <div style="font-size:11px; color:var(--ink-3); margin-top:1px;"><span x-text="task.subject"></span> · <span x-text="task.level"></span> · por <span x-text="task.authorName"></span></div>
-              </div>
-              <div style="display:flex; gap:6px; flex-shrink:0;">
-                <button @click="approveTask(task.id)" class="btn btn-success btn-sm">Aprobar</button>
-                <button @click="rejectTask(task.id)" class="btn btn-danger btn-sm">Rechazar</button>
-              </div>
-            </div>
-          </template>
-          <div x-show="pendingTasks.length===0" style="padding:24px; text-align:center; color:var(--ink-3); font-size:13px; border-top:1px solid var(--line);">Sin tareas pendientes ✓</div>
-        </div>
-      </div>
-
-      <!-- Users tab -->
-      <div x-show="adminTab==='users'">
-        <div class="card" style="overflow:hidden;">
-          <div style="padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; border-bottom:1px solid var(--line);">
-            <div style="font-size:16px; font-family:'Instrument Serif',serif;">Usuarios</div>
-            <input x-model="adminUserSearch" type="text" placeholder="Buscar..." class="input" style="max-width:200px;"/>
-          </div>
-          <div style="overflow-x:auto;">
-            <table>
-              <thead>
-                <tr><th>Usuario</th><th>Nivel</th><th style="text-align:right;">Puntos</th><th style="text-align:center;">↑</th><th style="text-align:center;">↓</th><th style="text-align:center;">Estado</th><th style="text-align:center;">Acciones</th></tr>
-              </thead>
-              <tbody>
-                <template x-for="user in filteredAdminUsers" :key="user.id">
-                  <tr>
-                    <td>
-                      <div style="display:flex; align-items:center; gap:8px;">
-                        <img :src="user.avatar||avatarUrl(user.username)" style="width:28px; height:28px; border-radius:50%; object-fit:cover;"/>
-                        <div>
-                          <div style="font-weight:500;" x-text="user.username"></div>
-                          <div style="font-size:11px; color:var(--ink-3);" x-text="user.email"></div>
-                        </div>
-                      </div>
-                    </td>
-                    <td style="color:var(--ink-2);" x-text="user.level||'—'"></td>
-                    <td style="text-align:right; font-family:'Geist Mono',monospace; font-weight:600;" x-text="(user.points||0).toLocaleString()"></td>
-                    <td style="text-align:center; color:var(--ink-2);" x-text="user.tasksUploaded||0"></td>
-                    <td style="text-align:center; color:var(--ink-2);" x-text="user.tasksClaimed||0"></td>
-                    <td style="text-align:center;">
-                      <span class="badge" :class="user.banned?'badge-red':'badge-green'" x-text="user.banned?'Baneado':'Activo'"></span>
-                    </td>
-                    <td>
-                      <div style="display:flex; gap:4px; justify-content:center;">
-                        <button @click="openEditUser(user)" class="btn btn-outline btn-sm">Editar</button>
-                        <button @click="toggleBan(user.id)" class="btn btn-sm" :class="user.banned?'btn-success':'btn-danger'" x-text="user.banned?'Desbanear':'Banear'"></button>
-                      </div>
-                    </td>
-                  </tr>
-                </template>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tasks tab -->
-      <div x-show="adminTab==='tasks'">
-        <div class="card" style="overflow:hidden;">
-          <div style="padding:14px 18px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line);">
-            <div style="font-size:16px; font-family:'Instrument Serif',serif;">Tareas</div>
-            <select x-model="adminTaskFilter" class="input" style="max-width:150px;">
-              <option value="all">Todas</option>
-              <option value="pending">Pendientes</option>
-              <option value="approved">Aprobadas</option>
-            </select>
-          </div>
-          <template x-for="task in adminFilteredTasks" :key="task.id">
-            <div style="display:flex; align-items:center; gap:12px; padding:12px 18px; border-top:1px solid var(--line);">
-              <div style="flex:1; min-width:0;">
-                <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px; flex-wrap:wrap;">
-                  <span class="pill" :class="subjectClass(task.subject)" x-text="task.subject"></span>
+        <div x-show="ui.libTab==='uploaded'">
+          <div class="grid-tasks">
+            <template x-for="task in myUploaded" :key="task.id">
+              <div class="task-card">
+                <div class="flex items-center justify-between">
+                  <span class="pill" :class="subjectCls(task.subject)" x-text="task.subject"></span>
                   <span class="badge" :class="task.approved?'badge-green':'badge-amber'" x-text="task.approved?'Aprobada':'Pendiente'"></span>
                 </div>
-                <div style="font-weight:500; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" x-text="task.title"></div>
-                <div style="font-size:11px; color:var(--ink-3);">por <span x-text="task.authorName"></span> · <span x-text="task.price"></span> pts</div>
+                <div class="task-title" x-text="task.title"></div>
+                <div class="flex items-center justify-between" style="margin-top:10px; font-size:12px; color:var(--ink-3);">
+                  <span>♥ <span x-text="task.likes||0"></span> · 👁 <span x-text="task.views||0"></span></span>
+                  <span style="color:var(--green); font-weight:600; font-family:var(--font-mono);" x-text="'+'+(task.earnedPoints||0)+' pts'"></span>
+                </div>
               </div>
-              <div style="display:flex; gap:6px; flex-shrink:0;">
-                <template x-if="!task.approved">
-                  <button @click="approveTask(task.id)" class="btn btn-success btn-sm">✓</button>
-                </template>
-                <button @click="adminDeleteTask(task.id)" class="btn btn-danger btn-sm">Eliminar</button>
+            </template>
+            <template x-if="myUploaded.length===0">
+              <div class="card" style="grid-column:1/-1;">
+                <div class="empty-state">
+                  <div class="empty-icon">📤</div>
+                  <div class="empty-title">Sin tareas subidas</div>
+                  <div class="empty-sub">Subí tu primera tarea y empezá a ganar puntos</div>
+                  <button @click="goPage('upload')" class="btn btn-primary btn-sm">Subir tarea</button>
+                </div>
               </div>
-            </div>
-          </template>
-        </div>
-      </div>
-
-      <!-- Interface tab -->
-      <div x-show="adminTab==='interface'">
-        <div class="card" style="padding:24px;">
-          <div style="font-size:16px; font-family:'Instrument Serif',serif; margin-bottom:18px;">Editor de interfaz</div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-            <div>
-              <div class="label" style="margin-bottom:6px;">Nombre de la plataforma</div>
-              <input x-model="configForm.platformName" type="text" class="input"/>
-            </div>
-            <div>
-              <div class="label" style="margin-bottom:6px;">Descripción corta</div>
-              <input x-model="configForm.platformDescription" type="text" class="input"/>
-            </div>
+            </template>
           </div>
-          <button @click="saveConfig()" :disabled="isLoading" class="btn btn-primary" style="margin-top:16px;">Guardar</button>
         </div>
-      </div>
 
-      <!-- Config tab -->
-      <div x-show="adminTab==='config'">
-        <div class="card" style="padding:24px;">
-          <div style="font-size:16px; font-family:'Instrument Serif',serif; margin-bottom:18px;">Configuración global</div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-            <div>
-              <div class="label" style="margin-bottom:6px;">Puntos bienvenida</div>
-              <input x-model.number="configForm.welcomePoints" type="number" class="input"/>
-            </div>
-            <div>
-              <div class="label" style="margin-bottom:6px;">Puntos base por subir</div>
-              <input x-model.number="configForm.baseUploadPoints" type="number" class="input"/>
-            </div>
-            <div>
-              <div class="label" style="margin-bottom:6px;">Puntos extra por reclamación</div>
-              <input x-model.number="configForm.pointsPerClaim" type="number" class="input"/>
-            </div>
-            <div>
-              <div class="label" style="margin-bottom:6px;">Precio mínimo (pts)</div>
-              <input x-model.number="configForm.minPrice" type="number" class="input"/>
-            </div>
-            <div>
-              <div class="label" style="margin-bottom:6px;">Precio máximo (pts)</div>
-              <input x-model.number="configForm.maxPrice" type="number" class="input"/>
-            </div>
-            <div>
-              <div class="label" style="margin-bottom:6px;">Límite diario de subidas</div>
-              <input x-model.number="configForm.dailyUploadLimit" type="number" class="input"/>
-            </div>
+        <div x-show="ui.libTab==='claimed'">
+          <div class="grid-tasks">
+            <template x-for="task in myClaimed" :key="task.id">
+              <div class="task-card" @click="openTask(task)">
+                <div class="flex items-center justify-between">
+                  <span class="pill" :class="subjectCls(task.subject)" x-text="task.subject"></span>
+                  <span class="badge badge-green">Reclamada</span>
+                </div>
+                <div class="task-title" x-text="task.title"></div>
+                <div style="font-size:12px; color:var(--ink-3); margin-top:4px;">por <span x-text="task.authorName"></span></div>
+              </div>
+            </template>
+            <template x-if="myClaimed.length===0">
+              <div class="card" style="grid-column:1/-1;">
+                <div class="empty-state">
+                  <div class="empty-icon">📥</div>
+                  <div class="empty-title">Sin tareas reclamadas</div>
+                  <div class="empty-sub">Explorá el catálogo y reclamá las que necesites</div>
+                  <button @click="goPage('explore')" class="btn btn-primary btn-sm">Explorar</button>
+                </div>
+              </div>
+            </template>
           </div>
-          <button @click="saveConfig()" :disabled="isLoading" class="btn btn-primary" style="margin-top:16px;">Guardar configuración</button>
         </div>
       </div>
     </div>
 
-    <div x-show="currentPage==='admin' && !currentUser?.isAdmin" style="padding:60px; text-align:center; color:var(--ink-3);">
-      <p style="font-size:15px;">Acceso denegado. Solo para administradores.</p>
+    <!-- ══════ LEADERBOARD ══════ -->
+    <div x-show="ui.page==='leaderboard'">
+      <div class="page-header">
+        <div class="page-title">Leaderboard</div>
+        <div class="page-sub">Los usuarios con más puntos acumulados</div>
+      </div>
+      <div class="page-body" style="max-width:700px;">
+        <div class="card" style="overflow:hidden;">
+          <template x-for="(u, i) in leaderboard" :key="u.id">
+            <div class="list-row">
+              <div style="width:32px; text-align:center; font-size:14px; flex-shrink:0; font-weight:700; color:var(--ink-3);"
+                x-text="i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)"></div>
+              <img :src="avatarUrl(u.username)" class="avatar"/>
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <span style="font-weight:600; font-size:13.5px;" x-text="u.username"></span>
+                  <template x-if="u.id===session?.id">
+                    <span class="badge badge-accent" style="font-size:10px;">Tú</span>
+                  </template>
+                  <template x-if="u.isAdmin">
+                    <span class="badge badge-amber" style="font-size:10px;">Admin</span>
+                  </template>
+                </div>
+                <div style="font-size:11px; color:var(--ink-3); margin-top:1px;">
+                  <span x-text="u.level||'Estudiante'"></span> · ↑<span x-text="u.tasksUploaded||0"></span> subidas · ↓<span x-text="u.tasksClaimed||0"></span> reclamadas
+                </div>
+              </div>
+              <div class="text-right">
+                <div style="font-family:var(--font-mono); font-size:16px; font-weight:700;"
+                  :style="i===0?'color:var(--amber)':i===1?'color:#94a3b8':i===2?'color:#c2410c':'color:var(--ink)'"
+                  x-text="(u.points||0).toLocaleString()"></div>
+                <div style="font-size:11px; color:var(--ink-3);">pts</div>
+              </div>
+            </div>
+          </template>
+          <template x-if="leaderboard.length===0">
+            <div class="empty-state">Sin usuarios registrados</div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ PROFILE ══════ -->
+    <div x-show="ui.page==='profile'">
+      <div class="page-header">
+        <div class="page-title">Mi perfil</div>
+      </div>
+      <div class="page-body" style="max-width:640px;">
+        <!-- Profile header -->
+        <div class="card card-pad" style="margin-bottom:14px;">
+          <div class="flex gap-3" style="margin-bottom:18px;">
+            <img :src="session?.avatar||avatarUrl(session?.username)" class="avatar avatar-lg"/>
+            <div style="flex:1;">
+              <div style="font-size:20px; font-weight:700; letter-spacing:-0.03em;" x-text="session?.username"></div>
+              <div style="font-size:13px; color:var(--ink-2); margin-top:3px;" x-text="session?.bio||'Sin bio configurada.'"></div>
+              <div class="flex flex-wrap gap-2" style="margin-top:8px;">
+                <span class="badge badge-default" x-text="session?.level||'Estudiante'"></span>
+                <template x-if="session?.isAdmin"><span class="badge badge-amber">Admin</span></template>
+                <span style="font-size:11px; color:var(--ink-3);">desde <span x-text="formatDate(session?.createdAt)"></span></span>
+              </div>
+            </div>
+          </div>
+          <hr style="margin-bottom:16px;"/>
+          <div class="grid-3 text-center">
+            <div>
+              <div class="stat-num" x-text="(session?.points||0).toLocaleString()"></div>
+              <div class="stat-label">Puntos</div>
+            </div>
+            <div>
+              <div class="stat-num" style="color:var(--green);" x-text="session?.tasksUploaded||0"></div>
+              <div class="stat-label">Subidas</div>
+            </div>
+            <div>
+              <div class="stat-num" style="color:var(--amber);" x-text="session?.tasksClaimed||0"></div>
+              <div class="stat-label">Reclamadas</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edit -->
+        <div class="card card-pad space-y" style="margin-bottom:14px;">
+          <div style="font-size:16px; font-weight:700; letter-spacing:-0.03em;">Editar perfil</div>
+          <div class="form-group">
+            <div class="input-label">Bio</div>
+            <textarea x-model="forms.profile.bio" class="input" rows="2" placeholder="Contá algo sobre vos..."></textarea>
+          </div>
+          <div class="form-group">
+            <div class="input-label">Nivel académico</div>
+            <select x-model="forms.profile.level" class="input">
+              <template x-for="l in LEVELS" :key="l"><option :value="l" x-text="l"></option></template>
+            </select>
+          </div>
+          <div class="form-group">
+            <div class="input-label">URL de avatar</div>
+            <input x-model="forms.profile.avatar" type="url" placeholder="https://..." class="input"/>
+          </div>
+          <button @click="saveProfile()" :disabled="ui.submitting" class="btn btn-primary" style="width:fit-content;">Guardar cambios</button>
+        </div>
+
+        <!-- Transactions -->
+        <div class="card" style="overflow:hidden;">
+          <div style="padding:16px 18px 12px; font-size:16px; font-weight:700; letter-spacing:-0.03em;">Historial de puntos</div>
+          <template x-for="tx in (session?.transactions||[]).slice().reverse().slice(0,20)" :key="tx.id">
+            <div class="list-row">
+              <div style="flex:1;">
+                <div style="font-size:13px;" x-text="tx.description"></div>
+                <div style="font-size:11px; color:var(--ink-3); margin-top:1px;" x-text="formatDate(tx.date)"></div>
+              </div>
+              <div style="font-family:var(--font-mono); font-size:13px; font-weight:600;" :style="tx.amount>0?'color:var(--green)':'color:var(--red)'" x-text="(tx.amount>0?'+':'')+tx.amount+' pts'"></div>
+            </div>
+          </template>
+          <template x-if="!(session?.transactions?.length)">
+            <div class="empty-state" style="padding:28px;">Sin transacciones</div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ ADMIN ══════ -->
+    <div x-show="ui.page==='admin'">
+      <template x-if="session?.isAdmin">
+        <div>
+          <div class="page-header">
+            <div class="page-title" style="color:var(--amber);">Panel Admin</div>
+            <div class="page-sub">Gestión completa de la plataforma</div>
+          </div>
+          <div class="page-body">
+            <div class="tabs" style="margin-bottom:24px;">
+              <button @click="ui.adminTab='dash'" class="tab" :class="ui.adminTab==='dash'?'active':''">Dashboard</button>
+              <button @click="ui.adminTab='users'" class="tab" :class="ui.adminTab==='users'?'active':''">Usuarios</button>
+              <button @click="ui.adminTab='tasks'" class="tab" :class="ui.adminTab==='tasks'?'active':''">Tareas</button>
+              <button @click="ui.adminTab='config'" class="tab" :class="ui.adminTab==='config'?'active':''">Config</button>
+            </div>
+
+            <!-- Dashboard tab -->
+            <div x-show="ui.adminTab==='dash'">
+              <div class="grid-4" style="margin-bottom:24px;">
+                <div class="stat-card"><div class="stat-num" x-text="db.users.length"></div><div class="stat-label">Usuarios</div></div>
+                <div class="stat-card"><div class="stat-num" x-text="db.tasks.length"></div><div class="stat-label">Tareas</div></div>
+                <div class="stat-card"><div class="stat-num" style="color:var(--green);" x-text="db.tasks.filter(t=>t.approved).length"></div><div class="stat-label">Aprobadas</div></div>
+                <div class="stat-card"><div class="stat-num" x-text="totalPts.toLocaleString()"></div><div class="stat-label">Pts circulación</div></div>
+              </div>
+              <div class="card" style="overflow:hidden;">
+                <div style="padding:16px 18px 12px; font-size:16px; font-weight:700; letter-spacing:-0.03em;">Pendientes de aprobación</div>
+                <template x-for="task in pendingTasks" :key="task.id">
+                  <div class="list-row">
+                    <div class="flex-1">
+                      <div style="font-weight:600; font-size:13.5px;" x-text="task.title"></div>
+                      <div style="font-size:11px; color:var(--ink-3); margin-top:1px;"><span x-text="task.subject"></span> · <span x-text="task.level"></span> · por <span x-text="task.authorName"></span></div>
+                    </div>
+                    <div class="flex gap-2">
+                      <button @click="approveTask(task.id)" class="btn btn-success btn-sm">Aprobar</button>
+                      <button @click="rejectTask(task.id)" class="btn btn-danger btn-sm">Rechazar</button>
+                    </div>
+                  </div>
+                </template>
+                <template x-if="pendingTasks.length===0">
+                  <div class="empty-state" style="padding:28px;">
+                    <div style="font-size:18px; margin-bottom:6px;">✓</div>
+                    Sin pendientes
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <!-- Users tab -->
+            <div x-show="ui.adminTab==='users'">
+              <div class="card" style="overflow:hidden;">
+                <div class="flex items-center justify-between" style="padding:14px 18px; border-bottom:1px solid var(--border);">
+                  <div style="font-size:16px; font-weight:700;">Usuarios</div>
+                  <input x-model="ui.adminUserQ" type="text" placeholder="Buscar..." class="input" style="max-width:200px;"/>
+                </div>
+                <div style="overflow-x:auto;">
+                  <table>
+                    <thead><tr><th>Usuario</th><th>Nivel</th><th style="text-align:right;">Pts</th><th style="text-align:center;">↑</th><th style="text-align:center;">↓</th><th style="text-align:center;">Estado</th><th style="text-align:center;">Acciones</th></tr></thead>
+                    <tbody>
+                      <template x-for="u in adminUsers" :key="u.id">
+                        <tr>
+                          <td>
+                            <div class="flex items-center gap-2">
+                              <img :src="avatarUrl(u.username)" class="avatar" style="width:28px;height:28px;border-radius:6px;"/>
+                              <div>
+                                <div style="font-weight:600;" x-text="u.username"></div>
+                                <div style="font-size:11px; color:var(--ink-3);" x-text="u.email"></div>
+                              </div>
+                            </div>
+                          </td>
+                          <td style="color:var(--ink-2);" x-text="u.level||'—'"></td>
+                          <td style="text-align:right; font-family:var(--font-mono); font-weight:600;" x-text="(u.points||0).toLocaleString()"></td>
+                          <td style="text-align:center;" x-text="u.tasksUploaded||0"></td>
+                          <td style="text-align:center;" x-text="u.tasksClaimed||0"></td>
+                          <td style="text-align:center;">
+                            <span class="badge" :class="u.banned?'badge-red':'badge-green'" x-text="u.banned?'Baneado':'Activo'"></span>
+                          </td>
+                          <td>
+                            <div class="flex gap-2" style="justify-content:center;">
+                              <button @click="openEditUser(u)" class="btn btn-secondary btn-sm">Editar</button>
+                              <button @click="toggleBan(u.id)" class="btn btn-sm" :class="u.banned?'btn-success':'btn-danger'" x-text="u.banned?'Desbanear':'Banear'"></button>
+                            </div>
+                          </td>
+                        </tr>
+                      </template>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tasks tab -->
+            <div x-show="ui.adminTab==='tasks'">
+              <div class="card" style="overflow:hidden;">
+                <div class="flex items-center justify-between" style="padding:14px 18px; border-bottom:1px solid var(--border);">
+                  <div style="font-size:16px; font-weight:700;">Tareas</div>
+                  <select x-model="ui.adminTaskFilter" class="input" style="max-width:150px;">
+                    <option value="all">Todas</option>
+                    <option value="pending">Pendientes</option>
+                    <option value="approved">Aprobadas</option>
+                  </select>
+                </div>
+                <template x-for="task in adminTasks" :key="task.id">
+                  <div class="list-row">
+                    <div class="flex-1">
+                      <div class="flex items-center gap-2 flex-wrap" style="margin-bottom:3px;">
+                        <span class="pill" :class="subjectCls(task.subject)" x-text="task.subject"></span>
+                        <span class="badge" :class="task.approved?'badge-green':'badge-amber'" x-text="task.approved?'Aprobada':'Pendiente'"></span>
+                      </div>
+                      <div style="font-weight:600; font-size:13px;" x-text="task.title"></div>
+                      <div style="font-size:11px; color:var(--ink-3);">por <span x-text="task.authorName"></span> · <span x-text="task.price"></span> pts</div>
+                    </div>
+                    <div class="flex gap-2">
+                      <template x-if="!task.approved">
+                        <button @click="approveTask(task.id)" class="btn btn-success btn-sm">✓</button>
+                      </template>
+                      <button @click="adminDeleteTask(task.id)" class="btn btn-danger btn-sm">Eliminar</button>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <!-- Config tab -->
+            <div x-show="ui.adminTab==='config'">
+              <div class="card card-pad">
+                <div style="font-size:16px; font-weight:700; margin-bottom:18px;">Configuración global</div>
+                <div class="grid-2 space-y-sm" style="margin-bottom:16px;">
+                  <div class="form-group">
+                    <div class="input-label">Nombre de la plataforma</div>
+                    <input x-model="forms.cfg.platformName" type="text" class="input"/>
+                  </div>
+                  <div class="form-group">
+                    <div class="input-label">Descripción corta</div>
+                    <input x-model="forms.cfg.platformDescription" type="text" class="input"/>
+                  </div>
+                  <div class="form-group">
+                    <div class="input-label">Puntos bienvenida</div>
+                    <input x-model.number="forms.cfg.welcomePoints" type="number" class="input"/>
+                  </div>
+                  <div class="form-group">
+                    <div class="input-label">Puntos base por subir</div>
+                    <input x-model.number="forms.cfg.baseUploadPoints" type="number" class="input"/>
+                  </div>
+                  <div class="form-group">
+                    <div class="input-label">Puntos extra por reclamación</div>
+                    <input x-model.number="forms.cfg.pointsPerClaim" type="number" class="input"/>
+                  </div>
+                  <div class="form-group">
+                    <div class="input-label">Precio mínimo (pts)</div>
+                    <input x-model.number="forms.cfg.minPrice" type="number" class="input"/>
+                  </div>
+                  <div class="form-group">
+                    <div class="input-label">Precio máximo (pts)</div>
+                    <input x-model.number="forms.cfg.maxPrice" type="number" class="input"/>
+                  </div>
+                  <div class="form-group">
+                    <div class="input-label">Límite diario de subidas</div>
+                    <input x-model.number="forms.cfg.dailyUploadLimit" type="number" class="input"/>
+                  </div>
+                </div>
+                <button @click="saveConfig()" :disabled="ui.submitting" class="btn btn-primary">Guardar configuración</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+      <template x-if="!session?.isAdmin">
+        <div class="empty-state" style="padding:80px;">
+          <div class="empty-icon">🔒</div>
+          <div class="empty-title">Acceso denegado</div>
+          <div class="empty-sub">Solo para administradores</div>
+        </div>
+      </template>
     </div>
 
   </main>
+
+  <!-- Mobile bottom nav -->
+  <div class="mobile-bar">
+    <button @click="goPage('home')" class="mob-btn" :class="ui.page==='home'?'active':''">
+      <div class="mob-btn-icon">🏠</div><span>Inicio</span>
+    </button>
+    <button @click="goPage('explore')" class="mob-btn" :class="ui.page==='explore'?'active':''">
+      <div class="mob-btn-icon">🔍</div><span>Explorar</span>
+    </button>
+    <button @click="goPage('upload')" class="mob-btn" :class="ui.page==='upload'?'active':''" style="background:var(--accent-bg); border-radius:10px; border:1px solid var(--accent-glow);">
+      <div class="mob-btn-icon">⬆</div><span>Subir</span>
+    </button>
+    <button @click="goPage('library')" class="mob-btn" :class="ui.page==='library'?'active':''">
+      <div class="mob-btn-icon">📚</div><span>Biblio</span>
+    </button>
+    <button @click="goPage('profile')" class="mob-btn" :class="ui.page==='profile'?'active':''">
+      <div class="mob-btn-icon">👤</div><span>Perfil</span>
+    </button>
+  </div>
 </div>
 
-<!-- ==================== TASK MODAL ==================== -->
-<div x-show="taskModal.open" x-cloak class="overlay" @click.self="taskModal.open=false">
-  <div class="modal" x-show="taskModal.task">
-    <div style="padding:24px;">
-      <!-- Header -->
-      <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:20px;">
-        <div style="flex:1; padding-right:12px;">
-          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:8px;">
-            <span class="pill" :class="subjectClass(taskModal.task?.subject)" x-text="taskModal.task?.subject"></span>
-            <span class="badge badge-default" x-text="taskModal.task?.level"></span>
-            <template x-if="taskModal.task?.hasFile">
-              <span class="badge badge-default">📎 Adjunto</span>
-            </template>
-          </div>
-          <h2 style="font-size:22px; line-height:1.3;" x-text="taskModal.task?.title"></h2>
+<!-- ════════════════════════ TASK MODAL ════════════════════════ -->
+<div x-show="modal.task.open" x-cloak class="overlay" @click.self="modal.task.open=false">
+  <div class="modal" x-show="modal.task.data">
+    <div class="modal-header">
+      <div>
+        <div class="flex items-center gap-2 flex-wrap" style="margin-bottom:8px;">
+          <span class="pill" :class="subjectCls(modal.task.data?.subject)" x-text="modal.task.data?.subject"></span>
+          <span class="badge badge-default" x-text="modal.task.data?.level"></span>
+          <template x-if="modal.task.data?.hasFile">
+            <span class="badge badge-accent">📎 Adjunto</span>
+          </template>
         </div>
-        <button @click="taskModal.open=false" class="btn btn-ghost" style="padding:4px 8px; flex-shrink:0; font-size:18px; color:var(--ink-3);">✕</button>
+        <h2 class="modal-title" x-text="modal.task.data?.title"></h2>
       </div>
-
+      <button @click="modal.task.open=false" class="btn btn-ghost btn-icon" style="flex-shrink:0; color:var(--ink-3); font-size:16px;">✕</button>
+    </div>
+    <div class="modal-body">
       <!-- Author -->
-      <div style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:var(--bg-2); border-radius:6px; margin-bottom:18px;">
-        <img :src="avatarUrl(taskModal.task?.authorName)" style="width:32px; height:32px; border-radius:50%;"/>
-        <div style="flex:1;">
-          <div style="font-weight:500; font-size:13px;" x-text="taskModal.task?.authorName"></div>
-          <div style="font-size:11px; color:var(--ink-3);" x-text="formatDate(taskModal.task?.createdAt)"></div>
+      <div class="card-inner" style="display:flex; align-items:center; gap:10px; padding:12px 14px; margin-bottom:18px;">
+        <img :src="avatarUrl(modal.task.data?.authorName)" class="avatar"/>
+        <div class="flex-1">
+          <div style="font-weight:600; font-size:13px;" x-text="modal.task.data?.authorName"></div>
+          <div style="font-size:11px; color:var(--ink-3);" x-text="formatDate(modal.task.data?.createdAt)"></div>
         </div>
-        <div style="display:flex; align-items:center; gap:10px; font-size:12px; color:var(--ink-3);">
-          <span>👁 <span x-text="taskModal.task?.views||0"></span></span>
-          <button @click="likeTask(taskModal.task?.id)" style="background:none; border:none; cursor:pointer; font-size:12px; color:var(--ink-3); display:flex; align-items:center; gap:3px; padding:0;" class="btn-ghost">
-            ♡ <span x-text="taskModal.task?.likes||0"></span>
+        <div class="flex items-center gap-3" style="font-size:12px; color:var(--ink-3);">
+          <span>👁 <span x-text="modal.task.data?.views||0"></span></span>
+          <button @click="likeTask(modal.task.data?.id)" style="background:none; border:none; cursor:pointer; font-size:12px; color:var(--ink-3); display:flex; align-items:center; gap:3px; font-family:var(--font); padding:4px 8px; border-radius:var(--radius-sm); transition:all var(--transition);" onmouseover="this.style.background='var(--bg-3)'" onmouseout="this.style.background='none'">
+            ♥ <span x-text="modal.task.data?.likes||0"></span>
           </button>
         </div>
       </div>
 
       <!-- Description -->
       <div style="margin-bottom:16px;">
-        <div class="label" style="margin-bottom:6px;">Descripción</div>
-        <p style="font-size:13.5px; color:var(--ink-2); line-height:1.6;" x-text="taskModal.task?.description"></p>
+        <div class="input-label" style="margin-bottom:7px;">Descripción</div>
+        <p style="font-size:13.5px; color:var(--ink-2); line-height:1.65;" x-text="modal.task.data?.description"></p>
       </div>
 
       <!-- Tags -->
-      <div x-show="taskModal.task?.tags?.length" style="margin-bottom:20px;">
-        <div class="label" style="margin-bottom:6px;">Tags</div>
-        <div style="display:flex; flex-wrap:wrap; gap:4px;">
-          <template x-for="tag in (taskModal.task?.tags||[])" :key="tag">
-            <span class="badge badge-default" x-text="'#'+tag"></span>
-          </template>
+      <template x-if="modal.task.data?.tags?.length">
+        <div style="margin-bottom:20px;">
+          <div class="input-label" style="margin-bottom:7px;">Tags</div>
+          <div class="flex flex-wrap gap-2">
+            <template x-for="tag in (modal.task.data?.tags||[])" :key="tag">
+              <span class="badge badge-default" x-text="'#'+tag"></span>
+            </template>
+          </div>
         </div>
-      </div>
+      </template>
 
       <hr style="margin-bottom:18px;"/>
 
-      <!-- Claim / price -->
-      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <!-- Claim area -->
+      <div class="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <div class="label" style="margin-bottom:3px;">Precio de reclamación</div>
-          <div style="font-family:'Geist Mono',monospace; font-size:22px; font-weight:600; color:var(--ink);" x-text="(taskModal.task?.price||0)+' pts'"></div>
-          <div style="font-size:12px; color:var(--ink-3); margin-top:2px;">Tu saldo: <span class="mono" x-text="(currentUser?.points||0).toLocaleString()"></span> pts</div>
+          <div class="input-label" style="margin-bottom:4px;">Precio de reclamación</div>
+          <div style="font-family:var(--font-mono); font-size:24px; font-weight:700; color:var(--accent-2);" x-text="(modal.task.data?.price||0)+' pts'"></div>
+          <div style="font-size:12px; color:var(--ink-3); margin-top:2px;">Tu saldo: <span class="mono" x-text="(session?.points||0).toLocaleString()"></span> pts</div>
         </div>
         <div>
-          <template x-if="isTaskClaimed(taskModal.task?.id)">
-            <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
-              <span class="badge badge-green" style="padding:4px 12px;">✓ Reclamada</span>
-              <button @click="downloadTask(taskModal.task)" class="btn btn-outline btn-sm">Descargar</button>
+          <template x-if="isClaimed(modal.task.data?.id)">
+            <div class="flex flex-col gap-2" style="align-items:flex-end;">
+              <span class="badge badge-green" style="padding:5px 14px; font-size:12px;">✓ Reclamada</span>
+              <button @click="toast('Descargando... (simulado)','success')" class="btn btn-secondary btn-sm">Descargar</button>
             </div>
           </template>
-          <template x-if="!isTaskClaimed(taskModal.task?.id) && taskModal.task?.authorId !== currentUser?.id">
-            <button @click="claimTask(taskModal.task)" :disabled="isLoading" class="btn btn-primary">
-              Reclamar por <span x-text="taskModal.task?.price"></span> pts
+          <template x-if="!isClaimed(modal.task.data?.id) && modal.task.data?.authorId !== session?.id">
+            <button @click="claimTask(modal.task.data)" :disabled="ui.submitting" class="btn btn-primary">
+              <span x-show="!ui.submitting">Reclamar — <span x-text="modal.task.data?.price"></span> pts</span>
+              <span x-show="ui.submitting">Procesando...</span>
             </button>
           </template>
-          <template x-if="taskModal.task?.authorId === currentUser?.id">
-            <span class="badge badge-default" style="padding:6px 14px;">Tu tarea</span>
+          <template x-if="modal.task.data?.authorId === session?.id">
+            <span class="badge badge-default" style="padding:6px 14px; font-size:12px;">Tu tarea</span>
           </template>
         </div>
       </div>
@@ -951,341 +1444,697 @@
   </div>
 </div>
 
-<!-- ==================== EDIT USER MODAL ==================== -->
-<div x-show="editUserModal.open" x-cloak class="overlay" @click.self="editUserModal.open=false">
+<!-- ════════════════════════ EDIT USER MODAL ════════════════════════ -->
+<div x-show="modal.editUser.open" x-cloak class="overlay" @click.self="modal.editUser.open=false">
   <div class="modal" style="max-width:440px;">
-    <div style="padding:24px;">
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
-        <h3 style="font-size:20px;">Editar: <span x-text="editUserModal.user?.username"></span></h3>
-        <button @click="editUserModal.open=false" class="btn btn-ghost" style="padding:4px 8px; color:var(--ink-3);">✕</button>
-      </div>
-      <div style="display:flex; flex-direction:column; gap:14px;">
-        <div>
-          <div class="label" style="margin-bottom:6px;">Puntos</div>
-          <input x-model.number="editUserModal.points" type="number" class="input"/>
+    <div class="modal-header">
+      <h3 class="modal-title">Editar: <span x-text="modal.editUser.data?.username"></span></h3>
+      <button @click="modal.editUser.open=false" class="btn btn-ghost btn-icon" style="color:var(--ink-3);">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="space-y">
+        <div class="form-group">
+          <div class="input-label">Puntos</div>
+          <input x-model.number="modal.editUser.points" type="number" class="input"/>
         </div>
-        <div>
-          <div class="label" style="margin-bottom:6px;">Nivel académico</div>
-          <select x-model="editUserModal.level" class="input">
-            <template x-for="l in academicLevels" :key="l"><option :value="l" x-text="l"></option></template>
+        <div class="form-group">
+          <div class="input-label">Nivel académico</div>
+          <select x-model="modal.editUser.level" class="input">
+            <template x-for="l in LEVELS" :key="l"><option :value="l" x-text="l"></option></template>
           </select>
         </div>
-        <div>
-          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13.5px; color:var(--ink-2);">
-            <input type="checkbox" x-model="editUserModal.isAdmin" style="width:14px; height:14px;"/>
-            Es administrador
-          </label>
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13.5px; color:var(--ink-2);">
+          <input type="checkbox" x-model="modal.editUser.isAdmin" style="width:14px; height:14px; accent-color:var(--accent);"/>
+          Es administrador
+        </label>
+        <div class="flex gap-2" style="padding-top:6px;">
+          <button @click="saveEditUser()" :disabled="ui.submitting" class="btn btn-primary" style="flex:1;">Guardar</button>
+          <button @click="modal.editUser.open=false" class="btn btn-secondary" style="flex:1;">Cancelar</button>
         </div>
-        <div style="display:flex; gap:8px; padding-top:4px;">
-          <button @click="saveEditUser()" :disabled="isLoading" class="btn btn-primary" style="flex:1;">Guardar</button>
-          <button @click="editUserModal.open=false" class="btn btn-outline" style="flex:1;">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════ SETUP MODAL (no credentials) ════════════════════════ -->
+<div x-show="ui.showSetup && !ui.loading" x-cloak class="overlay">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <h3 class="modal-title">Configurar JSONBin</h3>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px; color:var(--ink-2); margin-bottom:18px; line-height:1.6;">
+        Para guardar datos necesitás una cuenta gratuita en <a href="https://jsonbin.io" target="_blank" style="color:var(--accent-2);">jsonbin.io</a>. Creá una cuenta, generá una API Key y pegala aquí.
+      </p>
+      <div class="space-y">
+        <div class="form-group">
+          <div class="input-label">Secret Access Key</div>
+          <input x-model="ui.setupKey" type="text" placeholder="$2b$10$..." class="input" style="font-family:var(--font-mono); font-size:12px;"/>
         </div>
+        <div class="form-group">
+          <div class="input-label">Bin ID <span style="color:var(--ink-3); font-weight:400; text-transform:none;">(dejar vacío para crear nuevo)</span></div>
+          <input x-model="ui.setupBin" type="text" placeholder="64abc..." class="input" style="font-family:var(--font-mono); font-size:12px;"/>
+        </div>
+        <div class="flex gap-2">
+          <button @click="connectJSONBin()" :disabled="!ui.setupKey||ui.submitting" class="btn btn-primary" style="flex:1;">Conectar</button>
+          <button @click="useDemoMode()" class="btn btn-secondary" style="flex:1;">Modo demo (sin persistencia)</button>
+        </div>
+        <div style="font-size:11px; color:var(--ink-3);">En modo demo los datos se guardan solo localmente y se pierden al refrescar.</div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// ============================================================
-// CONFIGURACIÓN DE JSONBIN — EDITAR AQUÍ
-// ============================================================
-const JSONBIN_API_KEY = '$2a$10$ucM0OlKyXRD85828hDFs6uTS8srl1RM6v7vTjUhPMFwo0I9a4OCzq';  // ← Pegá tu Secret Access Key de JSONBin acá
-const JSONBIN_BIN_ID  = '69fcb2c2adc21f119a693adf';  // ← Pegá tu Bin ID acá (vacío = crear nuevo)
-// ============================================================
+// ╔══════════════════════════════════════════════════════╗
+// ║         TASKCULT — CONFIGURACIÓN JSONBIN             ║
+// ║  Pegá tu API Key y Bin ID aquí para persistencia     ║
+// ╚══════════════════════════════════════════════════════╝
+const JSONBIN_KEY = '';   // ← Tu Secret Access Key
+const JSONBIN_BIN = '';   // ← Tu Bin ID (vacío = crear nuevo)
+// ══════════════════════════════════════════════════════
 
-const JSONBIN_BASE = 'https://api.jsonbin.io/v3';
+// ── JSONBin helpers ──────────────────────────────────
+const JB_BASE = 'https://api.jsonbin.io/v3';
+const JB_HEADERS = key => ({ 'Content-Type': 'application/json', 'X-Master-Key': key });
 
-async function jbGet(binId, apiKey) {
-  const r = await fetch(`${JSONBIN_BASE}/b/${binId}/latest`, { headers: { 'X-Master-Key': apiKey } });
-  if (!r.ok) throw new Error('GET ' + r.status);
-  return (await r.json()).record;
-}
-async function jbSet(binId, apiKey, data) {
-  const r = await fetch(`${JSONBIN_BASE}/b/${binId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-Master-Key': apiKey }, body: JSON.stringify(data) });
-  if (!r.ok) throw new Error('PUT ' + r.status);
-  return (await r.json()).record;
-}
-async function jbCreate(apiKey, data, name) {
-  const r = await fetch(`${JSONBIN_BASE}/b`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Master-Key': apiKey, 'X-Bin-Name': name, 'X-Bin-Private': 'true' }, body: JSON.stringify(data) });
-  if (!r.ok) throw new Error('CREATE ' + r.status);
-  return (await r.json()).metadata.id;
+async function jbFetch(url, opts, retries = 2) {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const r = await fetch(url, opts);
+      if (!r.ok) {
+        const body = await r.text().catch(() => '');
+        throw new Error(`HTTP ${r.status}: ${body.slice(0,120)}`);
+      }
+      return await r.json();
+    } catch(e) {
+      if (i === retries) throw e;
+      await new Promise(r => setTimeout(r, 800 * (i + 1)));
+    }
+  }
 }
 
+async function jbGet(binId, key) {
+  const d = await jbFetch(`${JB_BASE}/b/${binId}/latest`, { headers: JB_HEADERS(key) });
+  return d.record;
+}
+
+async function jbPut(binId, key, data) {
+  const d = await jbFetch(`${JB_BASE}/b/${binId}`, {
+    method: 'PUT',
+    headers: JB_HEADERS(key),
+    body: JSON.stringify(data)
+  });
+  return d.record;
+}
+
+async function jbCreate(key, data) {
+  const d = await jbFetch(`${JB_BASE}/b`, {
+    method: 'POST',
+    headers: { ...JB_HEADERS(key), 'X-Bin-Name': 'taskcult-db', 'X-Bin-Private': 'true' },
+    body: JSON.stringify(data)
+  });
+  return d.metadata.id;
+}
+
+// ── Validation helpers ───────────────────────────────
+const sanitize = s => String(s||'').trim().replace(/[<>]/g,'');
+const isEmail = s => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+const hashPw = s => btoa(unescape(encodeURIComponent(s + '::taskcult')));
+const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
+
+// ── Initial DB factory ───────────────────────────────
+function buildInitialDB() {
+  const now = Date.now();
+  const cfg = {
+    platformName: 'TaskCult',
+    platformDescription: 'Economía del conocimiento académico',
+    welcomePoints: 100,
+    baseUploadPoints: 50,
+    pointsPerClaim: 10,
+    minPrice: 10,
+    maxPrice: 500,
+    dailyUploadLimit: 5
+  };
+  const admin = {
+    id: 'admin-001',
+    username: 'admin',
+    email: 'admin@taskcult.com',
+    password: hashPw('admin123'),
+    bio: 'Administrador de la plataforma.',
+    level: 'Posgrado',
+    points: 9999,
+    tasksUploaded: 5,
+    tasksClaimed: 0,
+    claimedTaskIds: [],
+    likedTaskIds: [],
+    transactions: [{ id: 'tx-0', description: 'Cuenta admin creada', amount: 9999, date: now }],
+    isAdmin: true,
+    avatar: '',
+    createdAt: now,
+    banned: false
+  };
+  const tasks = [
+    { id: 't1', title: 'Resolución de Integrales Dobles con cambio de variable', description: 'Guía exhaustiva con 15 ejercicios resueltos de integrales dobles en coordenadas cartesianas y polares. Incluye cambio de variable, Jacobiano y aplicaciones geométricas.', subject: 'Matemáticas', level: 'Universitario 2do año', price: 80, tags: ['integral','cálculo','ejercicios'], authorId: 'admin-001', authorName: 'admin', approved: true, likes: 12, views: 87, hasFile: true, earnedPoints: 80, createdAt: now - 86400000 * 3 },
+    { id: 't2', title: 'Mecánica Cuántica: Principio de Incertidumbre de Heisenberg', description: 'Apuntes detallados con derivaciones matemáticas, ejemplos físicos y análisis filosófico. Incluye ejercicios resueltos y bibliografía comentada.', subject: 'Física', level: 'Universitario 3er año', price: 120, tags: ['cuántica','heisenberg','física'], authorId: 'admin-001', authorName: 'admin', approved: true, likes: 8, views: 54, hasFile: true, earnedPoints: 120, createdAt: now - 86400000 * 2 },
+    { id: 't3', title: 'Análisis completo de La Metamorfosis de Kafka', description: 'Ensayo académico de 10 páginas. Estructura narrativa, simbolismo, alienación como tema central y contexto biográfico del autor.', subject: 'Literatura', level: 'Preuniversitario', price: 50, tags: ['kafka','ensayo','literatura'], authorId: 'admin-001', authorName: 'admin', approved: true, likes: 19, views: 130, hasFile: true, earnedPoints: 50, createdAt: now - 86400000 },
+    { id: 't4', title: 'Proyecto Python: Sistema de gestión de inventario con SQLite', description: 'Código completo y documentado con CRUD, reportes exportables y autenticación básica. Incluye tests unitarios y README detallado.', subject: 'Programación', level: 'Universitario 1er año', price: 150, tags: ['python','sqlite','proyecto'], authorId: 'admin-001', authorName: 'admin', approved: true, likes: 33, views: 210, hasFile: true, earnedPoints: 150, createdAt: now - 43200000 },
+    { id: 't5', title: 'Línea de tiempo: Primera y Segunda Guerra Mundial', description: 'Presentación con cronología comparativa, causas profundas y estructurales, consecuencias y análisis de los tratados de paz. Incluye mapas interactivos.', subject: 'Historia', level: 'Secundaria', price: 30, tags: ['historia','guerra','geopolítica'], authorId: 'admin-001', authorName: 'admin', approved: true, likes: 5, views: 41, hasFile: true, earnedPoints: 30, createdAt: now - 7200000 },
+  ];
+  return { users: [admin], tasks, config: cfg };
+}
+
+// ── Alpine App ───────────────────────────────────────
 function app() {
   return {
-    isLoading: true,
-    loadingMsg: 'Cargando...',
-    currentUser: null,
-    currentPage: 'home',
-    authMode: 'login',
-    libraryTab: 'uploaded',
-    adminTab: 'dashboard',
-    exploreSearch: '',
-    exploreSubject: '',
-    exploreLevel: '',
-    exploreSort: 'recent',
-    adminUserSearch: '',
-    adminTaskFilter: 'all',
+    // State
+    db: { users: [], tasks: [], config: {} },
+    session: null,
+    cfg: {},
+    toasts: [],
     apiKey: '',
     binId: '',
-    db: { users: [], tasks: [], config: {} },
-    loginForm: { username: '', password: '' },
-    registerForm: { username: '', email: '', password: '', level: '' },
-    uploadForm: { title: '', description: '', subject: '', level: '', price: 50, tagsStr: '', hasFile: false },
-    profileForm: { bio: '', level: '', avatar: '' },
-    configForm: {},
-    editUserModal: { open: false, user: null, points: 0, level: '', isAdmin: false },
-    taskModal: { open: false, task: null },
-    toast: { show: false, message: '', type: 'success' },
-    config: {},
-    subjects: ['Matemáticas','Física','Química','Historia','Literatura','Biología','Programación','Inglés','Geografía','Filosofía','Arte','Economía'],
-    academicLevels: ['Secundaria','Preuniversitario','Universitario 1er año','Universitario 2do año','Universitario 3er año','Posgrado'],
-    adminTabs: [
-      { id:'dashboard', label:'Dashboard' },
-      { id:'users', label:'Usuarios' },
-      { id:'tasks', label:'Tareas' },
-      { id:'interface', label:'Interfaz' },
-      { id:'config', label:'Config' },
-    ],
+    demoMode: false,
 
-    get featuredTasks() { return this.db.tasks.filter(t=>t.approved).sort((a,b)=>(b.likes||0)-(a.likes||0)).slice(0,6); },
-    get recentTasks() { return this.db.tasks.filter(t=>t.approved).sort((a,b)=>b.createdAt-a.createdAt).slice(0,8); },
-    get filteredTasks() {
-      let tasks = this.db.tasks.filter(t=>t.approved);
-      if (this.exploreSearch) { const q=this.exploreSearch.toLowerCase(); tasks=tasks.filter(t=>t.title.toLowerCase().includes(q)||t.description.toLowerCase().includes(q)||(t.tags||[]).some(g=>g.toLowerCase().includes(q))); }
-      if (this.exploreSubject) tasks=tasks.filter(t=>t.subject===this.exploreSubject);
-      if (this.exploreLevel) tasks=tasks.filter(t=>t.level===this.exploreLevel);
-      if (this.exploreSort==='recent') tasks.sort((a,b)=>b.createdAt-a.createdAt);
-      if (this.exploreSort==='popular') tasks.sort((a,b)=>(b.likes||0)-(a.likes||0));
-      if (this.exploreSort==='price_asc') tasks.sort((a,b)=>a.price-b.price);
-      if (this.exploreSort==='price_desc') tasks.sort((a,b)=>b.price-a.price);
-      return tasks;
+    // UI state
+    ui: {
+      loading: true,
+      loadingMsg: 'Conectando...',
+      submitting: false,
+      page: 'home',
+      authMode: 'login',
+      libTab: 'uploaded',
+      adminTab: 'dash',
+      adminUserQ: '',
+      adminTaskFilter: 'all',
+      sidebarOpen: false,
+      showSetup: false,
+      setupKey: '',
+      setupBin: '',
     },
-    get myUploadedTasks() { if (!this.currentUser) return []; return this.db.tasks.filter(t=>t.authorId===this.currentUser.id); },
-    get myClaimedTasks() { if (!this.currentUser) return []; const ids=this.currentUser.claimedTaskIds||[]; return this.db.tasks.filter(t=>ids.includes(t.id)); },
-    get leaderboardUsers() { return [...this.db.users].sort((a,b)=>(b.points||0)-(a.points||0)).slice(0,20); },
-    get pendingTasks() { return this.db.tasks.filter(t=>!t.approved); },
-    get filteredAdminUsers() { const q=this.adminUserSearch.toLowerCase(); return this.db.users.filter(u=>!q||u.username.toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q)); },
-    get adminFilteredTasks() { if (this.adminTaskFilter==='pending') return this.db.tasks.filter(t=>!t.approved); if (this.adminTaskFilter==='approved') return this.db.tasks.filter(t=>t.approved); return this.db.tasks; },
-    get totalPointsInCirculation() { return this.db.users.reduce((s,u)=>s+(u.points||0),0); },
 
+    // Modals
+    modal: {
+      task: { open: false, data: null },
+      editUser: { open: false, data: null, points: 0, level: '', isAdmin: false },
+    },
+
+    // Forms
+    forms: {
+      login: { id: '', pw: '' },
+      reg: { username: '', email: '', level: '', pw: '' },
+      upload: { title: '', description: '', subject: '', level: '', price: 50, tagsStr: '', hasFile: false },
+      profile: { bio: '', level: '', avatar: '' },
+      cfg: {},
+    },
+
+    // Constants
+    SUBJECTS: ['Matemáticas','Física','Química','Historia','Literatura','Biología','Programación','Inglés','Geografía','Filosofía','Arte','Economía'],
+    LEVELS: ['Secundaria','Preuniversitario','Universitario 1er año','Universitario 2do año','Universitario 3er año','Posgrado'],
+
+    // Nav items (computed to filter admin)
+    get navItems() {
+      const base = [
+        { id: 'home', label: 'Inicio', icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>' },
+        { id: 'explore', label: 'Explorar', icon: '<circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="m21 21-4.35-4.35"/>' },
+        { id: 'upload', label: 'Subir tarea', icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>' },
+        { id: 'library', label: 'Mi biblioteca', icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>' },
+        { id: 'leaderboard', label: 'Leaderboard', icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>' },
+        { id: 'profile', label: 'Perfil', icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>' },
+      ];
+      if (this.session?.isAdmin) {
+        base.push({ id: 'admin', label: 'Admin', icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/>' });
+      }
+      return base;
+    },
+
+    // Computed
+    get featuredTasks() { return this.db.tasks.filter(t => t.approved).sort((a,b) => (b.likes||0)-(a.likes||0)).slice(0, 6); },
+    get recentTasks() { return this.db.tasks.filter(t => t.approved).sort((a,b) => b.createdAt - a.createdAt).slice(0, 8); },
+    get filteredTasks() {
+      let list = this.db.tasks.filter(t => t.approved);
+      const q = (this.filters?.q || '').toLowerCase();
+      if (q) list = list.filter(t => t.title.toLowerCase().includes(q) || t.description.toLowerCase().includes(q) || (t.tags||[]).some(g => g.includes(q)));
+      if (this.filters?.subject) list = list.filter(t => t.subject === this.filters.subject);
+      if (this.filters?.level) list = list.filter(t => t.level === this.filters.level);
+      const s = this.filters?.sort || 'recent';
+      if (s === 'recent') list.sort((a,b) => b.createdAt - a.createdAt);
+      else if (s === 'popular') list.sort((a,b) => (b.likes||0) - (a.likes||0));
+      else if (s === 'cheap') list.sort((a,b) => a.price - b.price);
+      else if (s === 'expensive') list.sort((a,b) => b.price - a.price);
+      return list;
+    },
+    get myUploaded() { return this.session ? this.db.tasks.filter(t => t.authorId === this.session.id) : []; },
+    get myClaimed() {
+      if (!this.session) return [];
+      const ids = this.session.claimedTaskIds || [];
+      return this.db.tasks.filter(t => ids.includes(t.id));
+    },
+    get leaderboard() { return [...this.db.users].sort((a,b) => (b.points||0) - (a.points||0)).slice(0,25); },
+    get pendingTasks() { return this.db.tasks.filter(t => !t.approved); },
+    get pendingCount() { return this.pendingTasks.length; },
+    get adminUsers() {
+      const q = (this.ui.adminUserQ||'').toLowerCase();
+      return this.db.users.filter(u => !q || u.username.toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q));
+    },
+    get adminTasks() {
+      if (this.ui.adminTaskFilter === 'pending') return this.db.tasks.filter(t => !t.approved);
+      if (this.ui.adminTaskFilter === 'approved') return this.db.tasks.filter(t => t.approved);
+      return this.db.tasks;
+    },
+    get totalPts() { return this.db.users.reduce((s,u) => s + (u.points||0), 0); },
+
+    // Filters state (separate to avoid reactivity issues)
+    filters: { q: '', subject: '', level: '', sort: 'recent' },
+
+    // ── Init ──────────────────────────────────────────
     async init() {
-      this.isLoading = true;
-      this.loadingMsg = 'Conectando...';
+      this.ui.loading = true;
+      this.ui.loadingMsg = 'Inicializando...';
 
-      // Use hardcoded keys first, then fall back to localStorage
-      this.apiKey = JSONBIN_API_KEY || localStorage.getItem('tc_api_key') || '';
-      this.binId  = JSONBIN_BIN_ID  || localStorage.getItem('tc_bin_id')  || '';
+      // Load credentials (hardcoded > localStorage)
+      this.apiKey = JSONBIN_KEY || localStorage.getItem('tc_key') || '';
+      this.binId  = JSONBIN_BIN  || localStorage.getItem('tc_bin') || '';
 
-      if (this.apiKey && this.binId) {
-        try {
-          await this.loadDB();
-          this.applyConfig();
-          const sid = localStorage.getItem('tc_session');
-          if (sid) {
-            const u = this.db.users.find(u=>u.id===sid);
-            if (u && !u.banned) { this.currentUser = u; this.initProfileForm(); }
-          }
-        } catch(e) {
-          console.warn('Backend error:', e);
+      if (this.apiKey) {
+        await this.connectJSONBin(true);
+      } else {
+        const storedDB = localStorage.getItem('tc_demo_db');
+        if (storedDB) {
+          try {
+            this.db = JSON.parse(storedDB);
+            this.demoMode = true;
+            this.applyConfig();
+            this.tryRestoreSession();
+            this.ui.loading = false;
+            return;
+          } catch(e) {}
         }
-      } else if (this.apiKey && !this.binId) {
-        // API key present but no bin — create one
-        try {
-          this.loadingMsg = 'Inicializando base de datos...';
-          const initial = this.buildInitialDB();
-          const id = await jbCreate(this.apiKey, initial, 'taskcult-db');
-          this.binId = id;
-          localStorage.setItem('tc_api_key', this.apiKey);
-          localStorage.setItem('tc_bin_id', id);
+        this.ui.loading = false;
+        this.ui.showSetup = true;
+      }
+    },
+
+    async connectJSONBin(silent = false) {
+      if (!silent) this.ui.submitting = true;
+      this.ui.loadingMsg = 'Conectando a JSONBin...';
+      try {
+        if (this.apiKey && !this.binId) {
+          // Create new bin
+          this.ui.loadingMsg = 'Creando base de datos...';
+          const initial = buildInitialDB();
+          this.binId = await jbCreate(this.apiKey, initial);
+          localStorage.setItem('tc_key', this.apiKey);
+          localStorage.setItem('tc_bin', this.binId);
           this.db = initial;
-          this.applyConfig();
-        } catch(e) {
-          console.warn('Could not create bin:', e);
+        } else if (this.apiKey && this.binId) {
+          this.ui.loadingMsg = 'Cargando datos...';
+          this.db = await jbGet(this.binId, this.apiKey);
+          if (!this.db.users) this.db.users = [];
+          if (!this.db.tasks) this.db.tasks = [];
+          if (!this.db.config) this.db.config = {};
+          localStorage.setItem('tc_key', this.apiKey);
+          localStorage.setItem('tc_bin', this.binId);
+        }
+        this.applyConfig();
+        this.tryRestoreSession();
+        this.ui.showSetup = false;
+        if (!silent) this.toast('Conectado correctamente', 'success');
+      } catch(e) {
+        console.error('JSONBin error:', e);
+        this.toast('Error de conexión: ' + e.message, 'error');
+        if (!silent) {
+          // Fall through to demo mode
         }
       }
-
-      this.isLoading = false;
+      this.ui.loading = false;
+      this.ui.submitting = false;
     },
 
-    buildInitialDB() {
-      const cfg = { platformName:'TaskCult', platformDescription:'La economía del conocimiento académico', welcomePoints:100, baseUploadPoints:50, pointsPerClaim:10, minPrice:10, maxPrice:500, dailyUploadLimit:5 };
-      const admin = { id:'admin-001', username:'admin', email:'admin@taskcult.com', password:'admin123', bio:'Administrador de la plataforma.', level:'Posgrado', points:9999, tasksUploaded:5, tasksClaimed:0, claimedTaskIds:[], likedTaskIds:[], transactions:[{id:'tx-0',description:'Cuenta admin creada',amount:9999,date:Date.now()}], isAdmin:true, avatar:'', createdAt:Date.now(), banned:false };
-      const now = Date.now();
-      const tasks = [
-        {id:'task-s1',title:'Resolución completa de Integrales Dobles con cambio de variable',description:'Guía exhaustiva con 15 ejercicios resueltos de integrales dobles en coordenadas cartesianas y polares. Incluye cambio de variable, Jacobiano y aplicaciones.',subject:'Matemáticas',level:'Universitario 2do año',price:80,tags:['integral','cálculo','ejercicios'],authorId:'admin-001',authorName:'admin',approved:true,likes:12,views:87,hasFile:true,earnedPoints:80,createdAt:now-86400000*3},
-        {id:'task-s2',title:'Apuntes de Mecánica Cuántica: Principio de Heisenberg',description:'Apuntes detallados sobre el principio de incertidumbre con derivaciones matemáticas, ejemplos físicos y análisis filosófico.',subject:'Física',level:'Universitario 3er año',price:120,tags:['cuántica','heisenberg'],authorId:'admin-001',authorName:'admin',approved:true,likes:8,views:54,hasFile:true,earnedPoints:120,createdAt:now-86400000*2},
-        {id:'task-s3',title:'Análisis completo de La Metamorfosis de Kafka',description:'Ensayo académico de 10 páginas. Estructura narrativa, simbolismo, alienación como tema central y contexto biográfico.',subject:'Literatura',level:'Preuniversitario',price:50,tags:['kafka','ensayo'],authorId:'admin-001',authorName:'admin',approved:true,likes:19,views:130,hasFile:true,earnedPoints:50,createdAt:now-86400000},
-        {id:'task-s4',title:'Proyecto Python: Sistema de gestión de inventario con SQLite',description:'Código completo y documentado con CRUD, reportes y autenticación básica.',subject:'Programación',level:'Universitario 1er año',price:150,tags:['python','sqlite','proyecto'],authorId:'admin-001',authorName:'admin',approved:true,likes:33,views:210,hasFile:true,earnedPoints:150,createdAt:now-43200000},
-        {id:'task-s5',title:'Línea de tiempo: Primera y Segunda Guerra Mundial',description:'Presentación con cronología comparativa, causas, consecuencias, mapas y análisis de los tratados de paz.',subject:'Historia',level:'Secundaria',price:30,tags:['historia','guerra'],authorId:'admin-001',authorName:'admin',approved:true,likes:5,views:41,hasFile:true,earnedPoints:30,createdAt:now-7200000},
-      ];
-      return { users:[admin], tasks, config:cfg };
+    useDemoMode() {
+      this.demoMode = true;
+      this.db = buildInitialDB();
+      localStorage.setItem('tc_demo_db', JSON.stringify(this.db));
+      this.applyConfig();
+      this.ui.showSetup = false;
+      this.toast('Modo demo activo. Los datos se guardan localmente.', 'warning');
     },
 
-    async loadDB() {
-      this.loadingMsg = 'Cargando datos...';
-      this.db = await jbGet(this.binId, this.apiKey);
-      if (!this.db.users) this.db.users = [];
-      if (!this.db.tasks) this.db.tasks = [];
-      if (!this.db.config) this.db.config = {};
+    tryRestoreSession() {
+      const sid = localStorage.getItem('tc_session');
+      if (sid) {
+        const u = this.db.users.find(u => u.id === sid);
+        if (u && !u.banned) {
+          this.session = u;
+          this.initProfileForm();
+        } else {
+          localStorage.removeItem('tc_session');
+        }
+      }
     },
 
-    async saveDB() { await jbSet(this.binId, this.apiKey, this.db); },
+    // ── Persist ───────────────────────────────────────
+    _saveTimer: null,
+    async save() {
+      if (this.demoMode) {
+        localStorage.setItem('tc_demo_db', JSON.stringify(this.db));
+        return;
+      }
+      if (!this.apiKey || !this.binId) return;
+      clearTimeout(this._saveTimer);
+      this._saveTimer = setTimeout(async () => {
+        try {
+          await jbPut(this.binId, this.apiKey, this.db);
+        } catch(e) {
+          console.error('Save error:', e);
+          this.toast('Error al guardar: ' + e.message, 'error');
+        }
+      }, 600); // debounce 600ms
+    },
 
+    // ── Config ────────────────────────────────────────
     applyConfig() {
-      const d = { platformName:'TaskCult', platformDescription:'La economía del conocimiento académico', welcomePoints:100, baseUploadPoints:50, pointsPerClaim:10, minPrice:10, maxPrice:500, dailyUploadLimit:5 };
-      this.config = { ...d, ...(this.db.config||{}) };
-      this.configForm = { ...this.config };
+      const defaults = { platformName:'TaskCult', platformDescription:'Economía del conocimiento académico', welcomePoints:100, baseUploadPoints:50, pointsPerClaim:10, minPrice:10, maxPrice:500, dailyUploadLimit:5 };
+      this.cfg = { ...defaults, ...(this.db.config||{}) };
+      this.forms.cfg = { ...this.cfg };
     },
 
+    // ── Auth ──────────────────────────────────────────
     async doLogin() {
-      const u = this.db.users.find(u=>(u.username===this.loginForm.username||u.email===this.loginForm.username)&&u.password===this.loginForm.password);
-      if (!u) { this.showToast('Usuario o contraseña incorrectos.','error'); return; }
-      if (u.banned) { this.showToast('Tu cuenta ha sido baneada.','error'); return; }
-      this.currentUser = u;
+      const id = sanitize(this.forms.login.id);
+      const pw = this.forms.login.pw;
+      if (!id || !pw) { this.toast('Completá todos los campos', 'error'); return; }
+
+      const u = this.db.users.find(u =>
+        (u.username === id || u.email === id) &&
+        (u.password === hashPw(pw) || u.password === pw) // support legacy plain passwords
+      );
+
+      if (!u) { this.toast('Usuario o contraseña incorrectos', 'error'); return; }
+      if (u.banned) { this.toast('Tu cuenta ha sido suspendida', 'error'); return; }
+
+      // Migrate plain password to hashed if needed
+      if (u.password !== hashPw(pw)) {
+        const i = this.db.users.findIndex(x => x.id === u.id);
+        if (i !== -1) { this.db.users[i].password = hashPw(pw); await this.save(); }
+      }
+
+      this.session = u;
       localStorage.setItem('tc_session', u.id);
       this.initProfileForm();
-      this.showToast('Bienvenido, '+u.username+'!','success');
-      this.loginForm = { username:'', password:'' };
+      this.forms.login = { id: '', pw: '' };
+      this.toast('Bienvenido, ' + u.username + '!', 'success');
     },
 
     async doRegister() {
-      if (!this.registerForm.username||!this.registerForm.email||!this.registerForm.password||!this.registerForm.level) { this.showToast('Completá todos los campos.','error'); return; }
-      if (this.registerForm.password.length < 6) { this.showToast('Contraseña mínimo 6 caracteres.','error'); return; }
-      if (this.db.users.find(u=>u.username===this.registerForm.username)) { this.showToast('Ese usuario ya existe.','error'); return; }
-      if (this.db.users.find(u=>u.email===this.registerForm.email)) { this.showToast('Ese email ya está registrado.','error'); return; }
-      this.isLoading = true; this.loadingMsg = 'Creando cuenta...';
+      const username = sanitize(this.forms.reg.username);
+      const email    = sanitize(this.forms.reg.email);
+      const level    = this.forms.reg.level;
+      const pw       = this.forms.reg.pw;
+
+      if (!username || !email || !level || !pw) { this.toast('Completá todos los campos', 'error'); return; }
+      if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) { this.toast('Usuario: 3-20 caracteres alfanuméricos o _', 'error'); return; }
+      if (!isEmail(email)) { this.toast('Email inválido', 'error'); return; }
+      if (pw.length < 6) { this.toast('Contraseña mínimo 6 caracteres', 'error'); return; }
+      if (this.db.users.find(u => u.username.toLowerCase() === username.toLowerCase())) { this.toast('Ese usuario ya existe', 'error'); return; }
+      if (this.db.users.find(u => u.email.toLowerCase() === email.toLowerCase())) { this.toast('Ese email ya está registrado', 'error'); return; }
+
+      this.ui.submitting = true;
       try {
-        const wp = this.config.welcomePoints||100;
-        const nu = { id:'user-'+Date.now(), username:this.registerForm.username, email:this.registerForm.email, password:this.registerForm.password, level:this.registerForm.level, bio:'', points:wp, tasksUploaded:0, tasksClaimed:0, claimedTaskIds:[], likedTaskIds:[], transactions:[{id:'tx-r'+Date.now(),description:'Puntos de bienvenida',amount:wp,date:Date.now()}], isAdmin:false, avatar:'', createdAt:Date.now(), banned:false };
+        const wp = this.cfg.welcomePoints || 100;
+        const nu = {
+          id: 'u-' + uid(),
+          username,
+          email,
+          password: hashPw(pw),
+          bio: '',
+          level,
+          points: wp,
+          tasksUploaded: 0,
+          tasksClaimed: 0,
+          claimedTaskIds: [],
+          likedTaskIds: [],
+          transactions: [{ id: 'tx-' + uid(), description: 'Puntos de bienvenida 🎉', amount: wp, date: Date.now() }],
+          isAdmin: false,
+          avatar: '',
+          createdAt: Date.now(),
+          banned: false
+        };
         this.db.users.push(nu);
-        if (this.binId) await this.saveDB();
-        this.currentUser = nu;
+        await this.save();
+        this.session = nu;
         localStorage.setItem('tc_session', nu.id);
         this.initProfileForm();
-        this.showToast('Cuenta creada. Recibiste '+wp+' pts.','success');
-        this.registerForm = { username:'', email:'', password:'', level:'' };
-      } catch(e) { this.showToast('Error al guardar.','error'); }
-      this.isLoading = false;
+        this.forms.reg = { username: '', email: '', level: '', pw: '' };
+        this.toast('Cuenta creada. Recibiste ' + wp + ' pts 🎉', 'success');
+      } catch(e) { this.toast('Error al crear cuenta: ' + e.message, 'error'); }
+      this.ui.submitting = false;
     },
 
-    doLogout() { this.currentUser = null; localStorage.removeItem('tc_session'); this.currentPage = 'home'; },
+    doLogout() {
+      this.session = null;
+      localStorage.removeItem('tc_session');
+      this.ui.page = 'home';
+      this.ui.authMode = 'login';
+    },
 
-    async doUploadTask() {
-      if (!this.uploadForm.title||!this.uploadForm.description||!this.uploadForm.subject||!this.uploadForm.level) { this.showToast('Completá todos los campos.','error'); return; }
-      const price = Number(this.uploadForm.price);
-      if (!price||price<(this.config.minPrice||10)) { this.showToast('Precio mínimo: '+(this.config.minPrice||10)+' pts.','error'); return; }
-      if (price>(this.config.maxPrice||500)) { this.showToast('Precio máximo: '+(this.config.maxPrice||500)+' pts.','error'); return; }
-      this.isLoading = true; this.loadingMsg = 'Subiendo tarea...';
+    // ── Upload ────────────────────────────────────────
+    async doUpload() {
+      const { title, description, subject, level, price, tagsStr, hasFile } = this.forms.upload;
+      if (!sanitize(title) || !sanitize(description) || !subject || !level) { this.toast('Completá todos los campos obligatorios', 'error'); return; }
+      const p = Number(price);
+      if (!p || p < (this.cfg.minPrice||10)) { this.toast('Precio mínimo: ' + (this.cfg.minPrice||10) + ' pts', 'error'); return; }
+      if (p > (this.cfg.maxPrice||500)) { this.toast('Precio máximo: ' + (this.cfg.maxPrice||500) + ' pts', 'error'); return; }
+
+      this.ui.submitting = true;
       try {
-        const tags = this.uploadForm.tagsStr ? this.uploadForm.tagsStr.split(',').map(t=>t.trim().toLowerCase()).filter(Boolean) : [];
-        const task = { id:'task-'+Date.now(), title:this.uploadForm.title, description:this.uploadForm.description, subject:this.uploadForm.subject, level:this.uploadForm.level, price, tags, authorId:this.currentUser.id, authorName:this.currentUser.username, approved:!!this.currentUser.isAdmin, likes:0, views:0, hasFile:this.uploadForm.hasFile, earnedPoints:0, createdAt:Date.now() };
+        const tags = tagsStr ? tagsStr.split(',').map(t => sanitize(t).toLowerCase()).filter(Boolean) : [];
+        const task = {
+          id: 'task-' + uid(),
+          title: sanitize(title),
+          description: sanitize(description),
+          subject, level, price: p, tags,
+          authorId: this.session.id,
+          authorName: this.session.username,
+          approved: !!this.session.isAdmin,
+          likes: 0, views: 0,
+          hasFile,
+          earnedPoints: 0,
+          createdAt: Date.now()
+        };
         this.db.tasks.push(task);
-        const pts = this.config.baseUploadPoints||50;
-        const ui = this.db.users.findIndex(u=>u.id===this.currentUser.id);
-        if (ui!==-1) {
-          this.db.users[ui].points=(this.db.users[ui].points||0)+pts;
-          this.db.users[ui].tasksUploaded=(this.db.users[ui].tasksUploaded||0)+1;
-          this.db.users[ui].transactions=[...(this.db.users[ui].transactions||[]),{id:'tx-'+Date.now(),description:'Tarea subida: '+task.title.substring(0,40),amount:pts,date:Date.now()}];
+
+        const pts = this.cfg.baseUploadPoints || 50;
+        const ui = this.db.users.findIndex(u => u.id === this.session.id);
+        if (ui !== -1) {
+          this.db.users[ui].points = (this.db.users[ui].points || 0) + pts;
+          this.db.users[ui].tasksUploaded = (this.db.users[ui].tasksUploaded || 0) + 1;
+          this.db.users[ui].transactions = [...(this.db.users[ui].transactions || []), { id: 'tx-' + uid(), description: 'Subiste: ' + task.title.slice(0,40), amount: pts, date: Date.now() }];
+          this.session = { ...this.db.users[ui] };
         }
-        if (this.binId) await this.saveDB();
-        this.currentUser = this.db.users[ui];
-        this.showToast('¡Tarea subida! +'+pts+' pts.'+(this.currentUser.isAdmin?'':' Pendiente de aprobación.'),'success');
-        this.uploadForm = { title:'', description:'', subject:'', level:'', price:50, tagsStr:'', hasFile:false };
-        this.setPage('library');
-      } catch(e) { this.showToast('Error al subir.','error'); }
-      this.isLoading = false;
+
+        await this.save();
+        this.forms.upload = { title: '', description: '', subject: '', level: '', price: 50, tagsStr: '', hasFile: false };
+        this.toast('¡Tarea subida! +' + pts + ' pts' + (this.session.isAdmin ? '' : ' — Pendiente de aprobación'), 'success');
+        this.goPage('library');
+      } catch(e) { this.toast('Error al subir: ' + e.message, 'error'); }
+      this.ui.submitting = false;
     },
 
-    async openTask(task) {
+    // ── Task actions ──────────────────────────────────
+    openTask(task) {
       if (!task) return;
-      const idx = this.db.tasks.findIndex(t=>t.id===task.id);
-      if (idx!==-1) { this.db.tasks[idx].views=(this.db.tasks[idx].views||0)+1; if (this.binId) this.saveDB().catch(()=>{}); }
-      this.taskModal.task = { ...task, views:(task.views||0)+1 };
-      this.taskModal.open = true;
+      // Increment view count
+      const i = this.db.tasks.findIndex(t => t.id === task.id);
+      if (i !== -1) {
+        this.db.tasks[i].views = (this.db.tasks[i].views || 0) + 1;
+        this.save().catch(() => {});
+        this.modal.task.data = { ...this.db.tasks[i] };
+      } else {
+        this.modal.task.data = { ...task };
+      }
+      this.modal.task.open = true;
     },
 
-    isTaskClaimed(id) { if (!this.currentUser||!id) return false; return (this.currentUser.claimedTaskIds||[]).includes(id); },
+    isClaimed(id) {
+      if (!this.session || !id) return false;
+      return (this.session.claimedTaskIds || []).includes(id);
+    },
 
     async claimTask(task) {
       if (!task) return;
-      if (this.isTaskClaimed(task.id)) { this.showToast('Ya reclamaste esta tarea.','warning'); return; }
-      if (task.authorId===this.currentUser.id) { this.showToast('No podés reclamar tu propia tarea.','warning'); return; }
-      if ((this.currentUser.points||0)<task.price) { this.showToast('No tenés suficientes puntos.','error'); return; }
-      this.isLoading = true; this.loadingMsg = 'Procesando...';
-      try {
-        const bonus = this.config.pointsPerClaim||10;
-        const ci = this.db.users.findIndex(u=>u.id===this.currentUser.id);
-        const ai = this.db.users.findIndex(u=>u.id===task.authorId);
-        const ti = this.db.tasks.findIndex(t=>t.id===task.id);
-        if (ci!==-1) { this.db.users[ci].points-=task.price; this.db.users[ci].claimedTaskIds=[...(this.db.users[ci].claimedTaskIds||[]),task.id]; this.db.users[ci].tasksClaimed=(this.db.users[ci].tasksClaimed||0)+1; this.db.users[ci].transactions=[...(this.db.users[ci].transactions||[]),{id:'tx-'+Date.now(),description:'Reclamó: '+task.title.substring(0,40),amount:-task.price,date:Date.now()}]; }
-        if (ai!==-1) { this.db.users[ai].points=(this.db.users[ai].points||0)+task.price+bonus; this.db.users[ai].transactions=[...(this.db.users[ai].transactions||[]),{id:'tx-'+Date.now()+1,description:'Te reclamaron: '+task.title.substring(0,40),amount:task.price+bonus,date:Date.now()}]; }
-        if (ti!==-1) this.db.tasks[ti].earnedPoints=(this.db.tasks[ti].earnedPoints||0)+task.price;
-        if (this.binId) await this.saveDB();
-        if (ci!==-1) this.currentUser = this.db.users[ci];
-        this.showToast('Tarea reclamada. −'+task.price+' pts.','success');
-        this.taskModal.open = false;
-      } catch(e) { this.showToast('Error al reclamar.','error'); }
-      this.isLoading = false;
-    },
+      if (this.isClaimed(task.id)) { this.toast('Ya reclamaste esta tarea', 'warning'); return; }
+      if (task.authorId === this.session.id) { this.toast('No podés reclamar tu propia tarea', 'warning'); return; }
+      if ((this.session.points || 0) < task.price) { this.toast('No tenés suficientes puntos (' + this.session.points + ' / ' + task.price + ')', 'error'); return; }
 
-    downloadTask(task) { this.showToast('Descargando: '+task.title+' (simulado)','success'); },
+      this.ui.submitting = true;
+      try {
+        const bonus = this.cfg.pointsPerClaim || 10;
+        const ci = this.db.users.findIndex(u => u.id === this.session.id);
+        const ai = this.db.users.findIndex(u => u.id === task.authorId);
+        const ti = this.db.tasks.findIndex(t => t.id === task.id);
+
+        if (ci !== -1) {
+          this.db.users[ci].points -= task.price;
+          this.db.users[ci].claimedTaskIds = [...(this.db.users[ci].claimedTaskIds || []), task.id];
+          this.db.users[ci].tasksClaimed = (this.db.users[ci].tasksClaimed || 0) + 1;
+          this.db.users[ci].transactions = [...(this.db.users[ci].transactions || []), { id: 'tx-' + uid(), description: 'Reclamaste: ' + task.title.slice(0,40), amount: -task.price, date: Date.now() }];
+        }
+        if (ai !== -1) {
+          this.db.users[ai].points = (this.db.users[ai].points || 0) + task.price + bonus;
+          this.db.users[ai].transactions = [...(this.db.users[ai].transactions || []), { id: 'tx-' + uid(), description: 'Te reclamaron: ' + task.title.slice(0,40), amount: task.price + bonus, date: Date.now() }];
+        }
+        if (ti !== -1) {
+          this.db.tasks[ti].earnedPoints = (this.db.tasks[ti].earnedPoints || 0) + task.price;
+        }
+
+        await this.save();
+        if (ci !== -1) this.session = { ...this.db.users[ci] };
+        this.modal.task.open = false;
+        this.toast('Tarea reclamada — −' + task.price + ' pts', 'success');
+      } catch(e) { this.toast('Error al reclamar: ' + e.message, 'error'); }
+      this.ui.submitting = false;
+    },
 
     async likeTask(taskId) {
       if (!taskId) return;
-      if ((this.currentUser.likedTaskIds||[]).includes(taskId)) { this.showToast('Ya le diste like.','warning'); return; }
+      if ((this.session.likedTaskIds || []).includes(taskId)) { this.toast('Ya le diste like', 'warning'); return; }
       try {
-        const ti = this.db.tasks.findIndex(t=>t.id===taskId);
-        const ui = this.db.users.findIndex(u=>u.id===this.currentUser.id);
-        if (ti!==-1) this.db.tasks[ti].likes=(this.db.tasks[ti].likes||0)+1;
-        if (ui!==-1) this.db.users[ui].likedTaskIds=[...(this.db.users[ui].likedTaskIds||[]),taskId];
-        if (this.binId) await this.saveDB();
-        this.currentUser = this.db.users[ui];
-        if (this.taskModal.task?.id===taskId) this.taskModal.task = { ...this.taskModal.task, likes:(this.taskModal.task.likes||0)+1 };
-        this.showToast('Like añadido.','success');
-      } catch(e) { this.showToast('Error.','error'); }
+        const ti = this.db.tasks.findIndex(t => t.id === taskId);
+        const ui = this.db.users.findIndex(u => u.id === this.session.id);
+        if (ti !== -1) this.db.tasks[ti].likes = (this.db.tasks[ti].likes || 0) + 1;
+        if (ui !== -1) this.db.users[ui].likedTaskIds = [...(this.db.users[ui].likedTaskIds || []), taskId];
+        await this.save();
+        if (ui !== -1) this.session = { ...this.db.users[ui] };
+        if (this.modal.task.data?.id === taskId) {
+          this.modal.task.data = { ...this.modal.task.data, likes: (this.modal.task.data.likes||0) + 1 };
+        }
+        this.toast('Like añadido ♥', 'success');
+      } catch(e) { this.toast('Error', 'error'); }
     },
 
-    async approveTask(id) { try { const i=this.db.tasks.findIndex(t=>t.id===id); if(i!==-1){this.db.tasks[i].approved=true; if(this.binId)await this.saveDB();} this.showToast('Tarea aprobada.','success'); } catch(e){this.showToast('Error.','error');} },
-    async rejectTask(id) { try { this.db.tasks=this.db.tasks.filter(t=>t.id!==id); if(this.binId)await this.saveDB(); this.showToast('Tarea rechazada.','warning'); } catch(e){this.showToast('Error.','error');} },
-    async adminDeleteTask(id) { if(!confirm('¿Eliminar esta tarea?'))return; try{this.db.tasks=this.db.tasks.filter(t=>t.id!==id); if(this.binId)await this.saveDB(); this.showToast('Eliminada.','success');}catch(e){this.showToast('Error.','error');} },
+    // ── Admin ─────────────────────────────────────────
+    async approveTask(id) {
+      const i = this.db.tasks.findIndex(t => t.id === id);
+      if (i !== -1) { this.db.tasks[i].approved = true; await this.save(); this.toast('Tarea aprobada', 'success'); }
+    },
 
-    async toggleBan(id) { try { const i=this.db.users.findIndex(u=>u.id===id); if(i!==-1){this.db.users[i].banned=!this.db.users[i].banned; if(this.binId)await this.saveDB(); this.showToast(this.db.users[i].banned?'Usuario baneado.':'Usuario desbaneado.','warning');}} catch(e){this.showToast('Error.','error');} },
+    async rejectTask(id) {
+      this.db.tasks = this.db.tasks.filter(t => t.id !== id);
+      await this.save();
+      this.toast('Tarea rechazada', 'warning');
+    },
 
-    openEditUser(user) { this.editUserModal = { open:true, user, points:user.points, level:user.level, isAdmin:user.isAdmin }; },
+    async adminDeleteTask(id) {
+      if (!confirm('¿Eliminar esta tarea permanentemente?')) return;
+      this.db.tasks = this.db.tasks.filter(t => t.id !== id);
+      await this.save();
+      this.toast('Tarea eliminada', 'success');
+    },
+
+    async toggleBan(id) {
+      const i = this.db.users.findIndex(u => u.id === id);
+      if (i !== -1) {
+        this.db.users[i].banned = !this.db.users[i].banned;
+        await this.save();
+        this.toast(this.db.users[i].banned ? 'Usuario suspendido' : 'Usuario desbaneado', 'warning');
+      }
+    },
+
+    openEditUser(u) {
+      this.modal.editUser = { open: true, data: u, points: u.points, level: u.level, isAdmin: u.isAdmin };
+    },
 
     async saveEditUser() {
+      this.ui.submitting = true;
       try {
-        const i=this.db.users.findIndex(u=>u.id===this.editUserModal.user.id);
-        if(i!==-1){this.db.users[i].points=this.editUserModal.points; this.db.users[i].level=this.editUserModal.level; this.db.users[i].isAdmin=this.editUserModal.isAdmin; if(this.binId)await this.saveDB(); if(this.currentUser.id===this.editUserModal.user.id)this.currentUser=this.db.users[i];}
-        this.editUserModal.open=false;
-        this.showToast('Usuario actualizado.','success');
-      } catch(e){this.showToast('Error.','error');}
+        const i = this.db.users.findIndex(u => u.id === this.modal.editUser.data.id);
+        if (i !== -1) {
+          this.db.users[i].points = Number(this.modal.editUser.points) || 0;
+          this.db.users[i].level = this.modal.editUser.level;
+          this.db.users[i].isAdmin = this.modal.editUser.isAdmin;
+          await this.save();
+          if (this.session?.id === this.modal.editUser.data.id) this.session = { ...this.db.users[i] };
+        }
+        this.modal.editUser.open = false;
+        this.toast('Usuario actualizado', 'success');
+      } catch(e) { this.toast('Error: ' + e.message, 'error'); }
+      this.ui.submitting = false;
     },
 
     async saveConfig() {
-      try { this.db.config={...this.configForm}; if(this.binId)await this.saveDB(); this.applyConfig(); this.showToast('Config guardada.','success'); } catch(e){this.showToast('Error.','error');}
+      this.ui.submitting = true;
+      try {
+        this.db.config = { ...this.forms.cfg };
+        await this.save();
+        this.applyConfig();
+        this.toast('Configuración guardada', 'success');
+      } catch(e) { this.toast('Error: ' + e.message, 'error'); }
+      this.ui.submitting = false;
     },
 
-    initProfileForm() { this.profileForm = { bio:this.currentUser?.bio||'', level:this.currentUser?.level||'', avatar:this.currentUser?.avatar||'' }; },
+    // ── Profile ───────────────────────────────────────
+    initProfileForm() {
+      this.forms.profile = { bio: this.session?.bio || '', level: this.session?.level || '', avatar: this.session?.avatar || '' };
+    },
 
     async saveProfile() {
+      this.ui.submitting = true;
       try {
-        const i=this.db.users.findIndex(u=>u.id===this.currentUser.id);
-        if(i!==-1){this.db.users[i].bio=this.profileForm.bio; this.db.users[i].level=this.profileForm.level; this.db.users[i].avatar=this.profileForm.avatar; if(this.binId)await this.saveDB(); this.currentUser=this.db.users[i];}
-        this.showToast('Perfil actualizado.','success');
-      } catch(e){this.showToast('Error.','error');}
+        const i = this.db.users.findIndex(u => u.id === this.session.id);
+        if (i !== -1) {
+          this.db.users[i].bio = sanitize(this.forms.profile.bio);
+          this.db.users[i].level = this.forms.profile.level;
+          this.db.users[i].avatar = this.forms.profile.avatar;
+          await this.save();
+          this.session = { ...this.db.users[i] };
+        }
+        this.toast('Perfil actualizado', 'success');
+      } catch(e) { this.toast('Error: ' + e.message, 'error'); }
+      this.ui.submitting = false;
     },
 
-    setPage(p) { this.currentPage=p; window.scrollTo(0,0); },
-    avatarUrl(u) { if(!u)return'https://api.dicebear.com/7.x/initials/svg?seed=?'; return`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(u)}&backgroundColor=e5e3de&textColor=57534e`; },
-    subjectClass(s) { const m={'Matemáticas':'pill-math','Física':'pill-physics','Química':'pill-chem','Historia':'pill-hist','Literatura':'pill-lit','Biología':'pill-bio','Programación':'pill-prog','Inglés':'pill-eng'}; return m[s]||'pill-other'; },
-    formatDate(ts) { if(!ts)return'—'; return new Date(ts).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'}); },
-    timeAgo(ts) { if(!ts)return''; const d=Date.now()-ts,m=Math.floor(d/60000); if(m<1)return'ahora'; if(m<60)return'hace '+m+'m'; const h=Math.floor(m/60); if(h<24)return'hace '+h+'h'; return'hace '+Math.floor(h/24)+'d'; },
-    showToast(msg,type='success') { this.toast={show:true,message:msg,type}; setTimeout(()=>{this.toast.show=false;},3000); },
+    // ── Navigation ────────────────────────────────────
+    goPage(p) {
+      this.ui.page = p;
+      window.scrollTo(0, 0);
+    },
+
+    // ── Helpers ───────────────────────────────────────
+    avatarUrl(u) {
+      if (!u) return 'https://api.dicebear.com/7.x/shapes/svg?seed=x';
+      return `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(u)}&backgroundColor=1e1b4b&textColor=a5b4fc&fontSize=38`;
+    },
+
+    subjectCls(s) {
+      const map = { 'Matemáticas':'s-mat','Física':'s-fis','Química':'s-qui','Historia':'s-his','Literatura':'s-lit','Biología':'s-bio','Programación':'s-pro','Inglés':'s-ing','Geografía':'s-geo','Filosofía':'s-fil','Arte':'s-art','Economía':'s-eco' };
+      return map[s] || 's-def';
+    },
+
+    formatDate(ts) {
+      if (!ts) return '—';
+      return new Date(ts).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' });
+    },
+
+    timeAgo(ts) {
+      if (!ts) return '';
+      const d = Date.now() - ts;
+      const m = Math.floor(d / 60000);
+      if (m < 1) return 'ahora';
+      if (m < 60) return `hace ${m}m`;
+      const h = Math.floor(m / 60);
+      if (h < 24) return `hace ${h}h`;
+      return `hace ${Math.floor(h/24)}d`;
+    },
+
+    // Toast manager (multi-toast, auto-dismiss)
+    toast(msg, type = 'success') {
+      const id = uid();
+      this.toasts.push({ id, msg, type });
+      setTimeout(() => { this.toasts = this.toasts.filter(t => t.id !== id); }, 3500);
+    },
   };
 }
 </script>
 </body>
 </html>
-
