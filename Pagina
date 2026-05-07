@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="es" x-data="app()" x-init="init()">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title x-text="config.platformName || 'TaskCult'">TaskCult</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg-base: #080c10;
+      --bg-surface: #0d1117;
+      --bg-elevated: #131920;
+      --bg-overlay: #1a2232;
+      --border: #1e2d3d;
+      --border-subtle: #162030;
+      --text-primary: #e8edf3;
+      --text-secondary: #7a8fa8;
+      --text-muted: #3d5069;
+      --accent: #6366f1;
+      --accent-soft: #4f46e5;
+      --accent-glow: rgba(99,102,241,0.15);
+      --teal: #0d9488;
+      --teal-soft: rgba(13,148,136,0.12);
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; }
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    h1,h2,h3,h4,h5,h6,.font-display { font-family: 'Syne', sans-serif; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg-base); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+    .glass { background: rgba(13,17,23,0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border); }
+    .glass-elevated { background: rgba(19,25,32,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--border); }
+    .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-soft)); color: white; font-family: 'Syne', sans-serif; font-weight: 600; letter-spacing: 0.02em; transition: all 0.2s ease; box-shadow: 0 0 20px rgba(99,102,241,0.3); cursor: pointer; border: none; }
+    .btn-primary:hover { box-shadow: 0 0 30px rgba(99,102,241,0.5); transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); font-family: 'Syne', sans-serif; font-weight: 500; transition: all 0.2s ease; cursor: pointer; }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--text-primary); background: var(--accent-glow); }
+    .btn-teal { background: linear-gradient(135deg, var(--teal), #0f766e); color: white; font-family: 'Syne', sans-serif; font-weight: 600; transition: all 0.2s ease; box-shadow: 0 0 20px rgba(13,148,136,0.25); cursor: pointer; border: none; }
+    .btn-teal:hover { box-shadow: 0 0 30px rgba(13,148,136,0.4); transform: translateY(-1px); }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; color: var(--text-secondary); font-family: 'Syne', sans-serif; font-weight: 500; font-size: 13px; cursor: pointer; transition: all 0.15s ease; border: 1px solid transparent; }
+    .nav-item:hover { background: var(--bg-overlay); color: var(--text-primary); border-color: var(--border-subtle); }
+    .nav-item.active { background: var(--accent-glow); color: #a5b4fc; border-color: rgba(99,102,241,0.3); }
+    .task-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; transition: all 0.25s ease; cursor: pointer; overflow: hidden; }
+    .task-card:hover { border-color: rgba(99,102,241,0.4); box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(99,102,241,0.1); transform: translateY(-2px); }
+    .subject-pill { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-family: 'Syne', sans-serif; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+    .level-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-family: 'Syne', sans-serif; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; background: var(--bg-overlay); color: var(--text-muted); border: 1px solid var(--border); }
+    .input-field { background: var(--bg-base); border: 1px solid var(--border); color: var(--text-primary); border-radius: 8px; padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 14px; width: 100%; transition: border-color 0.15s ease, box-shadow 0.15s ease; outline: none; }
+    .input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+    .input-field::placeholder { color: var(--text-muted); }
+    select.input-field option { background: var(--bg-elevated); }
+    .points-badge { background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(79,70,229,0.1)); border: 1px solid rgba(99,102,241,0.3); color: #a5b4fc; padding: 3px 10px; border-radius: 20px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px; }
+    .mesh-bg { background-image: radial-gradient(ellipse at 20% 20%, rgba(99,102,241,0.06) 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(13,148,136,0.04) 0%, transparent 60%); }
+    .stat-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+    .toast { position: fixed; bottom: 24px; right: 24px; z-index: 9999; background: var(--bg-overlay); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; font-family: 'DM Sans', sans-serif; font-size: 13px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; animation: slideUp 0.3s ease; max-width: 320px; }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .modal-box { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; animation: modalIn 0.25s ease; }
+    @keyframes modalIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .tag { background: var(--bg-overlay); border: 1px solid var(--border); color: var(--text-secondary); padding: 3px 10px; border-radius: 6px; font-size: 11px; font-family: 'Syne', sans-serif; font-weight: 500; }
+    .progress-bar { background: var(--border); border-radius: 4px; height: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--teal)); border-radius: 4px; transition: width 0.5s ease; }
+    @media (max-width: 768px) { .sidebar-desktop { display: none; } }
+    @media (min-width: 769px) { .mobile-nav { display: none; } }
+    .subject-math { background: rgba(99,102,241,0.12); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.25); }
+    .subject-physics { background: rgba(6,182,212,0.12); color: #67e8f9; border: 1px solid rgba(6,182,212,0.25); }
+    .subject-chemistry { background: rgba(245,158,11,0.12); color: #fcd34d; border: 1px solid rgba(245,158,11,0.25); }
+    .subject-history { background: rgba(239,68,68,0.12); color: #fca5a5; border: 1px solid rgba(239,68,68,0.25); }
+    .subject-literature { background: rgba(168,85,247,0.12); color: #d8b4fe; border: 1px solid rgba(168,85,247,0.25); }
+    .subject-biology { background: rgba(16,185,129,0.12); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.25); }
+    .subject-programming { background: rgba(13,148,136,0.12); color: #5eead4; border: 1px solid rgba(13,148,136,0.25); }
+    .subject-english { background: rgba(251,146,60,0.12); color: #fdba74; border: 1px solid rgba(251,146,60,0.25); }
+    .subject-other { background: rgba(100,116,139,0.12); color: #94a3b8; border: 1px solid rgba(100,116,139,0.25); }
+    [x-cloak] { display: none !important; }
+    textarea.input-field { resize: vertical; min-height: 90px; }
+
+    /* Loading overlay */
+    .loading-overlay { position: fixed; inset: 0; background: rgba(8,12,16,0.85); backdrop-filter: blur(4px); z-index: 9998; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+    .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Setup screen */
+    .setup-screen { position: fixed; inset: 0; background: var(--bg-base); z-index: 9997; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  </style>
+</head>
+<body class="mesh-bg">
+
+<!-- LOADING OVERLAY -->
+<template x-if="isLoading">
+  <div class="loading-overlay">
+    <div class="spinner"></div>
+    <div class="font-display text-sm" style="color:var(--text-secondary)" x-text="loadingMsg"></div>
+  </div>
+</template>
+
+<!-- TOAST -->
+<template x-if="toast.show">
+  <div class="toast" :class="{'border-green-500/30': toast.type==='success', 'border-red-500/30': toast.type==='error', 'border-yellow-500/30': toast.type==='warning'}">
+    <span x-show="toast.type==='success'" class="text-green-400 text-base">✓</span>
+    <span x-show="toast.type==='error'" class="text-red-400 text-base">✗</span>
+    <span x-show="toast.type==='warning'" class="text-yellow-400 text-base">⚠</span>
+    <span x-text="toast.message" class="text-sm"></span>
+  </div>
+</template>
+
+<!-- ===================== JSONBIN SETUP SCREEN ===================== -->
+<div x-show="!setupDone && !isLoading" x-cloak class="setup-screen">
+  <div class="w-full max-w-lg">
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center gap-3 mb-4">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#6366f1,#0d9488)">
+          <span class="text-white font-display font-bold text-xl">T</span>
+        </div>
+        <h1 class="font-display text-3xl font-bold tracking-tight">TaskCult</h1>
+      </div>
+      <p class="text-sm" style="color:var(--text-secondary)">Configuración inicial del backend JSON</p>
+    </div>
+
+    <div class="glass-elevated rounded-2xl p-8 space-y-6">
+      <div class="rounded-xl p-4" style="background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2)">
+        <div class="font-display font-semibold text-sm mb-2" style="color:#a5b4fc">¿Cómo obtener tu API Key de JSONBin?</div>
+        <ol class="text-xs space-y-1" style="color:var(--text-secondary)">
+          <li>1. Entrá a <a href="https://jsonbin.io" target="_blank" class="text-indigo-400 underline">jsonbin.io</a> y creá una cuenta gratuita</li>
+          <li>2. En tu dashboard, andá a <strong>API Keys</strong></li>
+          <li>3. Copiá tu <strong>Secret Access Key</strong></li>
+          <li>4. Pegala abajo y hacé click en "Inicializar"</li>
+        </ol>
+      </div>
+
+      <div>
+        <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">SECRET ACCESS KEY DE JSONBIN</label>
+        <input x-model="setupApiKey" type="password" placeholder="$2b$10$..." class="input-field" @keydown.enter="initializeBackend()"/>
+        <p class="text-xs mt-1" style="color:var(--text-muted)">Se guarda localmente solo en tu navegador.</p>
+      </div>
+
+      <div x-show="setupError" class="text-sm text-red-400 px-3 py-2 rounded-lg" style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2)" x-text="setupError"></div>
+
+      <button @click="initializeBackend()" :disabled="!setupApiKey || isLoading" class="btn-primary w-full py-3 rounded-xl">
+        <span x-show="!isLoading">Inicializar Backend</span>
+        <span x-show="isLoading">Conectando...</span>
+      </button>
+
+      <p class="text-center text-xs" style="color:var(--text-muted)">
+        La cuenta gratuita de JSONBin incluye 10,000 requests/mes — más que suficiente para uso educativo.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== AUTH SCREEN ===================== -->
+<div x-show="setupDone && !currentUser && !isLoading" x-cloak class="min-h-screen flex items-center justify-center p-4">
+  <div class="w-full max-w-md">
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#6366f1,#0d9488)">
+          <span class="text-white font-display font-bold text-lg">T</span>
+        </div>
+        <h1 class="font-display text-2xl font-bold tracking-tight" x-text="config.platformName || 'TaskCult'"></h1>
+      </div>
+      <p class="text-sm" style="color:var(--text-secondary)" x-text="config.platformDescription || 'La economía del conocimiento académico'"></p>
+    </div>
+
+    <div class="glass-elevated rounded-2xl p-8">
+      <div class="flex gap-1 p-1 rounded-xl mb-8" style="background:var(--bg-base)">
+        <button @click="authMode='login'" class="flex-1 py-2 rounded-lg text-sm font-display font-semibold transition-all duration-200"
+          :class="authMode==='login' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'">
+          Iniciar Sesión
+        </button>
+        <button @click="authMode='register'" class="flex-1 py-2 rounded-lg text-sm font-display font-semibold transition-all duration-200"
+          :class="authMode==='register' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'">
+          Registrarse
+        </button>
+      </div>
+
+      <div x-show="authMode==='login'" class="space-y-4">
+        <div>
+          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">USUARIO O EMAIL</label>
+          <input x-model="loginForm.username" type="text" placeholder="tu_usuario" class="input-field" @keydown.enter="doLogin()"/>
+        </div>
+        <div>
+          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">CONTRASEÑA</label>
+          <input x-model="loginForm.password" type="password" placeholder="••••••••" class="input-field" @keydown.enter="doLogin()"/>
+        </div>
+        <button @click="doLogin()" :disabled="isLoading" class="btn-primary w-full py-3 rounded-xl mt-2">
+          <span x-show="!isLoading">Entrar a TaskCult</span>
+          <span x-show="isLoading">Verificando...</span>
+        </button>
+        <p class="text-center text-xs" style="color:var(--text-muted)">
+          Admin: <span class="text-indigo-400 font-mono">admin / admin123</span>
+        </p>
+      </div>
+
+      <div x-show="authMode==='register'" class="space-y-4">
+        <div>
+          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">NOMBRE DE USUARIO</label>
+          <input x-model="registerForm.username" type="text" placeholder="mi_usuario" class="input-field"/>
+        </div>
+        <div>
+          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">EMAIL</label>
+          <input x-model="registerForm.email" type="email" placeholder="tu@email.com" class="input-field"/>
+        </div>
+        <div>
+          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">NIVEL ACADÉMICO</label>
+          <select x-model="registerForm.level" class="input-field">
+            <option value="">Seleccionar nivel...</option>
+            <template x-for="lvl in academicLevels" :key="lvl"><option :value="lvl" x-text="lvl"></option></template>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">CONTRASEÑA</label>
+          <input x-model="registerForm.password" type="password" placeholder="mínimo 6 caracteres" class="input-field"/>
+        </div>
+        <button @click="doRegister()" :disabled="isLoading" class="btn-primary w-full py-3 rounded-xl mt-2">
+          <span x-show="!isLoading">Crear Cuenta</span>
+          <span x-show="isLoading">Creando cuenta...</span>
+        </button>
+        <p class="text-center text-xs" style="color:var(--text-muted)">
+          Recibirás <span class="text-indigo-400 font-semibold">100 puntos</span> de bienvenida
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MAIN APP ===================== -->
+<div x-show="setupDone && currentUser && !isLoading" x-cloak class="flex min-h-screen">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar-desktop w-56 flex-shrink-0 flex flex-col" style="background:var(--bg-surface); border-right:1px solid var(--border); position:sticky; top:0; height:100vh; overflow-y:auto;">
+    <div class="p-5 pb-4" style="border-bottom:1px solid var(--border)">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#0d9488)">
+          <span class="text-white font-display font-bold text-sm">T</span>
+        </div>
+        <span class="font-display font-bold text-base" x-text="config.platformName || 'TaskCult'"></span>
+      </div>
+    </div>
+    <div class="p-4">
+      <div class="rounded-lg p-3" style="background:var(--accent-glow); border:1px solid rgba(99,102,241,0.2)">
+        <div class="text-xs font-display font-semibold mb-1" style="color:var(--text-muted)">TUS PUNTOS</div>
+        <div class="text-xl font-display font-bold" style="color:#a5b4fc" x-text="(currentUser?.points || 0).toLocaleString() + ' pts'"></div>
+      </div>
+    </div>
+    <nav class="px-3 flex-1 space-y-1">
+      <div @click="setPage('home')" class="nav-item" :class="currentPage==='home'?'active':''"><span class="text-base">🏠</span> Feed</div>
+      <div @click="setPage('explore')" class="nav-item" :class="currentPage==='explore'?'active':''"><span class="text-base">🔭</span> Explorar</div>
+      <div @click="setPage('upload')" class="nav-item" :class="currentPage==='upload'?'active':''"><span class="text-base">⬆️</span> Subir Tarea</div>
+      <div @click="setPage('library')" class="nav-item" :class="currentPage==='library'?'active':''"><span class="text-base">📚</span> Mi Biblioteca</div>
+      <div @click="setPage('leaderboard')" class="nav-item" :class="currentPage==='leaderboard'?'active':''"><span class="text-base">🏆</span> Leaderboard</div>
+      <div @click="setPage('profile')" class="nav-item" :class="currentPage==='profile'?'active':''"><span class="text-base">👤</span> Perfil</div>
+      <template x-if="currentUser?.isAdmin">
+        <div>
+          <div class="my-3" style="border-top:1px solid var(--border)"></div>
+          <div @click="setPage('admin')" class="nav-item" :class="currentPage==='admin'?'active':''"
+            style="color:#fbbf24"
+            :style="currentPage==='admin' ? 'background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.2);color:#fbbf24' : ''">
+            <span class="text-base">⚙️</span> Admin Panel
+          </div>
+        </div>
+      </template>
+    </nav>
+    <div class="p-3 mt-auto" style="border-top:1px solid var(--border)">
+      <div class="flex items-center gap-2 p-2 rounded-lg cursor-pointer hover:bg-opacity-50 transition-all" style="background:var(--bg-overlay)" @click="setPage('profile')">
+        <img :src="currentUser?.avatar || avatarUrl(currentUser?.username)" class="w-8 h-8 rounded-full object-cover flex-shrink-0"/>
+        <div class="flex-1 min-w-0">
+          <div class="text-xs font-display font-semibold truncate" x-text="currentUser?.username"></div>
+          <div class="text-xs truncate" style="color:var(--text-muted)" x-text="currentUser?.level || 'Estudiante'"></div>
+        </div>
+        <button @click.stop="doLogout()" class="text-xs hover:text-red-400 transition-colors" style="color:var(--text-muted)" title="Cerrar sesión">✕</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav fixed bottom-0 left-0 right-0 z-50" style="background:var(--bg-surface); border-top:1px solid var(--border)">
+    <div class="flex items-center justify-around py-2 px-2">
+      <button @click="setPage('home')" class="flex flex-col items-center gap-1 px-3 py-1 rounded-lg transition-all" :class="currentPage==='home'?'text-indigo-400':''" style="color:var(--text-muted)">
+        <span class="text-lg">🏠</span><span class="text-xs font-display">Feed</span>
+      </button>
+      <button @click="setPage('explore')" class="flex flex-col items-center gap-1 px-3 py-1 rounded-lg transition-all" :class="currentPage==='explore'?'text-indigo-400':''" style="color:var(--text-muted)">
+        <span class="text-lg">🔭</span><span class="text-xs font-display">Explorar</span>
+      </button>
+      <button @click="setPage('upload')" class="flex flex-col items-center gap-1 px-3 py-1 rounded-lg transition-all btn-primary rounded-xl" style="color:white">
+        <span class="text-lg">⬆️</span><span class="text-xs font-display">Subir</span>
+      </button>
+      <button @click="setPage('library')" class="flex flex-col items-center gap-1 px-3 py-1 rounded-lg transition-all" :class="currentPage==='library'?'text-indigo-400':''" style="color:var(--text-muted)">
+        <span class="text-lg">📚</span><span class="text-xs font-display">Biblio</span>
+      </button>
+      <button @click="setPage('profile')" class="flex flex-col items-center gap-1 px-3 py-1 rounded-lg transition-all" :class="currentPage==='profile'?'text-indigo-400':''" style="color:var(--text-muted)">
+        <span class="text-lg">👤</span><span class="text-xs font-display">Perfil</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 min-w-0 pb-20 md:pb-0">
+
+    <!-- HOME -->
+    <div x-show="currentPage==='home'" class="p-4 md:p-8 max-w-4xl mx-auto">
+      <div class="mb-8">
+        <h2 class="font-display text-2xl font-bold mb-1">Bienvenido, <span style="color:#a5b4fc" x-text="currentUser?.username"></span> 👋</h2>
+        <p class="text-sm" style="color:var(--text-secondary)">Descubrí las mejores tareas académicas de la comunidad.</p>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+        <div class="stat-card"><div class="text-2xl font-display font-bold" style="color:#a5b4fc" x-text="db.tasks.length"></div><div class="text-xs mt-1" style="color:var(--text-muted)">Tareas totales</div></div>
+        <div class="stat-card"><div class="text-2xl font-display font-bold" style="color:#5eead4" x-text="currentUser?.tasksUploaded || 0"></div><div class="text-xs mt-1" style="color:var(--text-muted)">Subidas por vos</div></div>
+        <div class="stat-card"><div class="text-2xl font-display font-bold" style="color:#fbbf24" x-text="currentUser?.tasksClaimed || 0"></div><div class="text-xs mt-1" style="color:var(--text-muted)">Reclamadas</div></div>
+        <div class="stat-card"><div class="text-2xl font-display font-bold" style="color:#a5b4fc" x-text="(currentUser?.points || 0).toLocaleString()"></div><div class="text-xs mt-1" style="color:var(--text-muted)">Tus puntos</div></div>
+      </div>
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-display font-semibold text-base">⭐ Tareas Destacadas</h3>
+          <button @click="setPage('explore')" class="text-xs font-display" style="color:#a5b4fc">Ver todo →</button>
+        </div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <template x-for="task in featuredTasks" :key="task.id">
+            <div class="task-card p-4" @click="openTask(task)">
+              <div class="flex items-start justify-between mb-3">
+                <span class="subject-pill" :class="subjectClass(task.subject)" x-text="task.subject"></span>
+                <span class="points-badge" x-text="task.price + ' pts'"></span>
+              </div>
+              <h4 class="font-display font-semibold text-sm mb-1 line-clamp-2" x-text="task.title"></h4>
+              <p class="text-xs mb-3 line-clamp-2" style="color:var(--text-secondary)" x-text="task.description"></p>
+              <div class="flex items-center justify-between">
+                <span class="level-badge" x-text="task.level"></span>
+                <div class="flex items-center gap-2 text-xs" style="color:var(--text-muted)">
+                  <span>❤️ <span x-text="task.likes || 0"></span></span>
+                  <span>👁 <span x-text="task.views || 0"></span></span>
+                </div>
+              </div>
+            </div>
+          </template>
+          <div x-show="featuredTasks.length===0" class="col-span-full text-center py-12" style="color:var(--text-muted)">
+            <div class="text-4xl mb-3">📭</div>
+            <p class="font-display">Aún no hay tareas. ¡Sé el primero en subir una!</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3 class="font-display font-semibold text-base mb-4">🕐 Recientes</h3>
+        <div class="space-y-3">
+          <template x-for="task in recentTasks" :key="task.id">
+            <div class="task-card p-4 flex items-center gap-4" @click="openTask(task)">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="subject-pill text-xs" :class="subjectClass(task.subject)" x-text="task.subject"></span>
+                  <span class="level-badge" x-text="task.level"></span>
+                </div>
+                <h4 class="font-display font-semibold text-sm truncate" x-text="task.title"></h4>
+                <p class="text-xs mt-0.5 truncate" style="color:var(--text-muted)">por <span x-text="task.authorName"></span></p>
+              </div>
+              <div class="flex-shrink-0 text-right">
+                <div class="points-badge" x-text="task.price + ' pts'"></div>
+                <div class="text-xs mt-1" style="color:var(--text-muted)" x-text="timeAgo(task.createdAt)"></div>
+              </div>
+            </div>
+          </template>
+          <div x-show="recentTasks.length===0" class="text-center py-8" style="color:var(--text-muted)">No hay tareas recientes.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPLORE -->
+    <div x-show="currentPage==='explore'" class="p-4 md:p-8 max-w-5xl mx-auto">
+      <div class="mb-6">
+        <h2 class="font-display text-2xl font-bold mb-1">Explorar Tareas</h2>
+        <p class="text-sm" style="color:var(--text-secondary)">Filtrá por materia y nivel académico.</p>
+      </div>
+      <div class="glass rounded-xl p-4 mb-6 space-y-3">
+        <input x-model="exploreSearch" type="text" placeholder="Buscar tareas, materias, tags..." class="input-field"/>
+        <div class="flex flex-wrap gap-3">
+          <select x-model="exploreSubject" class="input-field flex-1 min-w-32">
+            <option value="">Todas las materias</option>
+            <template x-for="s in subjects" :key="s"><option :value="s" x-text="s"></option></template>
+          </select>
+          <select x-model="exploreLevel" class="input-field flex-1 min-w-32">
+            <option value="">Todos los niveles</option>
+            <template x-for="l in academicLevels" :key="l"><option :value="l" x-text="l"></option></template>
+          </select>
+          <select x-model="exploreSort" class="input-field flex-1 min-w-32">
+            <option value="recent">Más recientes</option>
+            <option value="popular">Más populares</option>
+            <option value="price_asc">Menor precio</option>
+            <option value="price_desc">Mayor precio</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-2 mb-6">
+        <button @click="exploreSubject=''" class="subject-pill transition-all" :class="exploreSubject==='' ? 'subject-programming' : 'subject-other'">Todas</button>
+        <template x-for="s in subjects" :key="s">
+          <button @click="exploreSubject = exploreSubject===s ? '' : s" class="subject-pill transition-all" :class="exploreSubject===s ? subjectClass(s) : 'subject-other'" x-text="s"></button>
+        </template>
+      </div>
+      <div class="text-xs font-display mb-4" style="color:var(--text-muted)"><span x-text="filteredTasks.length"></span> resultados</div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <template x-for="task in filteredTasks" :key="task.id">
+          <div class="task-card p-4" @click="openTask(task)">
+            <div class="flex items-start justify-between mb-3">
+              <span class="subject-pill" :class="subjectClass(task.subject)" x-text="task.subject"></span>
+              <span class="points-badge" x-text="task.price + ' pts'"></span>
+            </div>
+            <h4 class="font-display font-semibold text-sm mb-1 line-clamp-2" x-text="task.title"></h4>
+            <p class="text-xs mb-3 line-clamp-2" style="color:var(--text-secondary)" x-text="task.description"></p>
+            <div class="flex flex-wrap gap-1 mb-3">
+              <template x-for="tag in (task.tags||[]).slice(0,3)" :key="tag">
+                <span class="tag" x-text="'#'+tag"></span>
+              </template>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="level-badge" x-text="task.level"></span>
+              <div class="flex items-center gap-2 text-xs" style="color:var(--text-muted)">
+                <span>❤️ <span x-text="task.likes||0"></span></span>
+                <span>por <span x-text="task.authorName" class="font-semibold"></span></span>
+              </div>
+            </div>
+          </div>
+        </template>
+        <div x-show="filteredTasks.length===0" class="col-span-full text-center py-16" style="color:var(--text-muted)">
+          <div class="text-5xl mb-4">🔍</div>
+          <p class="font-display text-sm">Sin resultados para esos filtros.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- UPLOAD -->
+    <div x-show="currentPage==='upload'" class="p-4 md:p-8 max-w-2xl mx-auto">
+      <div class="mb-6">
+        <h2 class="font-display text-2xl font-bold mb-1">Subir Nueva Tarea</h2>
+        <p class="text-sm" style="color:var(--text-secondary)">Compartí tu trabajo y ganá puntos cuando otros lo reclamen.</p>
+      </div>
+      <div class="rounded-xl p-4 mb-6 flex items-center gap-4" style="background:var(--accent-glow); border:1px solid rgba(99,102,241,0.2)">
+        <div class="text-3xl">💎</div>
+        <div>
+          <div class="font-display font-semibold text-sm">Ganarás puntos al subir</div>
+          <div class="text-xs mt-0.5" style="color:var(--text-secondary)">
+            Puntos base: <span class="text-indigo-400 font-semibold" x-text="config.baseUploadPoints || 50"></span> pts +
+            <span x-text="config.pointsPerClaim || 10"></span> pts por cada reclamación.
+          </div>
+        </div>
+      </div>
+      <div class="glass-elevated rounded-2xl p-6 space-y-5">
+        <div>
+          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">TÍTULO *</label>
+          <input x-model="uploadForm.title" type="text" placeholder="Ej: Resolución completa de integrales dobles" class="input-field"/>
+        </div>
+        <div>
+          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">DESCRIPCIÓN *</label>
+          <textarea x-model="uploadForm.description" placeholder="Describí detalladamente el contenido..." class="input-field" rows="4"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">MATERIA *</label>
+            <select x-model="uploadForm.subject" class="input-field">
+              <option value="">Seleccionar...</option>
+              <template x-for="s in subjects" :key="s"><option :value="s" x-text="s"></option></template>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">NIVEL *</label>
+            <select x-model="uploadForm.level" class="input-field">
+              <option value="">Seleccionar...</option>
+              <template x-for="l in academicLevels" :key="l"><option :value="l" x-text="l"></option></template>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">
+            PRECIO EN PUNTOS
+            <span class="font-normal normal-case" style="color:var(--text-muted)">(mín: <span x-text="config.minPrice||10"></span>, máx: <span x-text="config.maxPrice||500"></span>)</span>
+          </label>
+          <input x-model.number="uploadForm.price" type="number" :min="config.minPrice||10" :max="config.maxPrice||500" placeholder="50" class="input-field"/>
+        </div>
+        <div>
+          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">TAGS (separados por coma)</label>
+          <input x-model="uploadForm.tagsStr" type="text" placeholder="integral, cálculo, ejercicios resueltos" class="input-field"/>
+        </div>
+        <div>
+          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">ARCHIVO ADJUNTO (simulado)</label>
+          <div class="rounded-lg border-2 border-dashed p-6 text-center cursor-pointer transition-all hover:border-indigo-500/50"
+            style="border-color:var(--border); color:var(--text-muted)"
+            @click="uploadForm.hasFile=!uploadForm.hasFile">
+            <div class="text-2xl mb-2" x-text="uploadForm.hasFile?'📎':'📁'"></div>
+            <div class="text-xs font-display" x-text="uploadForm.hasFile?'archivo_tarea.pdf — Click para quitar':'Click para simular adjuntar archivo'"></div>
+          </div>
+        </div>
+        <div x-show="uploadForm.title || uploadForm.description" class="rounded-xl p-4" style="background:var(--bg-base); border:1px solid var(--border-subtle)">
+          <div class="text-xs font-display font-semibold mb-3" style="color:var(--text-muted)">VISTA PREVIA</div>
+          <div class="task-card p-3 cursor-default">
+            <div class="flex items-start justify-between mb-2">
+              <span class="subject-pill" :class="subjectClass(uploadForm.subject)" x-text="uploadForm.subject||'Materia'"></span>
+              <span class="points-badge" x-text="(uploadForm.price||0)+' pts'"></span>
+            </div>
+            <h4 class="font-display font-semibold text-sm mb-1" x-text="uploadForm.title||'Título de la tarea'"></h4>
+            <p class="text-xs line-clamp-2" style="color:var(--text-secondary)" x-text="uploadForm.description||'Descripción...'"></p>
+            <div class="mt-2"><span class="level-badge" x-text="uploadForm.level||'Nivel'"></span></div>
+          </div>
+        </div>
+        <button @click="doUploadTask()" :disabled="isLoading" class="btn-primary w-full py-3 rounded-xl font-display">
+          <span x-show="!isLoading">Subir Tarea y Ganar Puntos</span>
+          <span x-show="isLoading">Subiendo...</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- LIBRARY -->
+    <div x-show="currentPage==='library'" class="p-4 md:p-8 max-w-4xl mx-auto">
+      <div class="mb-6">
+        <h2 class="font-display text-2xl font-bold mb-1">Mi Biblioteca</h2>
+        <p class="text-sm" style="color:var(--text-secondary)">Tus tareas subidas y las que reclamaste.</p>
+      </div>
+      <div class="flex gap-1 p-1 rounded-xl mb-6 inline-flex" style="background:var(--bg-surface); border:1px solid var(--border)">
+        <button @click="libraryTab='uploaded'" class="px-4 py-2 rounded-lg text-sm font-display font-semibold transition-all"
+          :class="libraryTab==='uploaded'?'bg-indigo-600 text-white':''" style="color:var(--text-secondary)">
+          Subidas (<span x-text="myUploadedTasks.length"></span>)
+        </button>
+        <button @click="libraryTab='claimed'" class="px-4 py-2 rounded-lg text-sm font-display font-semibold transition-all"
+          :class="libraryTab==='claimed'?'bg-indigo-600 text-white':''" style="color:var(--text-secondary)">
+          Reclamadas (<span x-text="myClaimedTasks.length"></span>)
+        </button>
+      </div>
+      <div x-show="libraryTab==='uploaded'">
+        <div class="grid md:grid-cols-2 gap-4">
+          <template x-for="task in myUploadedTasks" :key="task.id">
+            <div class="task-card p-4">
+              <div class="flex items-start justify-between mb-2">
+                <span class="subject-pill" :class="subjectClass(task.subject)" x-text="task.subject"></span>
+                <div class="flex gap-2">
+                  <span class="points-badge" x-text="task.price+' pts'"></span>
+                  <span class="text-xs px-2 py-1 rounded-lg font-display font-semibold"
+                    :class="task.approved ? 'text-green-400 bg-green-400/10' : 'text-yellow-400 bg-yellow-400/10'"
+                    x-text="task.approved ? '✓ Aprobada' : '⏳ Pendiente'"></span>
+                </div>
+              </div>
+              <h4 class="font-display font-semibold text-sm mb-1" x-text="task.title"></h4>
+              <div class="flex items-center justify-between mt-3 text-xs" style="color:var(--text-muted)">
+                <span>❤️ <span x-text="task.likes||0"></span> · 👁 <span x-text="task.views||0"></span></span>
+                <span>💰 <span class="text-indigo-400 font-semibold" x-text="(task.earnedPoints||0)+' pts'"></span></span>
+              </div>
+            </div>
+          </template>
+          <div x-show="myUploadedTasks.length===0" class="col-span-full text-center py-16" style="color:var(--text-muted)">
+            <div class="text-5xl mb-4">📝</div>
+            <p class="font-display">Aún no subiste tareas.</p>
+            <button @click="setPage('upload')" class="btn-primary px-6 py-2 rounded-xl mt-4 inline-block">Subir mi primera tarea</button>
+          </div>
+        </div>
+      </div>
+      <div x-show="libraryTab==='claimed'">
+        <div class="grid md:grid-cols-2 gap-4">
+          <template x-for="task in myClaimedTasks" :key="task.id">
+            <div class="task-card p-4" @click="openTask(task)">
+              <div class="flex items-start justify-between mb-2">
+                <span class="subject-pill" :class="subjectClass(task.subject)" x-text="task.subject"></span>
+                <span class="text-xs px-2 py-1 rounded-lg font-display font-semibold text-teal-400" style="background:var(--teal-soft)">✓ Reclamada</span>
+              </div>
+              <h4 class="font-display font-semibold text-sm mb-1" x-text="task.title"></h4>
+              <p class="text-xs" style="color:var(--text-muted)">por <span x-text="task.authorName"></span></p>
+            </div>
+          </template>
+          <div x-show="myClaimedTasks.length===0" class="col-span-full text-center py-16" style="color:var(--text-muted)">
+            <div class="text-5xl mb-4">📥</div>
+            <p class="font-display">Aún no reclamaste tareas.</p>
+            <button @click="setPage('explore')" class="btn-primary px-6 py-2 rounded-xl mt-4 inline-block">Explorar tareas</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div x-show="currentPage==='leaderboard'" class="p-4 md:p-8 max-w-3xl mx-auto">
+      <div class="mb-6">
+        <h2 class="font-display text-2xl font-bold mb-1">🏆 Leaderboard</h2>
+        <p class="text-sm" style="color:var(--text-secondary)">Los usuarios con más puntos acumulados.</p>
+      </div>
+      <div class="space-y-3">
+        <template x-for="(user, index) in leaderboardUsers" :key="user.id">
+          <div class="glass-elevated rounded-xl p-4 flex items-center gap-4 transition-all hover:border-indigo-500/30">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center font-display font-bold text-base flex-shrink-0"
+              :class="index===0 ? 'bg-yellow-500/15 text-yellow-400' : index===1 ? 'bg-gray-400/10 text-gray-300' : index===2 ? 'bg-amber-700/15 text-amber-600' : 'bg-gray-800 text-gray-500'"
+              x-text="index===0?'🥇':index===1?'🥈':index===2?'🥉':'#'+(index+1)">
+            </div>
+            <img :src="user.avatar || avatarUrl(user.username)" class="w-10 h-10 rounded-full object-cover flex-shrink-0"/>
+            <div class="flex-1">
+              <div class="font-display font-semibold text-sm flex items-center gap-2">
+                <span x-text="user.username"></span>
+                <template x-if="user.username === currentUser.username">
+                  <span class="text-xs px-2 py-0.5 rounded-full font-normal" style="background:var(--accent-glow); color:#a5b4fc; border:1px solid rgba(99,102,241,0.3)">Tú</span>
+                </template>
+              </div>
+              <div class="text-xs mt-0.5 flex items-center gap-3" style="color:var(--text-muted)">
+                <span x-text="user.level || 'Estudiante'"></span>
+                <span>📤 <span x-text="user.tasksUploaded||0"></span></span>
+                <span>📥 <span x-text="user.tasksClaimed||0"></span></span>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="font-display font-bold text-lg" :class="index===0?'text-yellow-400':index===1?'text-gray-300':index===2?'text-amber-600':'text-indigo-400'" x-text="(user.points||0).toLocaleString()"></div>
+              <div class="text-xs" style="color:var(--text-muted)">puntos</div>
+            </div>
+          </div>
+        </template>
+        <div x-show="leaderboardUsers.length===0" class="text-center py-12" style="color:var(--text-muted)">Sin usuarios registrados aún.</div>
+      </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div x-show="currentPage==='profile'" class="p-4 md:p-8 max-w-3xl mx-auto">
+      <div class="mb-6"><h2 class="font-display text-2xl font-bold mb-1">Mi Perfil</h2></div>
+      <div class="glass-elevated rounded-2xl p-6 mb-6">
+        <div class="flex items-start gap-5">
+          <div class="relative">
+            <img :src="currentUser?.avatar || avatarUrl(currentUser?.username)" class="w-20 h-20 rounded-2xl object-cover"/>
+          </div>
+          <div class="flex-1">
+            <h3 class="font-display font-bold text-xl" x-text="currentUser?.username"></h3>
+            <p class="text-sm mt-0.5" style="color:var(--text-secondary)" x-text="currentUser?.bio || 'Sin bio configurada.'"></p>
+            <div class="flex flex-wrap gap-2 mt-3">
+              <span class="level-badge" x-text="currentUser?.level || 'Estudiante'"></span>
+              <span class="text-xs px-2 py-1 rounded-md" style="color:var(--text-muted)">📅 desde <span x-text="formatDate(currentUser?.createdAt)"></span></span>
+              <template x-if="currentUser?.isAdmin">
+                <span class="text-xs px-2 py-1 rounded-md font-display font-semibold" style="background:rgba(251,191,36,0.1); color:#fbbf24; border:1px solid rgba(251,191,36,0.2)">⚙️ ADMIN</span>
+              </template>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-4 mt-6 pt-5" style="border-top:1px solid var(--border)">
+          <div class="text-center"><div class="font-display font-bold text-xl" style="color:#a5b4fc" x-text="(currentUser?.points||0).toLocaleString()"></div><div class="text-xs mt-0.5" style="color:var(--text-muted)">Puntos</div></div>
+          <div class="text-center"><div class="font-display font-bold text-xl" style="color:#5eead4" x-text="currentUser?.tasksUploaded||0"></div><div class="text-xs mt-0.5" style="color:var(--text-muted)">Subidas</div></div>
+          <div class="text-center"><div class="font-display font-bold text-xl" style="color:#fbbf24" x-text="currentUser?.tasksClaimed||0"></div><div class="text-xs mt-0.5" style="color:var(--text-muted)">Reclamadas</div></div>
+        </div>
+      </div>
+      <div class="glass-elevated rounded-2xl p-6 mb-6">
+        <h3 class="font-display font-semibold text-base mb-5">Editar Perfil</h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">BIO</label>
+            <textarea x-model="profileForm.bio" class="input-field" rows="2" placeholder="Contá algo sobre vos..."></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">NIVEL ACADÉMICO</label>
+            <select x-model="profileForm.level" class="input-field">
+              <template x-for="l in academicLevels" :key="l"><option :value="l" x-text="l"></option></template>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">URL DE AVATAR</label>
+            <input x-model="profileForm.avatar" type="url" placeholder="https://..." class="input-field"/>
+          </div>
+          <button @click="saveProfile()" :disabled="isLoading" class="btn-primary px-6 py-2 rounded-xl">Guardar Cambios</button>
+        </div>
+      </div>
+      <div class="glass-elevated rounded-2xl p-6">
+        <h3 class="font-display font-semibold text-base mb-4">Historial de Puntos</h3>
+        <div class="space-y-2">
+          <template x-for="tx in (currentUser?.transactions||[]).slice().reverse().slice(0,15)" :key="tx.id">
+            <div class="flex items-center justify-between py-2" style="border-bottom:1px solid var(--border-subtle)">
+              <div>
+                <div class="text-sm" x-text="tx.description"></div>
+                <div class="text-xs mt-0.5" style="color:var(--text-muted)" x-text="formatDate(tx.date)"></div>
+              </div>
+              <div class="font-display font-bold text-sm" :class="tx.amount > 0 ? 'text-green-400' : 'text-red-400'" x-text="(tx.amount > 0 ? '+' : '') + tx.amount + ' pts'"></div>
+            </div>
+          </template>
+          <div x-show="!(currentUser?.transactions?.length)" class="text-center py-6 text-xs" style="color:var(--text-muted)">Sin transacciones aún.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div x-show="currentPage==='admin' && currentUser?.isAdmin" class="p-4 md:p-8 max-w-5xl mx-auto">
+      <div class="mb-6">
+        <h2 class="font-display text-2xl font-bold mb-1 text-yellow-400">⚙️ Admin Panel</h2>
+        <p class="text-sm" style="color:var(--text-secondary)">Control total de la plataforma TaskCult.</p>
+      </div>
+      <div class="flex flex-wrap gap-1 p-1 rounded-xl mb-8" style="background:var(--bg-surface); border:1px solid var(--border)">
+        <template x-for="tab in adminTabs" :key="tab.id">
+          <button @click="adminTab=tab.id" class="px-4 py-2 rounded-lg text-xs font-display font-semibold transition-all flex-1"
+            :class="adminTab===tab.id ? 'bg-yellow-500/15 text-yellow-400' : ''" style="color:var(--text-secondary)"
+            x-text="tab.label"></button>
+        </template>
+      </div>
+
+      <!-- Dashboard -->
+      <div x-show="adminTab==='dashboard'">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+          <div class="stat-card text-center"><div class="text-3xl font-display font-bold text-yellow-400" x-text="db.users.length"></div><div class="text-xs mt-1" style="color:var(--text-muted)">Usuarios</div></div>
+          <div class="stat-card text-center"><div class="text-3xl font-display font-bold text-indigo-400" x-text="db.tasks.length"></div><div class="text-xs mt-1" style="color:var(--text-muted)">Tareas</div></div>
+          <div class="stat-card text-center"><div class="text-3xl font-display font-bold text-teal-400" x-text="db.tasks.filter(t=>t.approved).length"></div><div class="text-xs mt-1" style="color:var(--text-muted)">Aprobadas</div></div>
+          <div class="stat-card text-center"><div class="text-3xl font-display font-bold text-green-400" x-text="totalPointsInCirculation.toLocaleString()"></div><div class="text-xs mt-1" style="color:var(--text-muted)">Pts circulación</div></div>
+        </div>
+        <div class="glass-elevated rounded-2xl p-5">
+          <h3 class="font-display font-semibold mb-4">Tareas pendientes de aprobación</h3>
+          <div class="space-y-3">
+            <template x-for="task in pendingTasks" :key="task.id">
+              <div class="flex items-center gap-3 py-2" style="border-bottom:1px solid var(--border-subtle)">
+                <div class="flex-1">
+                  <div class="font-display font-semibold text-sm" x-text="task.title"></div>
+                  <div class="text-xs mt-0.5 flex gap-2" style="color:var(--text-muted)">
+                    <span x-text="task.subject"></span> · <span x-text="task.level"></span> · por <span x-text="task.authorName"></span>
+                  </div>
+                </div>
+                <button @click="approveTask(task.id)" class="btn-teal text-xs px-3 py-1 rounded-lg">Aprobar</button>
+                <button @click="rejectTask(task.id)" class="text-xs px-3 py-1 rounded-lg" style="background:rgba(239,68,68,0.1); color:#f87171; border:1px solid rgba(239,68,68,0.2)">Rechazar</button>
+              </div>
+            </template>
+            <div x-show="pendingTasks.length===0" class="text-center py-6 text-xs" style="color:var(--text-muted)">Sin tareas pendientes. ✓</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users -->
+      <div x-show="adminTab==='users'">
+        <div class="glass-elevated rounded-2xl p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-display font-semibold">Gestión de Usuarios</h3>
+            <input x-model="adminUserSearch" type="text" placeholder="Buscar usuario..." class="input-field" style="max-width:200px"/>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+              <thead>
+                <tr style="border-bottom:1px solid var(--border); color:var(--text-muted)">
+                  <th class="text-left py-2 px-2 font-display">Usuario</th>
+                  <th class="text-left py-2 px-2 font-display">Nivel</th>
+                  <th class="text-right py-2 px-2 font-display">Puntos</th>
+                  <th class="text-right py-2 px-2 font-display">↑</th>
+                  <th class="text-right py-2 px-2 font-display">↓</th>
+                  <th class="text-center py-2 px-2 font-display">Estado</th>
+                  <th class="text-center py-2 px-2 font-display">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template x-for="user in filteredAdminUsers" :key="user.id">
+                  <tr class="transition-all" style="border-bottom:1px solid var(--border-subtle)">
+                    <td class="py-2 px-2">
+                      <div class="flex items-center gap-2">
+                        <img :src="user.avatar||avatarUrl(user.username)" class="w-7 h-7 rounded-full object-cover"/>
+                        <div>
+                          <div class="font-semibold" x-text="user.username"></div>
+                          <div style="color:var(--text-muted)" x-text="user.email"></div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-2 px-2" style="color:var(--text-secondary)" x-text="user.level||'—'"></td>
+                    <td class="py-2 px-2 text-right font-display font-semibold text-indigo-400" x-text="(user.points||0).toLocaleString()"></td>
+                    <td class="py-2 px-2 text-right" x-text="user.tasksUploaded||0"></td>
+                    <td class="py-2 px-2 text-right" x-text="user.tasksClaimed||0"></td>
+                    <td class="py-2 px-2 text-center">
+                      <span class="px-2 py-0.5 rounded-full font-display font-semibold"
+                        :class="user.banned ? 'text-red-400 bg-red-400/10' : 'text-green-400 bg-green-400/10'"
+                        x-text="user.banned?'Baneado':'Activo'"></span>
+                    </td>
+                    <td class="py-2 px-2">
+                      <div class="flex items-center justify-center gap-1">
+                        <button @click="openEditUser(user)" class="btn-ghost text-xs px-2 py-1 rounded-lg">Editar</button>
+                        <button @click="toggleBan(user.id)" class="text-xs px-2 py-1 rounded-lg transition-all"
+                          :class="user.banned ? 'text-green-400 bg-green-400/10' : 'text-red-400 bg-red-400/10'"
+                          x-text="user.banned?'Desbanear':'Banear'"></button>
+                      </div>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tasks admin -->
+      <div x-show="adminTab==='tasks'">
+        <div class="glass-elevated rounded-2xl p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-display font-semibold">Gestión de Tareas</h3>
+            <select x-model="adminTaskFilter" class="input-field text-xs" style="max-width:150px">
+              <option value="all">Todas</option>
+              <option value="pending">Pendientes</option>
+              <option value="approved">Aprobadas</option>
+            </select>
+          </div>
+          <div class="space-y-3">
+            <template x-for="task in adminFilteredTasks" :key="task.id">
+              <div class="flex items-center gap-3 py-3" style="border-bottom:1px solid var(--border-subtle)">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="subject-pill text-xs" :class="subjectClass(task.subject)" x-text="task.subject"></span>
+                    <span class="text-xs px-2 py-0.5 rounded font-display font-semibold"
+                      :class="task.approved?'text-green-400 bg-green-400/10':'text-yellow-400 bg-yellow-400/10'"
+                      x-text="task.approved?'Aprobada':'Pendiente'"></span>
+                  </div>
+                  <div class="font-display font-semibold text-sm truncate" x-text="task.title"></div>
+                  <div class="text-xs mt-0.5" style="color:var(--text-muted)">por <span x-text="task.authorName"></span> · <span x-text="task.price"></span> pts</div>
+                </div>
+                <div class="flex gap-1 flex-shrink-0">
+                  <template x-if="!task.approved">
+                    <button @click="approveTask(task.id)" class="btn-teal text-xs px-2 py-1 rounded-lg">✓</button>
+                  </template>
+                  <button @click="adminDeleteTask(task.id)" class="text-xs px-2 py-1 rounded-lg" style="background:rgba(239,68,68,0.1); color:#f87171">🗑</button>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interface editor -->
+      <div x-show="adminTab==='interface'">
+        <div class="glass-elevated rounded-2xl p-5">
+          <h3 class="font-display font-semibold mb-5">Editor de Interfaz</h3>
+          <div class="grid md:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">NOMBRE DE LA PLATAFORMA</label>
+              <input x-model="configForm.platformName" type="text" class="input-field"/>
+            </div>
+            <div>
+              <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">DESCRIPCIÓN CORTA</label>
+              <input x-model="configForm.platformDescription" type="text" class="input-field"/>
+            </div>
+            <div>
+              <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">COLOR ACENTO (hex)</label>
+              <div class="flex gap-2">
+                <input x-model="configForm.accentColor" type="color" class="w-12 h-10 rounded-lg cursor-pointer" style="background:none; border:1px solid var(--border)"/>
+                <input x-model="configForm.accentColor" type="text" class="input-field flex-1" placeholder="#6366f1"/>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">COLOR SECUNDARIO</label>
+              <div class="flex gap-2">
+                <input x-model="configForm.tealColor" type="color" class="w-12 h-10 rounded-lg cursor-pointer" style="background:none; border:1px solid var(--border)"/>
+                <input x-model="configForm.tealColor" type="text" class="input-field flex-1" placeholder="#0d9488"/>
+              </div>
+            </div>
+          </div>
+          <button @click="saveConfig()" :disabled="isLoading" class="btn-primary px-6 py-2 rounded-xl mt-5">Aplicar Cambios</button>
+        </div>
+      </div>
+
+      <!-- Global config -->
+      <div x-show="adminTab==='config'">
+        <div class="glass-elevated rounded-2xl p-5">
+          <h3 class="font-display font-semibold mb-5">Configuración Global</h3>
+          <div class="grid md:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">PUNTOS BIENVENIDA</label>
+              <input x-model.number="configForm.welcomePoints" type="number" class="input-field"/>
+            </div>
+            <div>
+              <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">PUNTOS BASE POR SUBIR</label>
+              <input x-model.number="configForm.baseUploadPoints" type="number" class="input-field"/>
+            </div>
+            <div>
+              <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">PUNTOS EXTRA POR RECLAMACIÓN</label>
+              <input x-model.number="configForm.pointsPerClaim" type="number" class="input-field"/>
+            </div>
+            <div>
+              <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">PRECIO MÍNIMO (pts)</label>
+              <input x-model.number="configForm.minPrice" type="number" class="input-field"/>
+            </div>
+            <div>
+              <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">PRECIO MÁXIMO (pts)</label>
+              <input x-model.number="configForm.maxPrice" type="number" class="input-field"/>
+            </div>
+            <div>
+              <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">LÍMITE DIARIO DE SUBIDAS</label>
+              <input x-model.number="configForm.dailyUploadLimit" type="number" class="input-field"/>
+            </div>
+          </div>
+          <button @click="saveConfig()" :disabled="isLoading" class="btn-primary px-6 py-2 rounded-xl mt-5">Guardar Configuración</button>
+        </div>
+      </div>
+    </div>
+
+    <div x-show="currentPage==='admin' && !currentUser?.isAdmin" class="p-8 text-center" style="color:var(--text-muted)">
+      <div class="text-5xl mb-4">🚫</div>
+      <p class="font-display">Acceso denegado. Solo para administradores.</p>
+    </div>
+  </main>
+</div>
+
+<!-- TASK MODAL -->
+<div x-show="taskModal.open" x-cloak class="modal-overlay" @click.self="taskModal.open=false">
+  <div class="modal-box" x-show="taskModal.task">
+    <div class="p-6">
+      <div class="flex items-start justify-between mb-5">
+        <div class="flex-1">
+          <div class="flex items-center gap-2 flex-wrap mb-2">
+            <span class="subject-pill" :class="subjectClass(taskModal.task?.subject)" x-text="taskModal.task?.subject"></span>
+            <span class="level-badge" x-text="taskModal.task?.level"></span>
+            <template x-if="taskModal.task?.hasFile">
+              <span class="tag">📎 Archivo adjunto</span>
+            </template>
+          </div>
+          <h2 class="font-display font-bold text-lg" x-text="taskModal.task?.title"></h2>
+        </div>
+        <button @click="taskModal.open=false" class="ml-4 w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:bg-red-500/10 text-gray-500 hover:text-red-400 text-lg">✕</button>
+      </div>
+      <div class="flex items-center gap-3 p-3 rounded-xl mb-5" style="background:var(--bg-base)">
+        <img :src="avatarUrl(taskModal.task?.authorName)" class="w-9 h-9 rounded-full object-cover"/>
+        <div>
+          <div class="font-display font-semibold text-sm" x-text="taskModal.task?.authorName"></div>
+          <div class="text-xs" style="color:var(--text-muted)" x-text="formatDate(taskModal.task?.createdAt)"></div>
+        </div>
+        <div class="ml-auto flex items-center gap-3 text-xs" style="color:var(--text-muted)">
+          <span>👁 <span x-text="taskModal.task?.views||0"></span></span>
+          <button @click="likeTask(taskModal.task?.id)" class="flex items-center gap-1 transition-all hover:text-red-400 cursor-pointer">
+            ❤️ <span x-text="taskModal.task?.likes||0"></span>
+          </button>
+        </div>
+      </div>
+      <div class="mb-5">
+        <div class="text-xs font-display font-semibold mb-2" style="color:var(--text-muted)">DESCRIPCIÓN</div>
+        <p class="text-sm leading-relaxed" style="color:var(--text-secondary)" x-text="taskModal.task?.description"></p>
+      </div>
+      <div x-show="taskModal.task?.tags?.length" class="mb-5">
+        <div class="text-xs font-display font-semibold mb-2" style="color:var(--text-muted)">TAGS</div>
+        <div class="flex flex-wrap gap-2">
+          <template x-for="tag in (taskModal.task?.tags||[])" :key="tag">
+            <span class="tag" x-text="'#'+tag"></span>
+          </template>
+        </div>
+      </div>
+      <div class="rounded-xl p-4 flex items-center justify-between" style="background:var(--bg-base); border:1px solid var(--border)">
+        <div>
+          <div class="text-xs font-display font-semibold mb-1" style="color:var(--text-muted)">PRECIO DE RECLAMACIÓN</div>
+          <div class="text-2xl font-display font-bold" style="color:#a5b4fc" x-text="(taskModal.task?.price||0)+' puntos'"></div>
+          <div class="text-xs mt-0.5" style="color:var(--text-muted)">Tu saldo: <span x-text="(currentUser?.points||0).toLocaleString()"></span> pts</div>
+        </div>
+        <div>
+          <template x-if="isTaskClaimed(taskModal.task?.id)">
+            <div class="flex flex-col items-center gap-2">
+              <div class="text-xs px-4 py-2 rounded-xl font-display font-semibold text-teal-400" style="background:var(--teal-soft); border:1px solid rgba(13,148,136,0.3)">✓ Ya reclamada</div>
+              <button @click="downloadTask(taskModal.task)" class="btn-teal text-xs px-4 py-2 rounded-xl">📥 Descargar</button>
+            </div>
+          </template>
+          <template x-if="!isTaskClaimed(taskModal.task?.id) && taskModal.task?.authorId !== currentUser?.id">
+            <button @click="claimTask(taskModal.task)" :disabled="isLoading" class="btn-primary px-6 py-3 rounded-xl">
+              Reclamar por <span x-text="taskModal.task?.price"></span> pts
+            </button>
+          </template>
+          <template x-if="taskModal.task?.authorId === currentUser?.id">
+            <div class="text-xs px-4 py-2 rounded-xl font-display font-semibold" style="color:var(--text-muted); background:var(--bg-overlay)">Tu tarea</div>
+          </template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT USER MODAL -->
+<div x-show="editUserModal.open" x-cloak class="modal-overlay" @click.self="editUserModal.open=false">
+  <div class="modal-box p-6">
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="font-display font-bold text-lg">Editar Usuario: <span x-text="editUserModal.user?.username"></span></h3>
+      <button @click="editUserModal.open=false" class="text-gray-500 hover:text-white text-xl">✕</button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">PUNTOS</label>
+        <input x-model.number="editUserModal.points" type="number" class="input-field"/>
+      </div>
+      <div>
+        <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">NIVEL ACADÉMICO</label>
+        <select x-model="editUserModal.level" class="input-field">
+          <template x-for="l in academicLevels" :key="l"><option :value="l" x-text="l"></option></template>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">ROL ADMIN</label>
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" x-model="editUserModal.isAdmin" class="w-4 h-4"/>
+          <span class="text-sm" style="color:var(--text-secondary)">Es administrador</span>
+        </label>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button @click="saveEditUser()" :disabled="isLoading" class="btn-primary flex-1 py-2 rounded-xl">Guardar</button>
+        <button @click="editUserModal.open=false" class="btn-ghost flex-1 py-2 rounded-xl">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==============================
+// JSONBin API wrapper
+// ==============================
+const JSONBIN_BASE = 'https://api.jsonbin.io/v3';
+
+async function jbGet(binId, apiKey) {
+  const r = await fetch(`${JSONBIN_BASE}/b/${binId}/latest`, {
+    headers: { 'X-Master-Key': apiKey }
+  });
+  if (!r.ok) throw new Error('GET failed: ' + r.status);
+  const d = await r.json();
+  return d.record;
+}
+
+async function jbSet(binId, apiKey, data) {
+  const r = await fetch(`${JSONBIN_BASE}/b/${binId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'X-Master-Key': apiKey },
+    body: JSON.stringify(data)
+  });
+  if (!r.ok) throw new Error('PUT failed: ' + r.status);
+  const d = await r.json();
+  return d.record;
+}
+
+async function jbCreate(apiKey, data, name) {
+  const r = await fetch(`${JSONBIN_BASE}/b`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Master-Key': apiKey, 'X-Bin-Name': name, 'X-Bin-Private': 'true' },
+    body: JSON.stringify(data)
+  });
+  if (!r.ok) throw new Error('CREATE failed: ' + r.status);
+  const d = await r.json();
+  return d.metadata.id;
+}
+
+// ==============================
+// Alpine App
+// ==============================
+function app() {
+  return {
+    // State
+    isLoading: true,
+    loadingMsg: 'Conectando con el backend...',
+    setupDone: false,
+    setupApiKey: '',
+    setupError: '',
+    currentUser: null,
+    currentPage: 'home',
+    authMode: 'login',
+    libraryTab: 'uploaded',
+    adminTab: 'dashboard',
+    exploreSearch: '',
+    exploreSubject: '',
+    exploreLevel: '',
+    exploreSort: 'recent',
+    adminUserSearch: '',
+    adminTaskFilter: 'all',
+
+    // Backend refs
+    apiKey: '',
+    binId: '',
+
+    // In-memory DB (synced with JSONBin)
+    db: { users: [], tasks: [], config: {} },
+
+    // Forms
+    loginForm: { username: '', password: '' },
+    registerForm: { username: '', email: '', password: '', level: '' },
+    uploadForm: { title: '', description: '', subject: '', level: '', price: 50, tagsStr: '', hasFile: false },
+    profileForm: { bio: '', level: '', avatar: '' },
+    configForm: {},
+    editUserModal: { open: false, user: null, points: 0, level: '', isAdmin: false },
+    taskModal: { open: false, task: null },
+    toast: { show: false, message: '', type: 'success' },
+
+    // Static data
+    config: {},
+    subjects: ['Matemáticas','Física','Química','Historia','Literatura','Biología','Programación','Inglés','Geografía','Filosofía','Arte','Economía'],
+    academicLevels: ['Secundaria','Preuniversitario','Universitario 1er año','Universitario 2do año','Universitario 3er año','Posgrado'],
+    adminTabs: [
+      { id: 'dashboard', label: '📊 Dashboard' },
+      { id: 'users', label: '👥 Usuarios' },
+      { id: 'tasks', label: '📋 Tareas' },
+      { id: 'interface', label: '🎨 Interfaz' },
+      { id: 'config', label: '⚙️ Config' },
+    ],
+
+    // ---- Computed ----
+    get featuredTasks() { return this.db.tasks.filter(t=>t.approved).sort((a,b)=>(b.likes||0)-(a.likes||0)).slice(0,6); },
+    get recentTasks() { return this.db.tasks.filter(t=>t.approved).sort((a,b)=>b.createdAt-a.createdAt).slice(0,8); },
+    get filteredTasks() {
+      let tasks = this.db.tasks.filter(t=>t.approved);
+      if (this.exploreSearch) { const q=this.exploreSearch.toLowerCase(); tasks=tasks.filter(t=>t.title.toLowerCase().includes(q)||t.description.toLowerCase().includes(q)||(t.tags||[]).some(tag=>tag.toLowerCase().includes(q))); }
+      if (this.exploreSubject) tasks=tasks.filter(t=>t.subject===this.exploreSubject);
+      if (this.exploreLevel) tasks=tasks.filter(t=>t.level===this.exploreLevel);
+      if (this.exploreSort==='recent') tasks.sort((a,b)=>b.createdAt-a.createdAt);
+      if (this.exploreSort==='popular') tasks.sort((a,b)=>(b.likes||0)-(a.likes||0));
+      if (this.exploreSort==='price_asc') tasks.sort((a,b)=>a.price-b.price);
+      if (this.exploreSort==='price_desc') tasks.sort((a,b)=>b.price-a.price);
+      return tasks;
+    },
+    get myUploadedTasks() { if (!this.currentUser) return []; return this.db.tasks.filter(t=>t.authorId===this.currentUser.id); },
+    get myClaimedTasks() { if (!this.currentUser) return []; const ids=this.currentUser.claimedTaskIds||[]; return this.db.tasks.filter(t=>ids.includes(t.id)); },
+    get leaderboardUsers() { return [...this.db.users].sort((a,b)=>(b.points||0)-(a.points||0)).slice(0,20); },
+    get pendingTasks() { return this.db.tasks.filter(t=>!t.approved); },
+    get filteredAdminUsers() { const q=this.adminUserSearch.toLowerCase(); return this.db.users.filter(u=>!q||u.username.toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q)); },
+    get adminFilteredTasks() { if (this.adminTaskFilter==='pending') return this.db.tasks.filter(t=>!t.approved); if (this.adminTaskFilter==='approved') return this.db.tasks.filter(t=>t.approved); return this.db.tasks; },
+    get totalPointsInCirculation() { return this.db.users.reduce((sum,u)=>sum+(u.points||0),0); },
+
+    // ---- Init ----
+    async init() {
+      this.isLoading = true;
+      this.loadingMsg = 'Verificando configuración...';
+
+      // Check if already configured
+      const savedKey = localStorage.getItem('tc_api_key');
+      const savedBin = localStorage.getItem('tc_bin_id');
+
+      if (savedKey && savedBin) {
+        this.apiKey = savedKey;
+        this.binId = savedBin;
+        try {
+          await this.loadDB();
+          this.setupDone = true;
+          this.applyConfig();
+          // Restore session
+          const sessionId = localStorage.getItem('tc_session');
+          if (sessionId) {
+            const user = this.db.users.find(u => u.id === sessionId);
+            if (user && !user.banned) {
+              this.currentUser = user;
+              this.initProfileForm();
+            }
+          }
+        } catch(e) {
+          // Stored config is invalid, reset
+          localStorage.removeItem('tc_api_key');
+          localStorage.removeItem('tc_bin_id');
+          this.setupDone = false;
+        }
+      }
+
+      this.isLoading = false;
+    },
+
+    async initializeBackend() {
+      if (!this.setupApiKey) return;
+      this.isLoading = true;
+      this.loadingMsg = 'Creando base de datos en JSONBin...';
+      this.setupError = '';
+
+      try {
+        const initialDB = this.buildInitialDB();
+        const id = await jbCreate(this.setupApiKey, initialDB, 'taskcult-db');
+        this.apiKey = this.setupApiKey;
+        this.binId = id;
+        localStorage.setItem('tc_api_key', this.apiKey);
+        localStorage.setItem('tc_bin_id', this.binId);
+        this.db = initialDB;
+        this.applyConfig();
+        this.setupDone = true;
+        this.showToast('¡Backend inicializado correctamente!', 'success');
+      } catch(e) {
+        this.setupError = 'Error al conectar con JSONBin. Verificá tu API key e intentá de nuevo. (' + e.message + ')';
+      }
+
+      this.isLoading = false;
+    },
+
+    buildInitialDB() {
+      const cfg = {
+        platformName: 'TaskCult',
+        platformDescription: 'La economía del conocimiento académico',
+        welcomePoints: 100,
+        baseUploadPoints: 50,
+        pointsPerClaim: 10,
+        minPrice: 10,
+        maxPrice: 500,
+        dailyUploadLimit: 5,
+        accentColor: '#6366f1',
+        tealColor: '#0d9488',
+      };
+      const adminUser = {
+        id: 'admin-001',
+        username: 'admin',
+        email: 'admin@taskcult.com',
+        password: 'admin123',
+        bio: 'Administrador de la plataforma TaskCult.',
+        level: 'Posgrado',
+        points: 9999,
+        tasksUploaded: 5,
+        tasksClaimed: 0,
+        claimedTaskIds: [],
+        likedTaskIds: [],
+        transactions: [{ id: 'tx-0', description: 'Cuenta admin creada', amount: 9999, date: Date.now() }],
+        isAdmin: true,
+        avatar: '',
+        createdAt: Date.now(),
+        banned: false
+      };
+      const now = Date.now();
+      const sampleTasks = [
+        { id: 'task-s1', title: 'Resolución completa de Integrales Dobles con cambio de variable', description: 'Guía exhaustiva con 15 ejercicios resueltos de integrales dobles en coordenadas cartesianas y polares. Incluye cambio de variable, Jacobiano y aplicaciones.', subject: 'Matemáticas', level: 'Universitario 2do año', price: 80, tags:['integral','cálculo','ejercicios'], authorId:'admin-001', authorName:'admin', approved:true, likes:12, views:87, hasFile:true, earnedPoints:80, createdAt:now-86400000*3 },
+        { id: 'task-s2', title: 'Apuntes de Mecánica Cuántica: Principio de Heisenberg', description: 'Apuntes detallados sobre el principio de incertidumbre de Heisenberg, con derivaciones matemáticas, ejemplos físicos y análisis filosófico.', subject: 'Física', level: 'Universitario 3er año', price: 120, tags:['cuántica','heisenberg','física moderna'], authorId:'admin-001', authorName:'admin', approved:true, likes:8, views:54, hasFile:true, earnedPoints:120, createdAt:now-86400000*2 },
+        { id: 'task-s3', title: 'Análisis completo de La Metamorfosis de Kafka', description: 'Ensayo académico de 10 páginas. Cubre estructura narrativa, simbolismo, alienación como tema central y contexto biográfico de Kafka.', subject: 'Literatura', level: 'Preuniversitario', price: 50, tags:['kafka','ensayo','literatura moderna'], authorId:'admin-001', authorName:'admin', approved:true, likes:19, views:130, hasFile:true, earnedPoints:50, createdAt:now-86400000 },
+        { id: 'task-s4', title: 'Proyecto Python: Sistema de gestión de inventario con SQLite', description: 'Código completo y documentado de un sistema de inventario en Python con SQLite, CRUD completo, reportes y autenticación básica.', subject: 'Programación', level: 'Universitario 1er año', price: 150, tags:['python','sqlite','proyecto'], authorId:'admin-001', authorName:'admin', approved:true, likes:33, views:210, hasFile:true, earnedPoints:150, createdAt:now-43200000 },
+        { id: 'task-s5', title: 'Línea de tiempo: Primera y Segunda Guerra Mundial', description: 'Presentación con cronología comparativa, causas, consecuencias, mapas y análisis de los tratados de paz de ambas guerras mundiales.', subject: 'Historia', level: 'Secundaria', price: 30, tags:['historia','guerra','siglo XX'], authorId:'admin-001', authorName:'admin', approved:true, likes:5, views:41, hasFile:true, earnedPoints:30, createdAt:now-7200000 },
+      ];
+      return { users: [adminUser], tasks: sampleTasks, config: cfg };
+    },
+
+    async loadDB() {
+      this.loadingMsg = 'Cargando datos...';
+      this.db = await jbGet(this.binId, this.apiKey);
+      // Ensure structure
+      if (!this.db.users) this.db.users = [];
+      if (!this.db.tasks) this.db.tasks = [];
+      if (!this.db.config) this.db.config = {};
+    },
+
+    async saveDB() {
+      await jbSet(this.binId, this.apiKey, this.db);
+    },
+
+    applyConfig() {
+      const defaults = { platformName:'TaskCult', platformDescription:'La economía del conocimiento académico', welcomePoints:100, baseUploadPoints:50, pointsPerClaim:10, minPrice:10, maxPrice:500, dailyUploadLimit:5, accentColor:'#6366f1', tealColor:'#0d9488' };
+      this.config = { ...defaults, ...(this.db.config || {}) };
+      this.configForm = { ...this.config };
+      document.documentElement.style.setProperty('--accent', this.config.accentColor || '#6366f1');
+      document.documentElement.style.setProperty('--accent-soft', this.shadeColor(this.config.accentColor || '#6366f1', -20));
+      document.documentElement.style.setProperty('--teal', this.config.tealColor || '#0d9488');
+    },
+
+    shadeColor(color, percent) {
+      let num = parseInt(color.replace('#',''), 16);
+      let r = Math.max(0, Math.min(255, (num >> 16) + percent));
+      let g = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + percent));
+      let b = Math.max(0, Math.min(255, (num & 0x0000FF) + percent));
+      return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    },
+
+    // ---- Auth ----
+    async doLogin() {
+      const user = this.db.users.find(u => (u.username === this.loginForm.username || u.email === this.loginForm.username) && u.password === this.loginForm.password);
+      if (!user) { this.showToast('Usuario o contraseña incorrectos.', 'error'); return; }
+      if (user.banned) { this.showToast('Tu cuenta ha sido baneada.', 'error'); return; }
+      this.currentUser = user;
+      localStorage.setItem('tc_session', user.id);
+      this.initProfileForm();
+      this.showToast('¡Bienvenido, ' + user.username + '!', 'success');
+      this.loginForm = { username: '', password: '' };
+    },
+
+    async doRegister() {
+      if (!this.registerForm.username || !this.registerForm.email || !this.registerForm.password || !this.registerForm.level) { this.showToast('Completá todos los campos.', 'error'); return; }
+      if (this.registerForm.password.length < 6) { this.showToast('La contraseña debe tener mínimo 6 caracteres.', 'error'); return; }
+      if (this.db.users.find(u => u.username === this.registerForm.username)) { this.showToast('Ese nombre de usuario ya existe.', 'error'); return; }
+      if (this.db.users.find(u => u.email === this.registerForm.email)) { this.showToast('Ese email ya está registrado.', 'error'); return; }
+
+      this.isLoading = true;
+      this.loadingMsg = 'Creando cuenta...';
+      try {
+        const wp = this.config.welcomePoints || 100;
+        const newUser = {
+          id: 'user-' + Date.now(),
+          username: this.registerForm.username,
+          email: this.registerForm.email,
+          password: this.registerForm.password,
+          level: this.registerForm.level,
+          bio: '',
+          points: wp,
+          tasksUploaded: 0,
+          tasksClaimed: 0,
+          claimedTaskIds: [],
+          likedTaskIds: [],
+          transactions: [{ id:'tx-reg-'+Date.now(), description:'Puntos de bienvenida', amount:wp, date:Date.now() }],
+          isAdmin: false,
+          avatar: '',
+          createdAt: Date.now(),
+          banned: false
+        };
+        this.db.users.push(newUser);
+        await this.saveDB();
+        this.currentUser = newUser;
+        localStorage.setItem('tc_session', newUser.id);
+        this.initProfileForm();
+        this.showToast('¡Cuenta creada! Recibiste ' + wp + ' pts de bienvenida.', 'success');
+        this.registerForm = { username:'', email:'', password:'', level:'' };
+      } catch(e) {
+        this.showToast('Error al guardar. Intentá de nuevo.', 'error');
+      }
+      this.isLoading = false;
+    },
+
+    doLogout() {
+      this.currentUser = null;
+      localStorage.removeItem('tc_session');
+      this.currentPage = 'home';
+    },
+
+    // ---- Tasks ----
+    async doUploadTask() {
+      if (!this.uploadForm.title || !this.uploadForm.description || !this.uploadForm.subject || !this.uploadForm.level) { this.showToast('Completá todos los campos obligatorios.', 'error'); return; }
+      const price = Number(this.uploadForm.price);
+      if (!price || price < (this.config.minPrice||10)) { this.showToast('El precio mínimo es ' + (this.config.minPrice||10) + ' puntos.', 'error'); return; }
+      if (price > (this.config.maxPrice||500)) { this.showToast('El precio máximo es ' + (this.config.maxPrice||500) + ' puntos.', 'error'); return; }
+
+      this.isLoading = true;
+      this.loadingMsg = 'Subiendo tarea...';
+      try {
+        const tags = this.uploadForm.tagsStr ? this.uploadForm.tagsStr.split(',').map(t=>t.trim().toLowerCase()).filter(Boolean) : [];
+        const task = {
+          id: 'task-' + Date.now(),
+          title: this.uploadForm.title,
+          description: this.uploadForm.description,
+          subject: this.uploadForm.subject,
+          level: this.uploadForm.level,
+          price,
+          tags,
+          authorId: this.currentUser.id,
+          authorName: this.currentUser.username,
+          approved: !!this.currentUser.isAdmin,
+          likes: 0,
+          views: 0,
+          hasFile: this.uploadForm.hasFile,
+          earnedPoints: 0,
+          createdAt: Date.now()
+        };
+        this.db.tasks.push(task);
+        const pts = this.config.baseUploadPoints || 50;
+        const uIdx = this.db.users.findIndex(u => u.id === this.currentUser.id);
+        if (uIdx !== -1) {
+          this.db.users[uIdx].points = (this.db.users[uIdx].points || 0) + pts;
+          this.db.users[uIdx].tasksUploaded = (this.db.users[uIdx].tasksUploaded || 0) + 1;
+          this.db.users[uIdx].transactions = [...(this.db.users[uIdx].transactions || []), { id:'tx-'+Date.now(), description:'Tarea subida: '+task.title.substring(0,40), amount:pts, date:Date.now() }];
+        }
+        await this.saveDB();
+        this.currentUser = this.db.users[uIdx];
+        this.showToast('¡Tarea subida! Ganaste ' + pts + ' pts.' + (!this.currentUser.isAdmin ? ' Pendiente de aprobación.' : ''), 'success');
+        this.uploadForm = { title:'', description:'', subject:'', level:'', price:50, tagsStr:'', hasFile:false };
+        this.setPage('library');
+      } catch(e) {
+        this.showToast('Error al subir la tarea. Intentá de nuevo.', 'error');
+      }
+      this.isLoading = false;
+    },
+
+    async openTask(task) {
+      if (!task) return;
+      // Increment views
+      const idx = this.db.tasks.findIndex(t => t.id === task.id);
+      if (idx !== -1) {
+        this.db.tasks[idx].views = (this.db.tasks[idx].views || 0) + 1;
+        // Fire and forget view count save
+        this.saveDB().catch(() => {});
+      }
+      this.taskModal.task = { ...task, views: (task.views || 0) + 1 };
+      this.taskModal.open = true;
+    },
+
+    isTaskClaimed(taskId) {
+      if (!this.currentUser || !taskId) return false;
+      return (this.currentUser.claimedTaskIds || []).includes(taskId);
+    },
+
+    async claimTask(task) {
+      if (!task) return;
+      if (this.isTaskClaimed(task.id)) { this.showToast('Ya reclamaste esta tarea.', 'warning'); return; }
+      if (task.authorId === this.currentUser.id) { this.showToast('No podés reclamar tu propia tarea.', 'warning'); return; }
+      if ((this.currentUser.points || 0) < task.price) { this.showToast('No tenés suficientes puntos.', 'error'); return; }
+
+      this.isLoading = true;
+      this.loadingMsg = 'Procesando reclamación...';
+      try {
+        const authorBonus = this.config.pointsPerClaim || 10;
+        const claimerIdx = this.db.users.findIndex(u => u.id === this.currentUser.id);
+        const authorIdx = this.db.users.findIndex(u => u.id === task.authorId);
+        const taskIdx = this.db.tasks.findIndex(t => t.id === task.id);
+
+        if (claimerIdx !== -1) {
+          this.db.users[claimerIdx].points -= task.price;
+          this.db.users[claimerIdx].claimedTaskIds = [...(this.db.users[claimerIdx].claimedTaskIds || []), task.id];
+          this.db.users[claimerIdx].tasksClaimed = (this.db.users[claimerIdx].tasksClaimed || 0) + 1;
+          this.db.users[claimerIdx].transactions = [...(this.db.users[claimerIdx].transactions || []), { id:'tx-'+Date.now(), description:'Reclamó tarea: '+task.title.substring(0,40), amount:-task.price, date:Date.now() }];
+        }
+        if (authorIdx !== -1) {
+          this.db.users[authorIdx].points = (this.db.users[authorIdx].points || 0) + task.price + authorBonus;
+          this.db.users[authorIdx].transactions = [...(this.db.users[authorIdx].transactions || []), { id:'tx-'+Date.now()+1, description:'Te reclamaron: '+task.title.substring(0,40), amount:task.price+authorBonus, date:Date.now() }];
+        }
+        if (taskIdx !== -1) {
+          this.db.tasks[taskIdx].earnedPoints = (this.db.tasks[taskIdx].earnedPoints || 0) + task.price;
+        }
+        await this.saveDB();
+        if (claimerIdx !== -1) this.currentUser = this.db.users[claimerIdx];
+        this.showToast('¡Tarea reclamada! Se descontaron ' + task.price + ' pts.', 'success');
+        this.taskModal.open = false;
+      } catch(e) {
+        this.showToast('Error al reclamar. Intentá de nuevo.', 'error');
+      }
+      this.isLoading = false;
+    },
+
+    downloadTask(task) {
+      this.showToast('Descargando: ' + task.title + ' (simulado)', 'success');
+    },
+
+    async likeTask(taskId) {
+      if (!taskId) return;
+      const likedIds = this.currentUser.likedTaskIds || [];
+      if (likedIds.includes(taskId)) { this.showToast('Ya le diste like a esta tarea.', 'warning'); return; }
+
+      try {
+        const taskIdx = this.db.tasks.findIndex(t => t.id === taskId);
+        const userIdx = this.db.users.findIndex(u => u.id === this.currentUser.id);
+        if (taskIdx !== -1) this.db.tasks[taskIdx].likes = (this.db.tasks[taskIdx].likes || 0) + 1;
+        if (userIdx !== -1) this.db.users[userIdx].likedTaskIds = [...likedIds, taskId];
+        await this.saveDB();
+        this.currentUser = this.db.users[userIdx];
+        if (this.taskModal.task && this.taskModal.task.id === taskId) {
+          this.taskModal.task = { ...this.taskModal.task, likes: (this.taskModal.task.likes || 0) + 1 };
+        }
+        this.showToast('¡Like añadido!', 'success');
+      } catch(e) {
+        this.showToast('Error al guardar like.', 'error');
+      }
+    },
+
+    // ---- Admin ----
+    async approveTask(taskId) {
+      try {
+        const idx = this.db.tasks.findIndex(t => t.id === taskId);
+        if (idx !== -1) { this.db.tasks[idx].approved = true; await this.saveDB(); }
+        this.showToast('Tarea aprobada.', 'success');
+      } catch(e) { this.showToast('Error al aprobar.', 'error'); }
+    },
+
+    async rejectTask(taskId) {
+      try {
+        this.db.tasks = this.db.tasks.filter(t => t.id !== taskId);
+        await this.saveDB();
+        this.showToast('Tarea rechazada y eliminada.', 'warning');
+      } catch(e) { this.showToast('Error al rechazar.', 'error'); }
+    },
+
+    async adminDeleteTask(taskId) {
+      if (!confirm('¿Eliminar esta tarea?')) return;
+      try {
+        this.db.tasks = this.db.tasks.filter(t => t.id !== taskId);
+        await this.saveDB();
+        this.showToast('Tarea eliminada.', 'success');
+      } catch(e) { this.showToast('Error al eliminar.', 'error'); }
+    },
+
+    async toggleBan(userId) {
+      try {
+        const idx = this.db.users.findIndex(u => u.id === userId);
+        if (idx !== -1) {
+          this.db.users[idx].banned = !this.db.users[idx].banned;
+          await this.saveDB();
+          this.showToast(this.db.users[idx].banned ? 'Usuario baneado.' : 'Usuario desbaneado.', 'warning');
+        }
+      } catch(e) { this.showToast('Error al actualizar usuario.', 'error'); }
+    },
+
+    openEditUser(user) {
+      this.editUserModal = { open: true, user, points: user.points, level: user.level, isAdmin: user.isAdmin };
+    },
+
+    async saveEditUser() {
+      try {
+        const idx = this.db.users.findIndex(u => u.id === this.editUserModal.user.id);
+        if (idx !== -1) {
+          this.db.users[idx].points = this.editUserModal.points;
+          this.db.users[idx].level = this.editUserModal.level;
+          this.db.users[idx].isAdmin = this.editUserModal.isAdmin;
+          await this.saveDB();
+          if (this.currentUser.id === this.editUserModal.user.id) this.currentUser = this.db.users[idx];
+        }
+        this.editUserModal.open = false;
+        this.showToast('Usuario actualizado.', 'success');
+      } catch(e) { this.showToast('Error al guardar.', 'error'); }
+    },
+
+    async saveConfig() {
+      try {
+        this.db.config = { ...this.configForm };
+        await this.saveDB();
+        this.applyConfig();
+        this.showToast('Configuración guardada.', 'success');
+      } catch(e) { this.showToast('Error al guardar configuración.', 'error'); }
+    },
+
+    // ---- Profile ----
+    initProfileForm() {
+      this.profileForm = { bio: this.currentUser?.bio || '', level: this.currentUser?.level || '', avatar: this.currentUser?.avatar || '' };
+    },
+
+    async saveProfile() {
+      try {
+        const idx = this.db.users.findIndex(u => u.id === this.currentUser.id);
+        if (idx !== -1) {
+          this.db.users[idx].bio = this.profileForm.bio;
+          this.db.users[idx].level = this.profileForm.level;
+          this.db.users[idx].avatar = this.profileForm.avatar;
+          await this.saveDB();
+          this.currentUser = this.db.users[idx];
+        }
+        this.showToast('Perfil actualizado.', 'success');
+      } catch(e) { this.showToast('Error al guardar perfil.', 'error'); }
+    },
+
+    // ---- Utils ----
+    setPage(page) { this.currentPage = page; window.scrollTo(0,0); },
+
+    avatarUrl(username) {
+      if (!username) return 'https://api.dicebear.com/7.x/shapes/svg?seed=default';
+      return `https://api.dicebear.com/7.x/shapes/svg?seed=${encodeURIComponent(username)}&backgroundColor=1a2232,131920,0d1117`;
+    },
+
+    subjectClass(subject) {
+      const map = { 'Matemáticas':'subject-math','Física':'subject-physics','Química':'subject-chemistry','Historia':'subject-history','Literatura':'subject-literature','Biología':'subject-biology','Programación':'subject-programming','Inglés':'subject-english' };
+      return map[subject] || 'subject-other';
+    },
+
+    formatDate(ts) {
+      if (!ts) return '—';
+      return new Date(ts).toLocaleDateString('es-AR', { day:'2-digit', month:'short', year:'numeric' });
+    },
+
+    timeAgo(ts) {
+      if (!ts) return '';
+      const diff = Date.now() - ts;
+      const min = Math.floor(diff/60000);
+      if (min < 1) return 'ahora';
+      if (min < 60) return 'hace ' + min + 'm';
+      const hr = Math.floor(min/60);
+      if (hr < 24) return 'hace ' + hr + 'h';
+      return 'hace ' + Math.floor(hr/24) + 'd';
+    },
+
+    showToast(message, type = 'success') {
+      this.toast = { show: true, message, type };
+      setTimeout(() => { this.toast.show = false; }, 3500);
+    },
+  };
+}
+</script>
+</body>
+</html>
