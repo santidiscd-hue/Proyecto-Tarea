@@ -2127,6 +2127,158 @@ document.addEventListener("keydown", e => {
     e.preventDefault();
     document.getElementById("global-search")?.focus();
   }
+   // ========================================
+// PATCH REAL PARA REPARAR EL LOGOUT
+// NO CREA OTRO SISTEMA
+// SOLO REPARA EL EXISTENTE
+// PEGAR AL FINAL DEL SCRIPT PRINCIPAL
+// ========================================
+
+(function () {
+
+  // buscar función logout existente
+  const originalLogout =
+    window.logout ||
+    window.signOut ||
+    window.handleLogout;
+
+  // si existe, repararla
+  if (typeof originalLogout === "function") {
+
+    const fixedLogout = async function (...args) {
+
+      try {
+
+        // ejecutar logout original
+        await originalLogout.apply(this, args);
+
+      } catch (err) {
+        console.warn("Logout original falló:", err);
+      }
+
+      // reparación REAL
+      try {
+
+        // limpiar TODAS las posibles sesiones
+        [
+          "currentUser",
+          "user",
+          "auth",
+          "session",
+          "token",
+          "loggedUser",
+          "app_user",
+          "app_session"
+        ].forEach(key => {
+          localStorage.removeItem(key);
+          sessionStorage.removeItem(key);
+        });
+
+        // limpiar flags visuales
+        document.body.classList.remove(
+          "logged-in",
+          "authenticated",
+          "admin-mode"
+        );
+
+        // limpiar cache interna si existe
+        if (window.currentUser) {
+          window.currentUser = null;
+        }
+
+        // forzar actualización visual
+        window.dispatchEvent(
+          new Event("storage")
+        );
+
+        // redirección segura
+        setTimeout(() => {
+
+          const loginRoutes = [
+            "./index.html",
+            "./login.html",
+            "/",
+          ];
+
+          const current = window.location.pathname;
+
+          // evitar loop
+          const isAlreadyLogin =
+            current.includes("login") ||
+            current.endsWith("/");
+
+          if (!isAlreadyLogin) {
+            window.location.href = loginRoutes[0];
+          }
+
+        }, 100);
+
+      } catch (e) {
+        console.error("Patch logout error:", e);
+      }
+    };
+
+    // reemplazar SOLO la función existente
+    if (window.logout) window.logout = fixedLogout;
+    if (window.signOut) window.signOut = fixedLogout;
+    if (window.handleLogout) window.handleLogout = fixedLogout;
+  }
+
+  // reparar botones existentes
+  function repairLogoutButtons() {
+
+    const selectors = [
+      "#logoutBtn",
+      "#logout",
+      ".logout-btn",
+      ".btn-logout",
+      "[data-logout]"
+    ];
+
+    selectors.forEach(selector => {
+
+      document.querySelectorAll(selector).forEach(btn => {
+
+        // evitar listeners duplicados
+        if (btn.dataset.logoutFixed) return;
+
+        btn.dataset.logoutFixed = "true";
+
+        btn.addEventListener("click", function (e) {
+
+          e.preventDefault();
+          e.stopPropagation();
+
+          const fn =
+            window.logout ||
+            window.signOut ||
+            window.handleLogout;
+
+          if (typeof fn === "function") {
+            fn();
+          }
+
+        }, true);
+
+      });
+
+    });
+
+  }
+
+  // reparar inmediatamente
+  repairLogoutButtons();
+
+  // reparar después de renders dinámicos
+  const observer = new MutationObserver(() => {
+    repairLogoutButtons();
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+
+})();
 });
 </script>
 </body>
