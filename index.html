@@ -549,7 +549,7 @@ img{max-width:100%;display:block}
 
 /* analytics bars */
 .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.bar-label{font-size:12px;color:var(--text2);width:120px;flex-shrink:0;truncate}
+.bar-label{font-size:12px;color:var(--text2);width:120px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bar-track{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
 .bar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .5s ease}
 .bar-val{font-size:12px;color:var(--text2);width:30px;text-align:right}
@@ -944,37 +944,37 @@ img{max-width:100%;display:block}
 const CONFIG = {
   JSONBIN_KEY: "$2a$10$ucM0OlKyXRD85828hDFs6uTS8srl1RM6v7vTjUhPMFwo0I9a4OCzq",           // JSONBin Master API Key ($2a$10b$...)
   USERS_BIN: "69fd0b97250b1311c31b6bac",             // BIN ID para usuarios
-  TASKS_BIN: "69fd0bb5c0954111d8f07d2e ",             // BIN ID para tareas generales
-  LEADERBOARD_BIN: "69fd0bc7c0954111d8f07d7a ",       // BIN ID para ranking
-  CONFIG_BIN: "69fd0bd9adc21f119a6b39f4 ",            // BIN ID para configuración global
-  LOGS_BIN: "69fd0be5adc21f119a6b3a3c ",              // BIN ID para logs de acciones
+  TASKS_BIN: "69fd0bb5c0954111d8f07d2e",              // BIN ID para tareas generales
+  LEADERBOARD_BIN: "69fd0bc7c0954111d8f07d7a",        // BIN ID para ranking
+  CONFIG_BIN: "69fd0bd9adc21f119a6b39f4",             // BIN ID para configuración global
+  LOGS_BIN: "69fd0be5adc21f119a6b3a3c",               // BIN ID para logs de acciones
   ANALYTICS_BIN: "69fd0bf7adc21f119a6b3a8c",         // BIN ID para analytics
 
   // Bins por materia (opcional, para escalabilidad)
   BINS_BY_SUBJECT: {
-    matematica: "69fd0c13250b1311c31b6dcb ",
-    lengua: "69fd0c22250b1311c31b6e0c ",
-    literatura: "69fd0c77250b1311c31b6f50 ",
-    historia: "69fd0c83c0954111d8f08075 ",
-    geografia: "69fd0c95c0954111d8f080b3 ",
-    fisica: "69fd0ca1250b1311c31b701d ",
-    quimica: "69fd0cadadc21f119a6b3d95 ",
-    biologia: "69fd0cbbc0954111d8f0815d ",
-    informatica: "69fd0ccb250b1311c31b70d4 ",
-    programacion: "69fd0cdac0954111d8f081f0 ",
-    electronica: "69fd0cef250b1311c31b7165 ",
-    dibujo_tecnico: "69fd0d02250b1311c31b71ac ",
-    comunicacion: "69fd0d0e250b1311c31b71d8 ",
-    teatro: "69fd0d1badc21f119a6b3f76 ",
-    musica: "69fd0d25250b1311c31b723e ",
-    ed_fisica: "69fd0d34c0954111d8f08334 ",
-    ingles: "69fd0d41250b1311c31b7293 ",
-    fec: "69fd0d4cc0954111d8f0839d ",
-    filosofia: "69fd0d5cadc21f119a6b4065 ",
-    economia: "69fd0d69250b1311c31b7342 ",
-    psicologia: "69fd0d75250b1311c31b736b ",
-    derecho: "69fd0d83250b1311c31b739a ",
-    robotica: "69fd0d8e250b1311c31b73cb ",
+    matematica: "69fd0c13250b1311c31b6dcb",
+    lengua: "69fd0c22250b1311c31b6e0c",
+    literatura: "69fd0c77250b1311c31b6f50",
+    historia: "69fd0c83c0954111d8f08075",
+    geografia: "69fd0c95c0954111d8f080b3",
+    fisica: "69fd0ca1250b1311c31b701d",
+    quimica: "69fd0cadadc21f119a6b3d95",
+    biologia: "69fd0cbbc0954111d8f0815d",
+    informatica: "69fd0ccb250b1311c31b70d4",
+    programacion: "69fd0cdac0954111d8f081f0",
+    electronica: "69fd0cef250b1311c31b7165",
+    dibujo_tecnico: "69fd0d02250b1311c31b71ac",
+    comunicacion: "69fd0d0e250b1311c31b71d8",
+    teatro: "69fd0d1badc21f119a6b3f76",
+    musica: "69fd0d25250b1311c31b723e",
+    ed_fisica: "69fd0d34c0954111d8f08334",
+    ingles: "69fd0d41250b1311c31b7293",
+    fec: "69fd0d4cc0954111d8f0839d",
+    filosofia: "69fd0d5cadc21f119a6b4065",
+    economia: "69fd0d69250b1311c31b7342",
+    psicologia: "69fd0d75250b1311c31b736b",
+    derecho: "69fd0d83250b1311c31b739a",
+    robotica: "69fd0d8e250b1311c31b73cb",
   },
 
   // Cloudinary para archivos reales
@@ -1615,10 +1615,11 @@ async function submitTask() {
   if (!subject) { toast("Seleccioná una materia", "error"); return; }
 
   const btn = document.getElementById("submit-task-btn");
+  const isEditing = !!STATE.editingTaskId;
   btn.disabled = true; btn.textContent = "Guardando...";
 
   try {
-    if (STATE.editingTaskId) {
+    if (isEditing) {
       const idx = STATE.tasks.findIndex(t=>t.id===STATE.editingTaskId);
       if (idx > -1) {
         STATE.tasks[idx] = {...STATE.tasks[idx], title, subject, description:desc, year, type, files: STATE.uploadedFiles, updated: Date.now()};
@@ -1639,15 +1640,15 @@ async function submitTask() {
     await syncToCloud("tasks");
     closeModal("upload-modal");
     STATE.uploadedFiles = [];
+    STATE.editingTaskId = null;
     renderCurrentPage();
     updateBadges();
-    toast(STATE.editingTaskId ? "Tarea actualizada" : "Tarea enviada — pendiente de aprobación", "success");
-    STATE.editingTaskId = null;
+    toast(isEditing ? "Tarea actualizada" : "Tarea enviada — pendiente de aprobación", "success");
   } catch (e) {
     toast("Error al guardar: " + e.message, "error");
   } finally {
     btn.disabled = false;
-    btn.textContent = STATE.editingTaskId ? "Guardar cambios" : "Publicar tarea";
+    btn.textContent = isEditing ? "Guardar cambios" : "Publicar tarea";
   }
 }
 
@@ -2127,44 +2128,6 @@ document.addEventListener("keydown", e => {
     e.preventDefault();
     document.getElementById("global-search")?.focus();
   }
-   // ========================================
-// PATCH MOBILE RELOAD FIX
-// ========================================
-
-(function () {
-
-  // prevenir submits accidentales
-  document.querySelectorAll("form").forEach(form => {
-
-    form.addEventListener("submit", e => {
-      e.preventDefault();
-    });
-
-  });
-
-  // arreglar botones sin type
-  document.querySelectorAll("button").forEach(btn => {
-
-    if (!btn.getAttribute("type")) {
-      btn.setAttribute("type", "button");
-    }
-
-  });
-
-  // evitar enter que reinicia
-  document.querySelectorAll("input").forEach(input => {
-
-    input.addEventListener("keydown", e => {
-
-      if (e.key === "Enter") {
-        e.preventDefault();
-      }
-
-    });
-
-  });
-
-})();
 });
 </script>
 </body>
