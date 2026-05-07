@@ -2127,6 +2127,44 @@ document.addEventListener("keydown", e => {
     e.preventDefault();
     document.getElementById("global-search")?.focus();
   }
+   // ========================================
+// PATCH MOBILE RELOAD FIX
+// ========================================
+
+(function () {
+
+  // prevenir submits accidentales
+  document.querySelectorAll("form").forEach(form => {
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+    });
+
+  });
+
+  // arreglar botones sin type
+  document.querySelectorAll("button").forEach(btn => {
+
+    if (!btn.getAttribute("type")) {
+      btn.setAttribute("type", "button");
+    }
+
+  });
+
+  // evitar enter que reinicia
+  document.querySelectorAll("input").forEach(input => {
+
+    input.addEventListener("keydown", e => {
+
+      if (e.key === "Enter") {
+        e.preventDefault();
+      }
+
+    });
+
+  });
+
+})();
 });
 </script>
 </body>
