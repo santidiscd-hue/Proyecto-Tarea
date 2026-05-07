@@ -1,395 +1,430 @@
 <!DOCTYPE html>
 <html lang="es" x-data="app()" x-init="init()">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title x-text="config.platformName || 'TaskCult'">TaskCult</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --bg-base: #080c10;
-      --bg-surface: #0d1117;
-      --bg-elevated: #131920;
-      --bg-overlay: #1a2232;
-      --border: #1e2d3d;
-      --border-subtle: #162030;
-      --text-primary: #e8edf3;
-      --text-secondary: #7a8fa8;
-      --text-muted: #3d5069;
-      --accent: #6366f1;
-      --accent-soft: #4f46e5;
-      --accent-glow: rgba(99,102,241,0.15);
-      --teal: #0d9488;
-      --teal-soft: rgba(13,148,136,0.12);
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
+      --bg: #fafaf9;
+      --bg-2: #f5f4f2;
+      --bg-3: #eeede9;
+      --line: #e5e3de;
+      --line-2: #d5d2cb;
+      --ink: #1a1917;
+      --ink-2: #57534e;
+      --ink-3: #a8a29e;
+      --accent: #2563eb;
+      --accent-bg: #eff6ff;
+      --accent-line: #bfdbfe;
+      --red: #dc2626;
+      --red-bg: #fef2f2;
+      --green: #16a34a;
+      --green-bg: #f0fdf4;
+      --amber: #d97706;
+      --amber-bg: #fffbeb;
     }
-    * { box-sizing: border-box; }
-    body {
-      background-color: var(--bg-base);
-      color: var(--text-primary);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      line-height: 1.6;
-      min-height: 100vh;
-    }
-    h1,h2,h3,h4,h5,h6,.font-display { font-family: 'Syne', sans-serif; }
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
-    ::-webkit-scrollbar-track { background: var(--bg-base); }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
-    .glass { background: rgba(13,17,23,0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border); }
-    .glass-elevated { background: rgba(19,25,32,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--border); }
-    .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-soft)); color: white; font-family: 'Syne', sans-serif; font-weight: 600; letter-spacing: 0.02em; transition: all 0.2s ease; box-shadow: 0 0 20px rgba(99,102,241,0.3); cursor: pointer; border: none; }
-    .btn-primary:hover { box-shadow: 0 0 30px rgba(99,102,241,0.5); transform: translateY(-1px); }
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); font-family: 'Syne', sans-serif; font-weight: 500; transition: all 0.2s ease; cursor: pointer; }
-    .btn-ghost:hover { border-color: var(--accent); color: var(--text-primary); background: var(--accent-glow); }
-    .btn-teal { background: linear-gradient(135deg, var(--teal), #0f766e); color: white; font-family: 'Syne', sans-serif; font-weight: 600; transition: all 0.2s ease; box-shadow: 0 0 20px rgba(13,148,136,0.25); cursor: pointer; border: none; }
-    .btn-teal:hover { box-shadow: 0 0 30px rgba(13,148,136,0.4); transform: translateY(-1px); }
-    .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; color: var(--text-secondary); font-family: 'Syne', sans-serif; font-weight: 500; font-size: 13px; cursor: pointer; transition: all 0.15s ease; border: 1px solid transparent; }
-    .nav-item:hover { background: var(--bg-overlay); color: var(--text-primary); border-color: var(--border-subtle); }
-    .nav-item.active { background: var(--accent-glow); color: #a5b4fc; border-color: rgba(99,102,241,0.3); }
-    .task-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; transition: all 0.25s ease; cursor: pointer; overflow: hidden; }
-    .task-card:hover { border-color: rgba(99,102,241,0.4); box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(99,102,241,0.1); transform: translateY(-2px); }
-    .subject-pill { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-family: 'Syne', sans-serif; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
-    .level-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-family: 'Syne', sans-serif; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; background: var(--bg-overlay); color: var(--text-muted); border: 1px solid var(--border); }
-    .input-field { background: var(--bg-base); border: 1px solid var(--border); color: var(--text-primary); border-radius: 8px; padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 14px; width: 100%; transition: border-color 0.15s ease, box-shadow 0.15s ease; outline: none; }
-    .input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
-    .input-field::placeholder { color: var(--text-muted); }
-    select.input-field option { background: var(--bg-elevated); }
-    .points-badge { background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(79,70,229,0.1)); border: 1px solid rgba(99,102,241,0.3); color: #a5b4fc; padding: 3px 10px; border-radius: 20px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px; }
-    .mesh-bg { background-image: radial-gradient(ellipse at 20% 20%, rgba(99,102,241,0.06) 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(13,148,136,0.04) 0%, transparent 60%); }
-    .stat-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
-    .toast { position: fixed; bottom: 24px; right: 24px; z-index: 9999; background: var(--bg-overlay); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; font-family: 'DM Sans', sans-serif; font-size: 13px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; animation: slideUp 0.3s ease; max-width: 320px; }
-    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 16px; }
-    .modal-box { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; animation: modalIn 0.25s ease; }
-    @keyframes modalIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    .tag { background: var(--bg-overlay); border: 1px solid var(--border); color: var(--text-secondary); padding: 3px 10px; border-radius: 6px; font-size: 11px; font-family: 'Syne', sans-serif; font-weight: 500; }
-    .progress-bar { background: var(--border); border-radius: 4px; height: 4px; overflow: hidden; }
-    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--teal)); border-radius: 4px; transition: width 0.5s ease; }
-    @media (max-width: 768px) { .sidebar-desktop { display: none; } }
-    @media (min-width: 769px) { .mobile-nav { display: none; } }
-    .subject-math { background: rgba(99,102,241,0.12); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.25); }
-    .subject-physics { background: rgba(6,182,212,0.12); color: #67e8f9; border: 1px solid rgba(6,182,212,0.25); }
-    .subject-chemistry { background: rgba(245,158,11,0.12); color: #fcd34d; border: 1px solid rgba(245,158,11,0.25); }
-    .subject-history { background: rgba(239,68,68,0.12); color: #fca5a5; border: 1px solid rgba(239,68,68,0.25); }
-    .subject-literature { background: rgba(168,85,247,0.12); color: #d8b4fe; border: 1px solid rgba(168,85,247,0.25); }
-    .subject-biology { background: rgba(16,185,129,0.12); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.25); }
-    .subject-programming { background: rgba(13,148,136,0.12); color: #5eead4; border: 1px solid rgba(13,148,136,0.25); }
-    .subject-english { background: rgba(251,146,60,0.12); color: #fdba74; border: 1px solid rgba(251,146,60,0.25); }
-    .subject-other { background: rgba(100,116,139,0.12); color: #94a3b8; border: 1px solid rgba(100,116,139,0.25); }
-    [x-cloak] { display: none !important; }
-    textarea.input-field { resize: vertical; min-height: 90px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--ink); font-family: 'Geist', sans-serif; font-size: 14px; line-height: 1.6; min-height: 100vh; }
+    h1,h2,h3 { font-family: 'Instrument Serif', serif; font-weight: 400; letter-spacing: -0.01em; }
+    code, .mono { font-family: 'Geist Mono', monospace; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 2px; }
 
-    /* Loading overlay */
-    .loading-overlay { position: fixed; inset: 0; background: rgba(8,12,16,0.85); backdrop-filter: blur(4px); z-index: 9998; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
-    .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    /* Layout */
+    .sidebar { width: 220px; background: var(--bg); border-right: 1px solid var(--line); position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; }
+    .main { flex: 1; min-width: 0; }
+
+    /* Nav */
+    .nav-link { display: flex; align-items: center; gap: 10px; padding: 7px 12px; border-radius: 6px; color: var(--ink-2); font-size: 13.5px; font-weight: 400; cursor: pointer; transition: all 0.12s; user-select: none; }
+    .nav-link:hover { background: var(--bg-2); color: var(--ink); }
+    .nav-link.active { background: var(--bg-3); color: var(--ink); font-weight: 500; }
+    .nav-icon { width: 16px; height: 16px; opacity: 0.6; flex-shrink: 0; }
+    .nav-link.active .nav-icon { opacity: 1; }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 7px 16px; border-radius: 6px; font-size: 13.5px; font-weight: 500; cursor: pointer; transition: all 0.12s; border: none; font-family: 'Geist', sans-serif; white-space: nowrap; }
+    .btn-primary { background: var(--ink); color: white; }
+    .btn-primary:hover { background: #2d2a27; }
+    .btn-primary:disabled { background: var(--ink-3); cursor: not-allowed; }
+    .btn-outline { background: transparent; border: 1px solid var(--line-2); color: var(--ink-2); }
+    .btn-outline:hover { border-color: var(--ink-3); color: var(--ink); background: var(--bg-2); }
+    .btn-ghost { background: transparent; color: var(--ink-2); border: none; }
+    .btn-ghost:hover { color: var(--ink); background: var(--bg-2); }
+    .btn-danger { background: var(--red-bg); color: var(--red); border: 1px solid #fecaca; }
+    .btn-danger:hover { background: #fee2e2; }
+    .btn-success { background: var(--green-bg); color: var(--green); border: 1px solid #bbf7d0; }
+    .btn-sm { padding: 4px 10px; font-size: 12px; }
+
+    /* Inputs */
+    .input { background: white; border: 1px solid var(--line-2); color: var(--ink); border-radius: 6px; padding: 8px 12px; font-family: 'Geist', sans-serif; font-size: 13.5px; width: 100%; outline: none; transition: border-color 0.12s, box-shadow 0.12s; }
+    .input:focus { border-color: var(--ink-3); box-shadow: 0 0 0 3px rgba(0,0,0,0.06); }
+    .input::placeholder { color: var(--ink-3); }
+    textarea.input { resize: vertical; min-height: 80px; }
+    select.input option { background: white; }
+
+    /* Cards */
+    .card { background: white; border: 1px solid var(--line); border-radius: 8px; }
+    .card-hover { transition: border-color 0.15s, box-shadow 0.15s; cursor: pointer; }
+    .card-hover:hover { border-color: var(--line-2); box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+
+    /* Tags / badges */
+    .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; letter-spacing: 0.02em; }
+    .badge-default { background: var(--bg-3); color: var(--ink-2); border: 1px solid var(--line); }
+    .badge-blue { background: var(--accent-bg); color: var(--accent); border: 1px solid var(--accent-line); }
+    .badge-green { background: var(--green-bg); color: var(--green); border: 1px solid #bbf7d0; }
+    .badge-amber { background: var(--amber-bg); color: var(--amber); border: 1px solid #fde68a; }
+    .badge-red { background: var(--red-bg); color: var(--red); border: 1px solid #fecaca; }
+
+    /* Subject pills */
+    .pill { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+    .pill-math    { background: #eff6ff; color: #1d4ed8; }
+    .pill-physics { background: #ecfeff; color: #0e7490; }
+    .pill-chem    { background: #fffbeb; color: #b45309; }
+    .pill-hist    { background: #fef2f2; color: #b91c1c; }
+    .pill-lit     { background: #faf5ff; color: #7e22ce; }
+    .pill-bio     { background: #f0fdf4; color: #15803d; }
+    .pill-prog    { background: #f0fdfa; color: #0f766e; }
+    .pill-eng     { background: #fff7ed; color: #c2410c; }
+    .pill-other   { background: var(--bg-3); color: var(--ink-2); }
+
+    /* Points */
+    .pts { font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 500; color: var(--ink-2); }
+
+    /* Divider */
+    hr { border: none; border-top: 1px solid var(--line); }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: var(--ink); color: white; border-radius: 8px; padding: 10px 16px; font-size: 13px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); animation: slideUp 0.2s ease; max-width: 300px; }
+    .toast.success { background: #14532d; }
+    .toast.error   { background: #7f1d1d; }
+    .toast.warning { background: #78350f; }
+    @keyframes slideUp { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    /* Modal */
+    .overlay { position: fixed; inset: 0; background: rgba(26,25,23,0.5); backdrop-filter: blur(4px); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .modal { background: white; border: 1px solid var(--line); border-radius: 10px; width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; animation: popIn 0.18s ease; }
+    @keyframes popIn { from { transform: scale(0.97); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    /* Loading */
+    .loader { position: fixed; inset: 0; background: var(--bg); z-index: 9998; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+    .spin { width: 20px; height: 20px; border: 2px solid var(--line-2); border-top-color: var(--ink); border-radius: 50%; animation: spin 0.7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Setup screen */
-    .setup-screen { position: fixed; inset: 0; background: var(--bg-base); z-index: 9997; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    /* Welcome screen */
+    .welcome-screen { min-height: 100vh; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 24px; }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-3); padding: 8px 12px; border-bottom: 1px solid var(--line); }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 13px; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--bg); }
+
+    /* Auth screen */
+    .auth-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: var(--bg); }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+    }
+    @media (min-width: 769px) {
+      .mobile-nav { display: none; }
+    }
+
+    /* Stat number */
+    .stat-num { font-family: 'Instrument Serif', serif; font-size: 28px; line-height: 1; color: var(--ink); }
+
+    /* Section label */
+    .label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+
+    /* Tab */
+    .tab { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--ink-2); transition: all 0.12s; border: none; background: transparent; font-family: 'Geist', sans-serif; }
+    .tab.active { background: var(--bg-3); color: var(--ink); }
+    .tab:hover:not(.active) { background: var(--bg-2); }
+
+    /* Progress */
+    .progress { background: var(--line); border-radius: 99px; height: 3px; overflow: hidden; }
+    .progress-bar { height: 100%; background: var(--ink); border-radius: 99px; transition: width 0.4s ease; }
+
+    [x-cloak] { display: none !important; }
+
+    /* Welcome hero */
+    .welcome-line { width: 32px; height: 1px; background: var(--ink-3); display: inline-block; vertical-align: middle; margin-right: 10px; }
+
+    /* Scrollable content */
+    .page-content { padding: 32px 40px; max-width: 920px; }
+    @media (max-width: 900px) { .page-content { padding: 24px 20px; } }
   </style>
 </head>
-<body class="mesh-bg">
+<body>
 
-<!-- LOADING OVERLAY -->
+<!-- ==================== LOADER ==================== -->
 <template x-if="isLoading">
-  <div class="loading-overlay">
-    <div class="spinner"></div>
-    <div class="font-display text-sm" style="color:var(--text-secondary)" x-text="loadingMsg"></div>
+  <div class="loader">
+    <div class="spin"></div>
+    <span style="font-size:13px; color:var(--ink-3)" x-text="loadingMsg">Cargando...</span>
   </div>
 </template>
 
-<!-- TOAST -->
+<!-- ==================== TOAST ==================== -->
 <template x-if="toast.show">
-  <div class="toast" :class="{'border-green-500/30': toast.type==='success', 'border-red-500/30': toast.type==='error', 'border-yellow-500/30': toast.type==='warning'}">
-    <span x-show="toast.type==='success'" class="text-green-400 text-base">✓</span>
-    <span x-show="toast.type==='error'" class="text-red-400 text-base">✗</span>
-    <span x-show="toast.type==='warning'" class="text-yellow-400 text-base">⚠</span>
-    <span x-text="toast.message" class="text-sm"></span>
+  <div class="toast" :class="toast.type">
+    <span x-text="toast.type==='success'?'✓':toast.type==='error'?'✕':'·'"></span>
+    <span x-text="toast.message"></span>
   </div>
 </template>
 
-<!-- ===================== JSONBIN SETUP SCREEN ===================== -->
-<div x-show="!setupDone && !isLoading" x-cloak class="setup-screen">
-  <div class="w-full max-w-lg">
-    <div class="text-center mb-8">
-      <div class="inline-flex items-center gap-3 mb-4">
-        <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#6366f1,#0d9488)">
-          <span class="text-white font-display font-bold text-xl">T</span>
-        </div>
-        <h1 class="font-display text-3xl font-bold tracking-tight">TaskCult</h1>
-      </div>
-      <p class="text-sm" style="color:var(--text-secondary)">Configuración inicial del backend JSON</p>
+<!-- ==================== AUTH ==================== -->
+<div x-show="!currentUser && !isLoading" x-cloak class="auth-screen">
+  <div style="width:100%; max-width:360px;">
+
+    <!-- Logo -->
+    <div style="margin-bottom:40px;">
+      <h1 style="font-size:32px; color:var(--ink)" x-text="config.platformName||'TaskCult'"></h1>
+      <p style="color:var(--ink-3); font-size:13.5px; margin-top:4px" x-text="config.platformDescription||'La economía del conocimiento académico'"></p>
     </div>
 
-    <div class="glass-elevated rounded-2xl p-8 space-y-6">
-      <div class="rounded-xl p-4" style="background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2)">
-        <div class="font-display font-semibold text-sm mb-2" style="color:#a5b4fc">¿Cómo obtener tu API Key de JSONBin?</div>
-        <ol class="text-xs space-y-1" style="color:var(--text-secondary)">
-          <li>1. Entrá a <a href="https://jsonbin.io" target="_blank" class="text-indigo-400 underline">jsonbin.io</a> y creá una cuenta gratuita</li>
-          <li>2. En tu dashboard, andá a <strong>API Keys</strong></li>
-          <li>3. Copiá tu <strong>Secret Access Key</strong></li>
-          <li>4. Pegala abajo y hacé click en "Inicializar"</li>
-        </ol>
-      </div>
+    <!-- Tab switcher -->
+    <div style="display:flex; gap:4px; margin-bottom:24px; background:var(--bg-2); padding:4px; border-radius:8px;">
+      <button @click="authMode='login'" class="tab" :class="authMode==='login'?'active':''" style="flex:1;">Iniciar sesión</button>
+      <button @click="authMode='register'" class="tab" :class="authMode==='register'?'active':''" style="flex:1;">Registrarse</button>
+    </div>
 
+    <!-- Login -->
+    <div x-show="authMode==='login'" class="space-y-3">
       <div>
-        <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">SECRET ACCESS KEY DE JSONBIN</label>
-        <input x-model="setupApiKey" type="password" placeholder="$2b$10$..." class="input-field" @keydown.enter="initializeBackend()"/>
-        <p class="text-xs mt-1" style="color:var(--text-muted)">Se guarda localmente solo en tu navegador.</p>
+        <div class="label" style="margin-bottom:6px">Usuario o email</div>
+        <input x-model="loginForm.username" type="text" placeholder="tu_usuario" class="input" @keydown.enter="doLogin()"/>
       </div>
-
-      <div x-show="setupError" class="text-sm text-red-400 px-3 py-2 rounded-lg" style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2)" x-text="setupError"></div>
-
-      <button @click="initializeBackend()" :disabled="!setupApiKey || isLoading" class="btn-primary w-full py-3 rounded-xl">
-        <span x-show="!isLoading">Inicializar Backend</span>
-        <span x-show="isLoading">Conectando...</span>
+      <div>
+        <div class="label" style="margin-bottom:6px">Contraseña</div>
+        <input x-model="loginForm.password" type="password" placeholder="••••••••" class="input" @keydown.enter="doLogin()"/>
+      </div>
+      <button @click="doLogin()" :disabled="isLoading" class="btn btn-primary" style="width:100%; margin-top:8px;">
+        <span x-show="!isLoading">Entrar</span>
+        <span x-show="isLoading">Verificando...</span>
       </button>
+      <p style="font-size:12px; color:var(--ink-3); text-align:center; margin-top:8px;">
+        Admin: <span class="mono" style="color:var(--ink-2)">admin / admin123</span>
+      </p>
+    </div>
 
-      <p class="text-center text-xs" style="color:var(--text-muted)">
-        La cuenta gratuita de JSONBin incluye 10,000 requests/mes — más que suficiente para uso educativo.
+    <!-- Register -->
+    <div x-show="authMode==='register'" class="space-y-3">
+      <div>
+        <div class="label" style="margin-bottom:6px">Nombre de usuario</div>
+        <input x-model="registerForm.username" type="text" placeholder="mi_usuario" class="input"/>
+      </div>
+      <div>
+        <div class="label" style="margin-bottom:6px">Email</div>
+        <input x-model="registerForm.email" type="email" placeholder="tu@email.com" class="input"/>
+      </div>
+      <div>
+        <div class="label" style="margin-bottom:6px">Nivel académico</div>
+        <select x-model="registerForm.level" class="input">
+          <option value="">Seleccionar...</option>
+          <template x-for="l in academicLevels" :key="l"><option :value="l" x-text="l"></option></template>
+        </select>
+      </div>
+      <div>
+        <div class="label" style="margin-bottom:6px">Contraseña</div>
+        <input x-model="registerForm.password" type="password" placeholder="mínimo 6 caracteres" class="input"/>
+      </div>
+      <button @click="doRegister()" :disabled="isLoading" class="btn btn-primary" style="width:100%; margin-top:8px;">
+        <span x-show="!isLoading">Crear cuenta</span>
+        <span x-show="isLoading">Creando...</span>
+      </button>
+      <p style="font-size:12px; color:var(--ink-3); text-align:center; margin-top:4px;">
+        Recibís <span style="color:var(--ink-2); font-weight:500" x-text="config.welcomePoints||100"></span> puntos de bienvenida
       </p>
     </div>
   </div>
 </div>
 
-<!-- ===================== AUTH SCREEN ===================== -->
-<div x-show="setupDone && !currentUser && !isLoading" x-cloak class="min-h-screen flex items-center justify-center p-4">
-  <div class="w-full max-w-md">
-    <div class="text-center mb-10">
-      <div class="inline-flex items-center gap-3 mb-4">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#6366f1,#0d9488)">
-          <span class="text-white font-display font-bold text-lg">T</span>
-        </div>
-        <h1 class="font-display text-2xl font-bold tracking-tight" x-text="config.platformName || 'TaskCult'"></h1>
-      </div>
-      <p class="text-sm" style="color:var(--text-secondary)" x-text="config.platformDescription || 'La economía del conocimiento académico'"></p>
+<!-- ==================== MAIN APP ==================== -->
+<div x-show="currentUser && !isLoading" x-cloak style="display:flex; min-height:100vh;">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div style="padding:20px 16px 16px;">
+      <h2 style="font-size:18px;" x-text="config.platformName||'TaskCult'"></h2>
     </div>
 
-    <div class="glass-elevated rounded-2xl p-8">
-      <div class="flex gap-1 p-1 rounded-xl mb-8" style="background:var(--bg-base)">
-        <button @click="authMode='login'" class="flex-1 py-2 rounded-lg text-sm font-display font-semibold transition-all duration-200"
-          :class="authMode==='login' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'">
-          Iniciar Sesión
-        </button>
-        <button @click="authMode='register'" class="flex-1 py-2 rounded-lg text-sm font-display font-semibold transition-all duration-200"
-          :class="authMode==='register' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'">
-          Registrarse
-        </button>
-      </div>
-
-      <div x-show="authMode==='login'" class="space-y-4">
-        <div>
-          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">USUARIO O EMAIL</label>
-          <input x-model="loginForm.username" type="text" placeholder="tu_usuario" class="input-field" @keydown.enter="doLogin()"/>
-        </div>
-        <div>
-          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">CONTRASEÑA</label>
-          <input x-model="loginForm.password" type="password" placeholder="••••••••" class="input-field" @keydown.enter="doLogin()"/>
-        </div>
-        <button @click="doLogin()" :disabled="isLoading" class="btn-primary w-full py-3 rounded-xl mt-2">
-          <span x-show="!isLoading">Entrar a TaskCult</span>
-          <span x-show="isLoading">Verificando...</span>
-        </button>
-        <p class="text-center text-xs" style="color:var(--text-muted)">
-          Admin: <span class="text-indigo-400 font-mono">admin / admin123</span>
-        </p>
-      </div>
-
-      <div x-show="authMode==='register'" class="space-y-4">
-        <div>
-          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">NOMBRE DE USUARIO</label>
-          <input x-model="registerForm.username" type="text" placeholder="mi_usuario" class="input-field"/>
-        </div>
-        <div>
-          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">EMAIL</label>
-          <input x-model="registerForm.email" type="email" placeholder="tu@email.com" class="input-field"/>
-        </div>
-        <div>
-          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">NIVEL ACADÉMICO</label>
-          <select x-model="registerForm.level" class="input-field">
-            <option value="">Seleccionar nivel...</option>
-            <template x-for="lvl in academicLevels" :key="lvl"><option :value="lvl" x-text="lvl"></option></template>
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">CONTRASEÑA</label>
-          <input x-model="registerForm.password" type="password" placeholder="mínimo 6 caracteres" class="input-field"/>
-        </div>
-        <button @click="doRegister()" :disabled="isLoading" class="btn-primary w-full py-3 rounded-xl mt-2">
-          <span x-show="!isLoading">Crear Cuenta</span>
-          <span x-show="isLoading">Creando cuenta...</span>
-        </button>
-        <p class="text-center text-xs" style="color:var(--text-muted)">
-          Recibirás <span class="text-indigo-400 font-semibold">100 puntos</span> de bienvenida
-        </p>
+    <!-- Points display -->
+    <div style="padding:0 12px 16px;">
+      <div style="background:var(--bg-2); border:1px solid var(--line); border-radius:8px; padding:12px 14px;">
+        <div class="label" style="margin-bottom:4px;">Tus puntos</div>
+        <div class="stat-num" x-text="(currentUser?.points||0).toLocaleString()"></div>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- ===================== MAIN APP ===================== -->
-<div x-show="setupDone && currentUser && !isLoading" x-cloak class="flex min-h-screen">
+    <hr style="margin: 0 12px 12px;"/>
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar-desktop w-56 flex-shrink-0 flex flex-col" style="background:var(--bg-surface); border-right:1px solid var(--border); position:sticky; top:0; height:100vh; overflow-y:auto;">
-    <div class="p-5 pb-4" style="border-bottom:1px solid var(--border)">
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#0d9488)">
-          <span class="text-white font-display font-bold text-sm">T</span>
-        </div>
-        <span class="font-display font-bold text-base" x-text="config.platformName || 'TaskCult'"></span>
+    <nav style="padding:0 8px; display:flex; flex-direction:column; gap:1px;">
+      <div @click="setPage('home')" class="nav-link" :class="currentPage==='home'?'active':''">
+        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg>
+        Inicio
       </div>
-    </div>
-    <div class="p-4">
-      <div class="rounded-lg p-3" style="background:var(--accent-glow); border:1px solid rgba(99,102,241,0.2)">
-        <div class="text-xs font-display font-semibold mb-1" style="color:var(--text-muted)">TUS PUNTOS</div>
-        <div class="text-xl font-display font-bold" style="color:#a5b4fc" x-text="(currentUser?.points || 0).toLocaleString() + ' pts'"></div>
+      <div @click="setPage('explore')" class="nav-link" :class="currentPage==='explore'?'active':''">
+        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="1.8"/><path stroke-linecap="round" stroke-width="1.8" d="m21 21-4.35-4.35"/></svg>
+        Explorar
       </div>
-    </div>
-    <nav class="px-3 flex-1 space-y-1">
-      <div @click="setPage('home')" class="nav-item" :class="currentPage==='home'?'active':''"><span class="text-base">🏠</span> Feed</div>
-      <div @click="setPage('explore')" class="nav-item" :class="currentPage==='explore'?'active':''"><span class="text-base">🔭</span> Explorar</div>
-      <div @click="setPage('upload')" class="nav-item" :class="currentPage==='upload'?'active':''"><span class="text-base">⬆️</span> Subir Tarea</div>
-      <div @click="setPage('library')" class="nav-item" :class="currentPage==='library'?'active':''"><span class="text-base">📚</span> Mi Biblioteca</div>
-      <div @click="setPage('leaderboard')" class="nav-item" :class="currentPage==='leaderboard'?'active':''"><span class="text-base">🏆</span> Leaderboard</div>
-      <div @click="setPage('profile')" class="nav-item" :class="currentPage==='profile'?'active':''"><span class="text-base">👤</span> Perfil</div>
+      <div @click="setPage('upload')" class="nav-link" :class="currentPage==='upload'?'active':''">
+        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+        Subir tarea
+      </div>
+      <div @click="setPage('library')" class="nav-link" :class="currentPage==='library'?'active':''">
+        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        Mi biblioteca
+      </div>
+      <div @click="setPage('leaderboard')" class="nav-link" :class="currentPage==='leaderboard'?'active':''">
+        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        Leaderboard
+      </div>
+      <div @click="setPage('profile')" class="nav-link" :class="currentPage==='profile'?'active':''">
+        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        Perfil
+      </div>
       <template x-if="currentUser?.isAdmin">
         <div>
-          <div class="my-3" style="border-top:1px solid var(--border)"></div>
-          <div @click="setPage('admin')" class="nav-item" :class="currentPage==='admin'?'active':''"
-            style="color:#fbbf24"
-            :style="currentPage==='admin' ? 'background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.2);color:#fbbf24' : ''">
-            <span class="text-base">⚙️</span> Admin Panel
+          <hr style="margin:8px 4px;"/>
+          <div @click="setPage('admin')" class="nav-link" :class="currentPage==='admin'?'active':''" style="color:var(--amber);">
+            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="opacity:1"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3" stroke-width="1.8"/></svg>
+            Admin
           </div>
         </div>
       </template>
     </nav>
-    <div class="p-3 mt-auto" style="border-top:1px solid var(--border)">
-      <div class="flex items-center gap-2 p-2 rounded-lg cursor-pointer hover:bg-opacity-50 transition-all" style="background:var(--bg-overlay)" @click="setPage('profile')">
-        <img :src="currentUser?.avatar || avatarUrl(currentUser?.username)" class="w-8 h-8 rounded-full object-cover flex-shrink-0"/>
-        <div class="flex-1 min-w-0">
-          <div class="text-xs font-display font-semibold truncate" x-text="currentUser?.username"></div>
-          <div class="text-xs truncate" style="color:var(--text-muted)" x-text="currentUser?.level || 'Estudiante'"></div>
+
+    <!-- User footer -->
+    <div style="margin-top:auto; padding:12px 8px; border-top:1px solid var(--line);">
+      <div style="display:flex; align-items:center; gap:10px; padding:8px; border-radius:6px; cursor:pointer;" class="nav-link" @click="setPage('profile')">
+        <img :src="currentUser?.avatar||avatarUrl(currentUser?.username)" style="width:28px; height:28px; border-radius:50%; object-fit:cover; flex-shrink:0; background:var(--bg-2);"/>
+        <div style="flex:1; min-width:0;">
+          <div style="font-size:13px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" x-text="currentUser?.username"></div>
+          <div style="font-size:11px; color:var(--ink-3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" x-text="currentUser?.level||'Estudiante'"></div>
         </div>
-        <button @click.stop="doLogout()" class="text-xs hover:text-red-400 transition-colors" style="color:var(--text-muted)" title="Cerrar sesión">✕</button>
+        <button @click.stop="doLogout()" style="color:var(--ink-3); font-size:12px; padding:2px 4px; background:none; border:none; cursor:pointer; border-radius:4px;" title="Salir">✕</button>
       </div>
     </div>
   </aside>
 
-  <!-- MOBILE NAV -->
-  <div class="mobile-nav fixed bottom-0 left-0 right-0 z-50" style="background:var(--bg-surface); border-top:1px solid var(--border)">
-    <div class="flex items-center justify-around py-2 px-2">
-      <button @click="setPage('home')" class="flex flex-col items-center gap-1 px-3 py-1 rounded-lg transition-all" :class="currentPage==='home'?'text-indigo-400':''" style="color:var(--text-muted)">
-        <span class="text-lg">🏠</span><span class="text-xs font-display">Feed</span>
-      </button>
-      <button @click="setPage('explore')" class="flex flex-col items-center gap-1 px-3 py-1 rounded-lg transition-all" :class="currentPage==='explore'?'text-indigo-400':''" style="color:var(--text-muted)">
-        <span class="text-lg">🔭</span><span class="text-xs font-display">Explorar</span>
-      </button>
-      <button @click="setPage('upload')" class="flex flex-col items-center gap-1 px-3 py-1 rounded-lg transition-all btn-primary rounded-xl" style="color:white">
-        <span class="text-lg">⬆️</span><span class="text-xs font-display">Subir</span>
-      </button>
-      <button @click="setPage('library')" class="flex flex-col items-center gap-1 px-3 py-1 rounded-lg transition-all" :class="currentPage==='library'?'text-indigo-400':''" style="color:var(--text-muted)">
-        <span class="text-lg">📚</span><span class="text-xs font-display">Biblio</span>
-      </button>
-      <button @click="setPage('profile')" class="flex flex-col items-center gap-1 px-3 py-1 rounded-lg transition-all" :class="currentPage==='profile'?'text-indigo-400':''" style="color:var(--text-muted)">
-        <span class="text-lg">👤</span><span class="text-xs font-display">Perfil</span>
-      </button>
-    </div>
+  <!-- Mobile bottom nav -->
+  <div class="mobile-nav" style="position:fixed; bottom:0; left:0; right:0; z-index:50; background:white; border-top:1px solid var(--line); display:flex; align-items:center; justify-content:space-around; padding:8px 0 calc(env(safe-area-inset-bottom) + 8px);">
+    <button @click="setPage('home')" style="display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px 12px; background:none; border:none; cursor:pointer; font-size:11px; color:var(--ink-2);" :style="currentPage==='home'?'color:var(--ink); font-weight:500':''">🏠 <span>Inicio</span></button>
+    <button @click="setPage('explore')" style="display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px 12px; background:none; border:none; cursor:pointer; font-size:11px; color:var(--ink-2);" :style="currentPage==='explore'?'color:var(--ink); font-weight:500':''">🔍 <span>Explorar</span></button>
+    <button @click="setPage('upload')" style="display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px 12px; background:var(--ink); border:none; cursor:pointer; font-size:11px; color:white; border-radius:8px;">⬆ <span>Subir</span></button>
+    <button @click="setPage('library')" style="display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px 12px; background:none; border:none; cursor:pointer; font-size:11px; color:var(--ink-2);" :style="currentPage==='library'?'color:var(--ink); font-weight:500':''">📚 <span>Biblio</span></button>
+    <button @click="setPage('profile')" style="display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px 12px; background:none; border:none; cursor:pointer; font-size:11px; color:var(--ink-2);" :style="currentPage==='profile'?'color:var(--ink); font-weight:500':''">👤 <span>Perfil</span></button>
   </div>
 
   <!-- MAIN CONTENT -->
-  <main class="flex-1 min-w-0 pb-20 md:pb-0">
+  <main class="main" style="padding-bottom: 80px;">
 
-    <!-- HOME -->
-    <div x-show="currentPage==='home'" class="p-4 md:p-8 max-w-4xl mx-auto">
-      <div class="mb-8">
-        <h2 class="font-display text-2xl font-bold mb-1">Bienvenido, <span style="color:#a5b4fc" x-text="currentUser?.username"></span> 👋</h2>
-        <p class="text-sm" style="color:var(--text-secondary)">Descubrí las mejores tareas académicas de la comunidad.</p>
-      </div>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-        <div class="stat-card"><div class="text-2xl font-display font-bold" style="color:#a5b4fc" x-text="db.tasks.length"></div><div class="text-xs mt-1" style="color:var(--text-muted)">Tareas totales</div></div>
-        <div class="stat-card"><div class="text-2xl font-display font-bold" style="color:#5eead4" x-text="currentUser?.tasksUploaded || 0"></div><div class="text-xs mt-1" style="color:var(--text-muted)">Subidas por vos</div></div>
-        <div class="stat-card"><div class="text-2xl font-display font-bold" style="color:#fbbf24" x-text="currentUser?.tasksClaimed || 0"></div><div class="text-xs mt-1" style="color:var(--text-muted)">Reclamadas</div></div>
-        <div class="stat-card"><div class="text-2xl font-display font-bold" style="color:#a5b4fc" x-text="(currentUser?.points || 0).toLocaleString()"></div><div class="text-xs mt-1" style="color:var(--text-muted)">Tus puntos</div></div>
-      </div>
-      <div class="mb-6">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="font-display font-semibold text-base">⭐ Tareas Destacadas</h3>
-          <button @click="setPage('explore')" class="text-xs font-display" style="color:#a5b4fc">Ver todo →</button>
-        </div>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <template x-for="task in featuredTasks" :key="task.id">
-            <div class="task-card p-4" @click="openTask(task)">
-              <div class="flex items-start justify-between mb-3">
-                <span class="subject-pill" :class="subjectClass(task.subject)" x-text="task.subject"></span>
-                <span class="points-badge" x-text="task.price + ' pts'"></span>
-              </div>
-              <h4 class="font-display font-semibold text-sm mb-1 line-clamp-2" x-text="task.title"></h4>
-              <p class="text-xs mb-3 line-clamp-2" style="color:var(--text-secondary)" x-text="task.description"></p>
-              <div class="flex items-center justify-between">
-                <span class="level-badge" x-text="task.level"></span>
-                <div class="flex items-center gap-2 text-xs" style="color:var(--text-muted)">
-                  <span>❤️ <span x-text="task.likes || 0"></span></span>
-                  <span>👁 <span x-text="task.views || 0"></span></span>
-                </div>
-              </div>
+    <!-- ======== WELCOME (home) ======== -->
+    <div x-show="currentPage==='home'">
+      <!-- Welcome hero -->
+      <div style="background:var(--bg-2); border-bottom:1px solid var(--line); padding:32px 40px 28px;">
+        <div style="max-width:880px;">
+          <p class="label" style="margin-bottom:8px;"><span class="welcome-line"></span>Panel de inicio</p>
+          <h1 style="font-size:36px; color:var(--ink); margin-bottom:6px;">Bienvenido, <em x-text="currentUser?.username"></em></h1>
+          <p style="color:var(--ink-2); font-size:14px;" x-text="config.platformDescription||'La economía del conocimiento académico'"></p>
+
+          <!-- Stats row -->
+          <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:24px;">
+            <div class="card" style="padding:16px 18px;">
+              <div class="label" style="margin-bottom:8px;">Tareas totales</div>
+              <div class="stat-num" x-text="db.tasks.length"></div>
             </div>
-          </template>
-          <div x-show="featuredTasks.length===0" class="col-span-full text-center py-12" style="color:var(--text-muted)">
-            <div class="text-4xl mb-3">📭</div>
-            <p class="font-display">Aún no hay tareas. ¡Sé el primero en subir una!</p>
+            <div class="card" style="padding:16px 18px;">
+              <div class="label" style="margin-bottom:8px;">Subidas por vos</div>
+              <div class="stat-num" style="color:var(--green)" x-text="currentUser?.tasksUploaded||0"></div>
+            </div>
+            <div class="card" style="padding:16px 18px;">
+              <div class="label" style="margin-bottom:8px;">Reclamadas</div>
+              <div class="stat-num" style="color:var(--amber)" x-text="currentUser?.tasksClaimed||0"></div>
+            </div>
+            <div class="card" style="padding:16px 18px;">
+              <div class="label" style="margin-bottom:8px;">Tus puntos</div>
+              <div class="stat-num" x-text="(currentUser?.points||0).toLocaleString()"></div>
+            </div>
           </div>
         </div>
       </div>
-      <div>
-        <h3 class="font-display font-semibold text-base mb-4">🕐 Recientes</h3>
-        <div class="space-y-3">
-          <template x-for="task in recentTasks" :key="task.id">
-            <div class="task-card p-4 flex items-center gap-4" @click="openTask(task)">
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 mb-1">
-                  <span class="subject-pill text-xs" :class="subjectClass(task.subject)" x-text="task.subject"></span>
-                  <span class="level-badge" x-text="task.level"></span>
+
+      <div class="page-content">
+
+        <!-- Featured -->
+        <div style="margin-bottom:36px;">
+          <div style="display:flex; align-items:baseline; justify-content:space-between; margin-bottom:16px;">
+            <h2 style="font-size:22px;">Destacadas</h2>
+            <button @click="setPage('explore')" class="btn btn-ghost btn-sm" style="font-size:12px;">Ver todo →</button>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:12px;">
+            <template x-for="task in featuredTasks" :key="task.id">
+              <div class="card card-hover" style="padding:16px;" @click="openTask(task)">
+                <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:10px; gap:8px;">
+                  <span class="pill" :class="subjectClass(task.subject)" x-text="task.subject"></span>
+                  <span class="pts" x-text="task.price+' pts'"></span>
                 </div>
-                <h4 class="font-display font-semibold text-sm truncate" x-text="task.title"></h4>
-                <p class="text-xs mt-0.5 truncate" style="color:var(--text-muted)">por <span x-text="task.authorName"></span></p>
+                <div style="font-weight:500; font-size:13.5px; margin-bottom:4px; line-height:1.4;" x-text="task.title"></div>
+                <p style="font-size:12px; color:var(--ink-3); overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;" x-text="task.description"></p>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                  <span class="badge badge-default" style="font-size:10px;" x-text="task.level"></span>
+                  <span style="font-size:11px; color:var(--ink-3);">♡ <span x-text="task.likes||0"></span></span>
+                </div>
               </div>
-              <div class="flex-shrink-0 text-right">
-                <div class="points-badge" x-text="task.price + ' pts'"></div>
-                <div class="text-xs mt-1" style="color:var(--text-muted)" x-text="timeAgo(task.createdAt)"></div>
-              </div>
+            </template>
+            <div x-show="featuredTasks.length===0" style="grid-column:1/-1; text-align:center; padding:48px 0; color:var(--ink-3);">
+              <p style="font-size:15px; margin-bottom:8px;">Aún no hay tareas publicadas.</p>
+              <button @click="setPage('upload')" class="btn btn-primary btn-sm" style="margin-top:4px;">Subir la primera</button>
             </div>
-          </template>
-          <div x-show="recentTasks.length===0" class="text-center py-8" style="color:var(--text-muted)">No hay tareas recientes.</div>
+          </div>
+        </div>
+
+        <!-- Recent -->
+        <div>
+          <h2 style="font-size:22px; margin-bottom:16px;">Recientes</h2>
+          <div class="card" style="overflow:hidden;">
+            <template x-for="(task, i) in recentTasks" :key="task.id">
+              <div class="card-hover" style="display:flex; align-items:center; gap:12px; padding:12px 16px; border-bottom:1px solid var(--line);" @click="openTask(task)">
+                <span class="pill" :class="subjectClass(task.subject)" style="flex-shrink:0; width:88px; justify-content:center;" x-text="task.subject"></span>
+                <div style="flex:1; min-width:0;">
+                  <div style="font-weight:500; font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" x-text="task.title"></div>
+                  <div style="font-size:11px; color:var(--ink-3); margin-top:1px;">por <span x-text="task.authorName"></span> · <span x-text="timeAgo(task.createdAt)"></span></div>
+                </div>
+                <span class="pts" style="flex-shrink:0;" x-text="task.price+' pts'"></span>
+              </div>
+            </template>
+            <div x-show="recentTasks.length===0" style="padding:32px; text-align:center; color:var(--ink-3);">Sin tareas recientes.</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- EXPLORE -->
-    <div x-show="currentPage==='explore'" class="p-4 md:p-8 max-w-5xl mx-auto">
-      <div class="mb-6">
-        <h2 class="font-display text-2xl font-bold mb-1">Explorar Tareas</h2>
-        <p class="text-sm" style="color:var(--text-secondary)">Filtrá por materia y nivel académico.</p>
-      </div>
-      <div class="glass rounded-xl p-4 mb-6 space-y-3">
-        <input x-model="exploreSearch" type="text" placeholder="Buscar tareas, materias, tags..." class="input-field"/>
-        <div class="flex flex-wrap gap-3">
-          <select x-model="exploreSubject" class="input-field flex-1 min-w-32">
+    <!-- ======== EXPLORE ======== -->
+    <div x-show="currentPage==='explore'" class="page-content">
+      <h1 style="font-size:32px; margin-bottom:4px;">Explorar</h1>
+      <p style="color:var(--ink-2); margin-bottom:24px; font-size:13.5px;">Buscá tareas por materia, nivel o palabras clave.</p>
+
+      <!-- Filters -->
+      <div class="card" style="padding:16px; margin-bottom:20px; display:flex; flex-direction:column; gap:10px;">
+        <input x-model="exploreSearch" type="text" placeholder="Buscar tareas, materias, tags..." class="input"/>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <select x-model="exploreSubject" class="input" style="flex:1; min-width:120px;">
             <option value="">Todas las materias</option>
             <template x-for="s in subjects" :key="s"><option :value="s" x-text="s"></option></template>
           </select>
-          <select x-model="exploreLevel" class="input-field flex-1 min-w-32">
+          <select x-model="exploreLevel" class="input" style="flex:1; min-width:120px;">
             <option value="">Todos los niveles</option>
             <template x-for="l in academicLevels" :key="l"><option :value="l" x-text="l"></option></template>
           </select>
-          <select x-model="exploreSort" class="input-field flex-1 min-w-32">
+          <select x-model="exploreSort" class="input" style="flex:1; min-width:120px;">
             <option value="recent">Más recientes</option>
             <option value="popular">Más populares</option>
             <option value="price_asc">Menor precio</option>
@@ -397,376 +432,343 @@
           </select>
         </div>
       </div>
-      <div class="flex flex-wrap gap-2 mb-6">
-        <button @click="exploreSubject=''" class="subject-pill transition-all" :class="exploreSubject==='' ? 'subject-programming' : 'subject-other'">Todas</button>
+
+      <!-- Pill filters -->
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;">
+        <button @click="exploreSubject=''" class="pill" :class="exploreSubject===''?'pill-prog':'pill-other'" style="cursor:pointer;">Todas</button>
         <template x-for="s in subjects" :key="s">
-          <button @click="exploreSubject = exploreSubject===s ? '' : s" class="subject-pill transition-all" :class="exploreSubject===s ? subjectClass(s) : 'subject-other'" x-text="s"></button>
+          <button @click="exploreSubject=exploreSubject===s?'':s" class="pill" :class="exploreSubject===s?subjectClass(s):'pill-other'" style="cursor:pointer;" x-text="s"></button>
         </template>
       </div>
-      <div class="text-xs font-display mb-4" style="color:var(--text-muted)"><span x-text="filteredTasks.length"></span> resultados</div>
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+      <p style="font-size:12px; color:var(--ink-3); margin-bottom:12px;"><span x-text="filteredTasks.length"></span> resultados</p>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:12px;">
         <template x-for="task in filteredTasks" :key="task.id">
-          <div class="task-card p-4" @click="openTask(task)">
-            <div class="flex items-start justify-between mb-3">
-              <span class="subject-pill" :class="subjectClass(task.subject)" x-text="task.subject"></span>
-              <span class="points-badge" x-text="task.price + ' pts'"></span>
+          <div class="card card-hover" style="padding:16px;" @click="openTask(task)">
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:10px; gap:8px;">
+              <span class="pill" :class="subjectClass(task.subject)" x-text="task.subject"></span>
+              <span class="pts" x-text="task.price+' pts'"></span>
             </div>
-            <h4 class="font-display font-semibold text-sm mb-1 line-clamp-2" x-text="task.title"></h4>
-            <p class="text-xs mb-3 line-clamp-2" style="color:var(--text-secondary)" x-text="task.description"></p>
-            <div class="flex flex-wrap gap-1 mb-3">
+            <div style="font-weight:500; font-size:13.5px; margin-bottom:4px; line-height:1.4;" x-text="task.title"></div>
+            <p style="font-size:12px; color:var(--ink-3); overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; margin-bottom:10px;" x-text="task.description"></p>
+            <div style="display:flex; flex-wrap:wrap; gap:4px; margin-bottom:10px;">
               <template x-for="tag in (task.tags||[]).slice(0,3)" :key="tag">
-                <span class="tag" x-text="'#'+tag"></span>
+                <span class="badge badge-default" style="font-size:10px;" x-text="'#'+tag"></span>
               </template>
             </div>
-            <div class="flex items-center justify-between">
-              <span class="level-badge" x-text="task.level"></span>
-              <div class="flex items-center gap-2 text-xs" style="color:var(--text-muted)">
-                <span>❤️ <span x-text="task.likes||0"></span></span>
-                <span>por <span x-text="task.authorName" class="font-semibold"></span></span>
-              </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="badge badge-default" style="font-size:10px;" x-text="task.level"></span>
+              <span style="font-size:11px; color:var(--ink-3);">♡ <span x-text="task.likes||0"></span> · <span x-text="task.authorName" style="font-weight:500;"></span></span>
             </div>
           </div>
         </template>
-        <div x-show="filteredTasks.length===0" class="col-span-full text-center py-16" style="color:var(--text-muted)">
-          <div class="text-5xl mb-4">🔍</div>
-          <p class="font-display text-sm">Sin resultados para esos filtros.</p>
+        <div x-show="filteredTasks.length===0" style="grid-column:1/-1; text-align:center; padding:48px 0; color:var(--ink-3);">
+          <p>Sin resultados para esos filtros.</p>
         </div>
       </div>
     </div>
 
-    <!-- UPLOAD -->
-    <div x-show="currentPage==='upload'" class="p-4 md:p-8 max-w-2xl mx-auto">
-      <div class="mb-6">
-        <h2 class="font-display text-2xl font-bold mb-1">Subir Nueva Tarea</h2>
-        <p class="text-sm" style="color:var(--text-secondary)">Compartí tu trabajo y ganá puntos cuando otros lo reclamen.</p>
-      </div>
-      <div class="rounded-xl p-4 mb-6 flex items-center gap-4" style="background:var(--accent-glow); border:1px solid rgba(99,102,241,0.2)">
-        <div class="text-3xl">💎</div>
+    <!-- ======== UPLOAD ======== -->
+    <div x-show="currentPage==='upload'" class="page-content" style="max-width:600px;">
+      <h1 style="font-size:32px; margin-bottom:4px;">Subir tarea</h1>
+      <p style="color:var(--ink-2); margin-bottom:24px; font-size:13.5px;">Compartí tu trabajo y ganá puntos.</p>
+
+      <!-- Reward info -->
+      <div class="card" style="padding:14px 16px; margin-bottom:24px; display:flex; align-items:center; gap:12px; background:var(--bg-2);">
+        <div style="font-size:20px;">⟳</div>
         <div>
-          <div class="font-display font-semibold text-sm">Ganarás puntos al subir</div>
-          <div class="text-xs mt-0.5" style="color:var(--text-secondary)">
-            Puntos base: <span class="text-indigo-400 font-semibold" x-text="config.baseUploadPoints || 50"></span> pts +
-            <span x-text="config.pointsPerClaim || 10"></span> pts por cada reclamación.
-          </div>
+          <div style="font-size:13px; font-weight:500;">Al subir ganás <span x-text="config.baseUploadPoints||50"></span> puntos</div>
+          <div style="font-size:12px; color:var(--ink-3); margin-top:2px;">+ <span x-text="config.pointsPerClaim||10"></span> pts extra cada vez que alguien la reclame.</div>
         </div>
       </div>
-      <div class="glass-elevated rounded-2xl p-6 space-y-5">
-        <div>
-          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">TÍTULO *</label>
-          <input x-model="uploadForm.title" type="text" placeholder="Ej: Resolución completa de integrales dobles" class="input-field"/>
-        </div>
-        <div>
-          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">DESCRIPCIÓN *</label>
-          <textarea x-model="uploadForm.description" placeholder="Describí detalladamente el contenido..." class="input-field" rows="4"></textarea>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
+
+      <div class="card" style="padding:24px;">
+        <div style="display:flex; flex-direction:column; gap:18px;">
           <div>
-            <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">MATERIA *</label>
-            <select x-model="uploadForm.subject" class="input-field">
-              <option value="">Seleccionar...</option>
-              <template x-for="s in subjects" :key="s"><option :value="s" x-text="s"></option></template>
-            </select>
+            <div class="label" style="margin-bottom:6px;">Título <span style="color:var(--red)">*</span></div>
+            <input x-model="uploadForm.title" type="text" placeholder="Ej: Resolución de integrales dobles" class="input"/>
           </div>
           <div>
-            <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">NIVEL *</label>
-            <select x-model="uploadForm.level" class="input-field">
-              <option value="">Seleccionar...</option>
-              <template x-for="l in academicLevels" :key="l"><option :value="l" x-text="l"></option></template>
-            </select>
+            <div class="label" style="margin-bottom:6px;">Descripción <span style="color:var(--red)">*</span></div>
+            <textarea x-model="uploadForm.description" placeholder="Describí el contenido con detalle..." class="input" rows="4"></textarea>
           </div>
-        </div>
-        <div>
-          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">
-            PRECIO EN PUNTOS
-            <span class="font-normal normal-case" style="color:var(--text-muted)">(mín: <span x-text="config.minPrice||10"></span>, máx: <span x-text="config.maxPrice||500"></span>)</span>
-          </label>
-          <input x-model.number="uploadForm.price" type="number" :min="config.minPrice||10" :max="config.maxPrice||500" placeholder="50" class="input-field"/>
-        </div>
-        <div>
-          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">TAGS (separados por coma)</label>
-          <input x-model="uploadForm.tagsStr" type="text" placeholder="integral, cálculo, ejercicios resueltos" class="input-field"/>
-        </div>
-        <div>
-          <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">ARCHIVO ADJUNTO (simulado)</label>
-          <div class="rounded-lg border-2 border-dashed p-6 text-center cursor-pointer transition-all hover:border-indigo-500/50"
-            style="border-color:var(--border); color:var(--text-muted)"
-            @click="uploadForm.hasFile=!uploadForm.hasFile">
-            <div class="text-2xl mb-2" x-text="uploadForm.hasFile?'📎':'📁'"></div>
-            <div class="text-xs font-display" x-text="uploadForm.hasFile?'archivo_tarea.pdf — Click para quitar':'Click para simular adjuntar archivo'"></div>
-          </div>
-        </div>
-        <div x-show="uploadForm.title || uploadForm.description" class="rounded-xl p-4" style="background:var(--bg-base); border:1px solid var(--border-subtle)">
-          <div class="text-xs font-display font-semibold mb-3" style="color:var(--text-muted)">VISTA PREVIA</div>
-          <div class="task-card p-3 cursor-default">
-            <div class="flex items-start justify-between mb-2">
-              <span class="subject-pill" :class="subjectClass(uploadForm.subject)" x-text="uploadForm.subject||'Materia'"></span>
-              <span class="points-badge" x-text="(uploadForm.price||0)+' pts'"></span>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div>
+              <div class="label" style="margin-bottom:6px;">Materia <span style="color:var(--red)">*</span></div>
+              <select x-model="uploadForm.subject" class="input">
+                <option value="">Seleccionar...</option>
+                <template x-for="s in subjects" :key="s"><option :value="s" x-text="s"></option></template>
+              </select>
             </div>
-            <h4 class="font-display font-semibold text-sm mb-1" x-text="uploadForm.title||'Título de la tarea'"></h4>
-            <p class="text-xs line-clamp-2" style="color:var(--text-secondary)" x-text="uploadForm.description||'Descripción...'"></p>
-            <div class="mt-2"><span class="level-badge" x-text="uploadForm.level||'Nivel'"></span></div>
+            <div>
+              <div class="label" style="margin-bottom:6px;">Nivel <span style="color:var(--red)">*</span></div>
+              <select x-model="uploadForm.level" class="input">
+                <option value="">Seleccionar...</option>
+                <template x-for="l in academicLevels" :key="l"><option :value="l" x-text="l"></option></template>
+              </select>
+            </div>
           </div>
+          <div>
+            <div class="label" style="margin-bottom:6px;">Precio en puntos <span style="color:var(--ink-3); font-size:10px;">(mín: <span x-text="config.minPrice||10"></span> — máx: <span x-text="config.maxPrice||500"></span>)</span></div>
+            <input x-model.number="uploadForm.price" type="number" :min="config.minPrice||10" :max="config.maxPrice||500" class="input"/>
+          </div>
+          <div>
+            <div class="label" style="margin-bottom:6px;">Tags <span style="color:var(--ink-3);">(separados por coma)</span></div>
+            <input x-model="uploadForm.tagsStr" type="text" placeholder="integral, cálculo, ejercicios" class="input"/>
+          </div>
+          <div>
+            <div class="label" style="margin-bottom:6px;">Archivo adjunto</div>
+            <div style="border:1.5px dashed var(--line-2); border-radius:6px; padding:20px; text-align:center; cursor:pointer; transition:border-color 0.12s;" :style="uploadForm.hasFile?'border-color:var(--green);background:var(--green-bg)':''" @click="uploadForm.hasFile=!uploadForm.hasFile">
+              <div style="font-size:18px; margin-bottom:4px;" x-text="uploadForm.hasFile?'📎':'📁'"></div>
+              <div style="font-size:12px; color:var(--ink-3);" x-text="uploadForm.hasFile?'archivo_tarea.pdf adjunto — click para quitar':'Click para simular adjuntar archivo'"></div>
+            </div>
+          </div>
+
+          <!-- Preview -->
+          <div x-show="uploadForm.title" style="border-top:1px solid var(--line); padding-top:16px;">
+            <div class="label" style="margin-bottom:10px;">Vista previa</div>
+            <div class="card" style="padding:14px;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                <span class="pill" :class="subjectClass(uploadForm.subject)" x-text="uploadForm.subject||'Materia'"></span>
+                <span class="pts" x-text="(uploadForm.price||0)+' pts'"></span>
+              </div>
+              <div style="font-weight:500; font-size:13.5px;" x-text="uploadForm.title||'Título'"></div>
+              <p style="font-size:12px; color:var(--ink-3); margin-top:4px;" x-text="uploadForm.description||'Descripción...'"></p>
+            </div>
+          </div>
+
+          <button @click="doUploadTask()" :disabled="isLoading" class="btn btn-primary">
+            <span x-show="!isLoading">Subir y ganar puntos</span>
+            <span x-show="isLoading">Subiendo...</span>
+          </button>
         </div>
-        <button @click="doUploadTask()" :disabled="isLoading" class="btn-primary w-full py-3 rounded-xl font-display">
-          <span x-show="!isLoading">Subir Tarea y Ganar Puntos</span>
-          <span x-show="isLoading">Subiendo...</span>
-        </button>
       </div>
     </div>
 
-    <!-- LIBRARY -->
-    <div x-show="currentPage==='library'" class="p-4 md:p-8 max-w-4xl mx-auto">
-      <div class="mb-6">
-        <h2 class="font-display text-2xl font-bold mb-1">Mi Biblioteca</h2>
-        <p class="text-sm" style="color:var(--text-secondary)">Tus tareas subidas y las que reclamaste.</p>
+    <!-- ======== LIBRARY ======== -->
+    <div x-show="currentPage==='library'" class="page-content">
+      <h1 style="font-size:32px; margin-bottom:4px;">Mi biblioteca</h1>
+      <p style="color:var(--ink-2); margin-bottom:24px; font-size:13.5px;">Tus tareas subidas y las que reclamaste.</p>
+
+      <div style="display:flex; gap:4px; margin-bottom:20px; background:var(--bg-2); padding:4px; border-radius:8px; width:fit-content;">
+        <button @click="libraryTab='uploaded'" class="tab" :class="libraryTab==='uploaded'?'active':''">Subidas (<span x-text="myUploadedTasks.length"></span>)</button>
+        <button @click="libraryTab='claimed'" class="tab" :class="libraryTab==='claimed'?'active':''">Reclamadas (<span x-text="myClaimedTasks.length"></span>)</button>
       </div>
-      <div class="flex gap-1 p-1 rounded-xl mb-6 inline-flex" style="background:var(--bg-surface); border:1px solid var(--border)">
-        <button @click="libraryTab='uploaded'" class="px-4 py-2 rounded-lg text-sm font-display font-semibold transition-all"
-          :class="libraryTab==='uploaded'?'bg-indigo-600 text-white':''" style="color:var(--text-secondary)">
-          Subidas (<span x-text="myUploadedTasks.length"></span>)
-        </button>
-        <button @click="libraryTab='claimed'" class="px-4 py-2 rounded-lg text-sm font-display font-semibold transition-all"
-          :class="libraryTab==='claimed'?'bg-indigo-600 text-white':''" style="color:var(--text-secondary)">
-          Reclamadas (<span x-text="myClaimedTasks.length"></span>)
-        </button>
-      </div>
+
       <div x-show="libraryTab==='uploaded'">
-        <div class="grid md:grid-cols-2 gap-4">
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:12px;">
           <template x-for="task in myUploadedTasks" :key="task.id">
-            <div class="task-card p-4">
-              <div class="flex items-start justify-between mb-2">
-                <span class="subject-pill" :class="subjectClass(task.subject)" x-text="task.subject"></span>
-                <div class="flex gap-2">
-                  <span class="points-badge" x-text="task.price+' pts'"></span>
-                  <span class="text-xs px-2 py-1 rounded-lg font-display font-semibold"
-                    :class="task.approved ? 'text-green-400 bg-green-400/10' : 'text-yellow-400 bg-yellow-400/10'"
-                    x-text="task.approved ? '✓ Aprobada' : '⏳ Pendiente'"></span>
-                </div>
+            <div class="card" style="padding:16px;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:10px; gap:6px; flex-wrap:wrap;">
+                <span class="pill" :class="subjectClass(task.subject)" x-text="task.subject"></span>
+                <span class="badge" :class="task.approved?'badge-green':'badge-amber'" x-text="task.approved?'Aprobada':'Pendiente'"></span>
               </div>
-              <h4 class="font-display font-semibold text-sm mb-1" x-text="task.title"></h4>
-              <div class="flex items-center justify-between mt-3 text-xs" style="color:var(--text-muted)">
-                <span>❤️ <span x-text="task.likes||0"></span> · 👁 <span x-text="task.views||0"></span></span>
-                <span>💰 <span class="text-indigo-400 font-semibold" x-text="(task.earnedPoints||0)+' pts'"></span></span>
+              <div style="font-weight:500; font-size:13.5px; margin-bottom:6px;" x-text="task.title"></div>
+              <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--ink-3);">
+                <span>♡ <span x-text="task.likes||0"></span> · 👁 <span x-text="task.views||0"></span></span>
+                <span style="color:var(--green); font-weight:500;" x-text="(task.earnedPoints||0)+' pts ganados'"></span>
               </div>
             </div>
           </template>
-          <div x-show="myUploadedTasks.length===0" class="col-span-full text-center py-16" style="color:var(--text-muted)">
-            <div class="text-5xl mb-4">📝</div>
-            <p class="font-display">Aún no subiste tareas.</p>
-            <button @click="setPage('upload')" class="btn-primary px-6 py-2 rounded-xl mt-4 inline-block">Subir mi primera tarea</button>
+          <div x-show="myUploadedTasks.length===0" style="grid-column:1/-1; text-align:center; padding:48px 0; color:var(--ink-3);">
+            <p style="margin-bottom:12px;">No subiste tareas aún.</p>
+            <button @click="setPage('upload')" class="btn btn-primary btn-sm">Subir mi primera tarea</button>
           </div>
         </div>
       </div>
+
       <div x-show="libraryTab==='claimed'">
-        <div class="grid md:grid-cols-2 gap-4">
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:12px;">
           <template x-for="task in myClaimedTasks" :key="task.id">
-            <div class="task-card p-4" @click="openTask(task)">
-              <div class="flex items-start justify-between mb-2">
-                <span class="subject-pill" :class="subjectClass(task.subject)" x-text="task.subject"></span>
-                <span class="text-xs px-2 py-1 rounded-lg font-display font-semibold text-teal-400" style="background:var(--teal-soft)">✓ Reclamada</span>
+            <div class="card card-hover" style="padding:16px;" @click="openTask(task)">
+              <div style="display:flex; justify-content:space-between; margin-bottom:10px; gap:6px; flex-wrap:wrap;">
+                <span class="pill" :class="subjectClass(task.subject)" x-text="task.subject"></span>
+                <span class="badge badge-green">Reclamada</span>
               </div>
-              <h4 class="font-display font-semibold text-sm mb-1" x-text="task.title"></h4>
-              <p class="text-xs" style="color:var(--text-muted)">por <span x-text="task.authorName"></span></p>
+              <div style="font-weight:500; font-size:13.5px; margin-bottom:4px;" x-text="task.title"></div>
+              <div style="font-size:12px; color:var(--ink-3);">por <span x-text="task.authorName"></span></div>
             </div>
           </template>
-          <div x-show="myClaimedTasks.length===0" class="col-span-full text-center py-16" style="color:var(--text-muted)">
-            <div class="text-5xl mb-4">📥</div>
-            <p class="font-display">Aún no reclamaste tareas.</p>
-            <button @click="setPage('explore')" class="btn-primary px-6 py-2 rounded-xl mt-4 inline-block">Explorar tareas</button>
+          <div x-show="myClaimedTasks.length===0" style="grid-column:1/-1; text-align:center; padding:48px 0; color:var(--ink-3);">
+            <p style="margin-bottom:12px;">No reclamaste tareas aún.</p>
+            <button @click="setPage('explore')" class="btn btn-primary btn-sm">Explorar tareas</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- LEADERBOARD -->
-    <div x-show="currentPage==='leaderboard'" class="p-4 md:p-8 max-w-3xl mx-auto">
-      <div class="mb-6">
-        <h2 class="font-display text-2xl font-bold mb-1">🏆 Leaderboard</h2>
-        <p class="text-sm" style="color:var(--text-secondary)">Los usuarios con más puntos acumulados.</p>
-      </div>
-      <div class="space-y-3">
-        <template x-for="(user, index) in leaderboardUsers" :key="user.id">
-          <div class="glass-elevated rounded-xl p-4 flex items-center gap-4 transition-all hover:border-indigo-500/30">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center font-display font-bold text-base flex-shrink-0"
-              :class="index===0 ? 'bg-yellow-500/15 text-yellow-400' : index===1 ? 'bg-gray-400/10 text-gray-300' : index===2 ? 'bg-amber-700/15 text-amber-600' : 'bg-gray-800 text-gray-500'"
-              x-text="index===0?'🥇':index===1?'🥈':index===2?'🥉':'#'+(index+1)">
-            </div>
-            <img :src="user.avatar || avatarUrl(user.username)" class="w-10 h-10 rounded-full object-cover flex-shrink-0"/>
-            <div class="flex-1">
-              <div class="font-display font-semibold text-sm flex items-center gap-2">
+    <!-- ======== LEADERBOARD ======== -->
+    <div x-show="currentPage==='leaderboard'" class="page-content" style="max-width:680px;">
+      <h1 style="font-size:32px; margin-bottom:4px;">Leaderboard</h1>
+      <p style="color:var(--ink-2); margin-bottom:24px; font-size:13.5px;">Usuarios con más puntos acumulados.</p>
+
+      <div class="card" style="overflow:hidden;">
+        <template x-for="(user, i) in leaderboardUsers" :key="user.id">
+          <div style="display:flex; align-items:center; gap:14px; padding:14px 18px; border-bottom:1px solid var(--line);">
+            <div style="width:28px; text-align:center; font-weight:600; font-size:13px; color:var(--ink-3); flex-shrink:0;"
+              x-text="i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)"></div>
+            <img :src="user.avatar||avatarUrl(user.username)" style="width:32px; height:32px; border-radius:50%; object-fit:cover; flex-shrink:0;"/>
+            <div style="flex:1; min-width:0;">
+              <div style="font-weight:500; font-size:13.5px; display:flex; align-items:center; gap:6px;">
                 <span x-text="user.username"></span>
-                <template x-if="user.username === currentUser.username">
-                  <span class="text-xs px-2 py-0.5 rounded-full font-normal" style="background:var(--accent-glow); color:#a5b4fc; border:1px solid rgba(99,102,241,0.3)">Tú</span>
+                <template x-if="user.username===currentUser?.username">
+                  <span class="badge badge-blue" style="font-size:10px;">Tú</span>
                 </template>
               </div>
-              <div class="text-xs mt-0.5 flex items-center gap-3" style="color:var(--text-muted)">
-                <span x-text="user.level || 'Estudiante'"></span>
-                <span>📤 <span x-text="user.tasksUploaded||0"></span></span>
-                <span>📥 <span x-text="user.tasksClaimed||0"></span></span>
+              <div style="font-size:11px; color:var(--ink-3); margin-top:1px;">
+                <span x-text="user.level||'Estudiante'"></span> · ↑<span x-text="user.tasksUploaded||0"></span> · ↓<span x-text="user.tasksClaimed||0"></span>
               </div>
             </div>
-            <div class="text-right">
-              <div class="font-display font-bold text-lg" :class="index===0?'text-yellow-400':index===1?'text-gray-300':index===2?'text-amber-600':'text-indigo-400'" x-text="(user.points||0).toLocaleString()"></div>
-              <div class="text-xs" style="color:var(--text-muted)">puntos</div>
+            <div style="text-align:right;">
+              <div style="font-family:'Geist Mono', monospace; font-size:15px; font-weight:600;" :style="i===0?'color:var(--amber)':i===1?'color:#6b7280':i===2?'color:#b45309':'color:var(--ink)'" x-text="(user.points||0).toLocaleString()"></div>
+              <div style="font-size:11px; color:var(--ink-3);">pts</div>
             </div>
           </div>
         </template>
-        <div x-show="leaderboardUsers.length===0" class="text-center py-12" style="color:var(--text-muted)">Sin usuarios registrados aún.</div>
+        <div x-show="leaderboardUsers.length===0" style="padding:40px; text-align:center; color:var(--ink-3);">Sin usuarios registrados.</div>
       </div>
     </div>
 
-    <!-- PROFILE -->
-    <div x-show="currentPage==='profile'" class="p-4 md:p-8 max-w-3xl mx-auto">
-      <div class="mb-6"><h2 class="font-display text-2xl font-bold mb-1">Mi Perfil</h2></div>
-      <div class="glass-elevated rounded-2xl p-6 mb-6">
-        <div class="flex items-start gap-5">
-          <div class="relative">
-            <img :src="currentUser?.avatar || avatarUrl(currentUser?.username)" class="w-20 h-20 rounded-2xl object-cover"/>
-          </div>
-          <div class="flex-1">
-            <h3 class="font-display font-bold text-xl" x-text="currentUser?.username"></h3>
-            <p class="text-sm mt-0.5" style="color:var(--text-secondary)" x-text="currentUser?.bio || 'Sin bio configurada.'"></p>
-            <div class="flex flex-wrap gap-2 mt-3">
-              <span class="level-badge" x-text="currentUser?.level || 'Estudiante'"></span>
-              <span class="text-xs px-2 py-1 rounded-md" style="color:var(--text-muted)">📅 desde <span x-text="formatDate(currentUser?.createdAt)"></span></span>
+    <!-- ======== PROFILE ======== -->
+    <div x-show="currentPage==='profile'" class="page-content" style="max-width:640px;">
+      <h1 style="font-size:32px; margin-bottom:24px;">Mi perfil</h1>
+
+      <!-- Profile card -->
+      <div class="card" style="padding:24px; margin-bottom:16px;">
+        <div style="display:flex; align-items:flex-start; gap:16px; margin-bottom:20px;">
+          <img :src="currentUser?.avatar||avatarUrl(currentUser?.username)" style="width:56px; height:56px; border-radius:8px; object-fit:cover; background:var(--bg-2);"/>
+          <div style="flex:1;">
+            <div style="font-size:20px; font-family:'Instrument Serif', serif;" x-text="currentUser?.username"></div>
+            <div style="font-size:13px; color:var(--ink-2); margin-top:2px;" x-text="currentUser?.bio||'Sin bio configurada.'"></div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">
+              <span class="badge badge-default" x-text="currentUser?.level||'Estudiante'"></span>
               <template x-if="currentUser?.isAdmin">
-                <span class="text-xs px-2 py-1 rounded-md font-display font-semibold" style="background:rgba(251,191,36,0.1); color:#fbbf24; border:1px solid rgba(251,191,36,0.2)">⚙️ ADMIN</span>
+                <span class="badge badge-amber">Admin</span>
               </template>
+              <span style="font-size:11px; color:var(--ink-3); display:flex; align-items:center;">desde <span style="margin-left:4px;" x-text="formatDate(currentUser?.createdAt)"></span></span>
             </div>
           </div>
         </div>
-        <div class="grid grid-cols-3 gap-4 mt-6 pt-5" style="border-top:1px solid var(--border)">
-          <div class="text-center"><div class="font-display font-bold text-xl" style="color:#a5b4fc" x-text="(currentUser?.points||0).toLocaleString()"></div><div class="text-xs mt-0.5" style="color:var(--text-muted)">Puntos</div></div>
-          <div class="text-center"><div class="font-display font-bold text-xl" style="color:#5eead4" x-text="currentUser?.tasksUploaded||0"></div><div class="text-xs mt-0.5" style="color:var(--text-muted)">Subidas</div></div>
-          <div class="text-center"><div class="font-display font-bold text-xl" style="color:#fbbf24" x-text="currentUser?.tasksClaimed||0"></div><div class="text-xs mt-0.5" style="color:var(--text-muted)">Reclamadas</div></div>
+        <hr style="margin-bottom:16px;"/>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; text-align:center;">
+          <div><div class="stat-num" x-text="(currentUser?.points||0).toLocaleString()"></div><div style="font-size:11px; color:var(--ink-3); margin-top:2px;">Puntos</div></div>
+          <div><div class="stat-num" style="color:var(--green);" x-text="currentUser?.tasksUploaded||0"></div><div style="font-size:11px; color:var(--ink-3); margin-top:2px;">Subidas</div></div>
+          <div><div class="stat-num" style="color:var(--amber);" x-text="currentUser?.tasksClaimed||0"></div><div style="font-size:11px; color:var(--ink-3); margin-top:2px;">Reclamadas</div></div>
         </div>
       </div>
-      <div class="glass-elevated rounded-2xl p-6 mb-6">
-        <h3 class="font-display font-semibold text-base mb-5">Editar Perfil</h3>
-        <div class="space-y-4">
+
+      <!-- Edit -->
+      <div class="card" style="padding:24px; margin-bottom:16px;">
+        <div style="font-size:16px; font-family:'Instrument Serif', serif; margin-bottom:16px;">Editar perfil</div>
+        <div style="display:flex; flex-direction:column; gap:14px;">
           <div>
-            <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">BIO</label>
-            <textarea x-model="profileForm.bio" class="input-field" rows="2" placeholder="Contá algo sobre vos..."></textarea>
+            <div class="label" style="margin-bottom:6px;">Bio</div>
+            <textarea x-model="profileForm.bio" class="input" rows="2" placeholder="Contá algo sobre vos..."></textarea>
           </div>
           <div>
-            <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">NIVEL ACADÉMICO</label>
-            <select x-model="profileForm.level" class="input-field">
+            <div class="label" style="margin-bottom:6px;">Nivel académico</div>
+            <select x-model="profileForm.level" class="input">
               <template x-for="l in academicLevels" :key="l"><option :value="l" x-text="l"></option></template>
             </select>
           </div>
           <div>
-            <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">URL DE AVATAR</label>
-            <input x-model="profileForm.avatar" type="url" placeholder="https://..." class="input-field"/>
+            <div class="label" style="margin-bottom:6px;">URL de avatar</div>
+            <input x-model="profileForm.avatar" type="url" placeholder="https://..." class="input"/>
           </div>
-          <button @click="saveProfile()" :disabled="isLoading" class="btn-primary px-6 py-2 rounded-xl">Guardar Cambios</button>
+          <button @click="saveProfile()" :disabled="isLoading" class="btn btn-primary" style="width:fit-content;">Guardar cambios</button>
         </div>
       </div>
-      <div class="glass-elevated rounded-2xl p-6">
-        <h3 class="font-display font-semibold text-base mb-4">Historial de Puntos</h3>
-        <div class="space-y-2">
-          <template x-for="tx in (currentUser?.transactions||[]).slice().reverse().slice(0,15)" :key="tx.id">
-            <div class="flex items-center justify-between py-2" style="border-bottom:1px solid var(--border-subtle)">
-              <div>
-                <div class="text-sm" x-text="tx.description"></div>
-                <div class="text-xs mt-0.5" style="color:var(--text-muted)" x-text="formatDate(tx.date)"></div>
-              </div>
-              <div class="font-display font-bold text-sm" :class="tx.amount > 0 ? 'text-green-400' : 'text-red-400'" x-text="(tx.amount > 0 ? '+' : '') + tx.amount + ' pts'"></div>
+
+      <!-- Transactions -->
+      <div class="card" style="padding:20px 0; overflow:hidden;">
+        <div style="padding:0 20px 12px; font-size:16px; font-family:'Instrument Serif', serif;">Historial de puntos</div>
+        <template x-for="tx in (currentUser?.transactions||[]).slice().reverse().slice(0,15)" :key="tx.id">
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 20px; border-top:1px solid var(--line);">
+            <div>
+              <div style="font-size:13px;" x-text="tx.description"></div>
+              <div style="font-size:11px; color:var(--ink-3); margin-top:2px;" x-text="formatDate(tx.date)"></div>
             </div>
-          </template>
-          <div x-show="!(currentUser?.transactions?.length)" class="text-center py-6 text-xs" style="color:var(--text-muted)">Sin transacciones aún.</div>
-        </div>
+            <div style="font-family:'Geist Mono',monospace; font-size:13px; font-weight:600;" :class="tx.amount>0?'':''" :style="tx.amount>0?'color:var(--green)':'color:var(--red)'" x-text="(tx.amount>0?'+':'')+tx.amount+' pts'"></div>
+          </div>
+        </template>
+        <div x-show="!(currentUser?.transactions?.length)" style="padding:24px; text-align:center; color:var(--ink-3); font-size:13px;">Sin transacciones aún.</div>
       </div>
     </div>
 
-    <!-- ADMIN -->
-    <div x-show="currentPage==='admin' && currentUser?.isAdmin" class="p-4 md:p-8 max-w-5xl mx-auto">
-      <div class="mb-6">
-        <h2 class="font-display text-2xl font-bold mb-1 text-yellow-400">⚙️ Admin Panel</h2>
-        <p class="text-sm" style="color:var(--text-secondary)">Control total de la plataforma TaskCult.</p>
-      </div>
-      <div class="flex flex-wrap gap-1 p-1 rounded-xl mb-8" style="background:var(--bg-surface); border:1px solid var(--border)">
+    <!-- ======== ADMIN ======== -->
+    <div x-show="currentPage==='admin' && currentUser?.isAdmin" class="page-content">
+      <h1 style="font-size:32px; margin-bottom:4px;">Admin</h1>
+      <p style="color:var(--ink-2); margin-bottom:24px; font-size:13.5px;">Gestión completa de la plataforma.</p>
+
+      <!-- Admin tabs -->
+      <div style="display:flex; gap:4px; margin-bottom:24px; background:var(--bg-2); padding:4px; border-radius:8px; width:fit-content; flex-wrap:wrap;">
         <template x-for="tab in adminTabs" :key="tab.id">
-          <button @click="adminTab=tab.id" class="px-4 py-2 rounded-lg text-xs font-display font-semibold transition-all flex-1"
-            :class="adminTab===tab.id ? 'bg-yellow-500/15 text-yellow-400' : ''" style="color:var(--text-secondary)"
-            x-text="tab.label"></button>
+          <button @click="adminTab=tab.id" class="tab" :class="adminTab===tab.id?'active':''" x-text="tab.label"></button>
         </template>
       </div>
 
-      <!-- Dashboard -->
+      <!-- Dashboard tab -->
       <div x-show="adminTab==='dashboard'">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-          <div class="stat-card text-center"><div class="text-3xl font-display font-bold text-yellow-400" x-text="db.users.length"></div><div class="text-xs mt-1" style="color:var(--text-muted)">Usuarios</div></div>
-          <div class="stat-card text-center"><div class="text-3xl font-display font-bold text-indigo-400" x-text="db.tasks.length"></div><div class="text-xs mt-1" style="color:var(--text-muted)">Tareas</div></div>
-          <div class="stat-card text-center"><div class="text-3xl font-display font-bold text-teal-400" x-text="db.tasks.filter(t=>t.approved).length"></div><div class="text-xs mt-1" style="color:var(--text-muted)">Aprobadas</div></div>
-          <div class="stat-card text-center"><div class="text-3xl font-display font-bold text-green-400" x-text="totalPointsInCirculation.toLocaleString()"></div><div class="text-xs mt-1" style="color:var(--text-muted)">Pts circulación</div></div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:12px; margin-bottom:24px;">
+          <div class="card" style="padding:16px; text-align:center;"><div class="stat-num" x-text="db.users.length"></div><div style="font-size:11px; color:var(--ink-3); margin-top:4px;">Usuarios</div></div>
+          <div class="card" style="padding:16px; text-align:center;"><div class="stat-num" x-text="db.tasks.length"></div><div style="font-size:11px; color:var(--ink-3); margin-top:4px;">Tareas</div></div>
+          <div class="card" style="padding:16px; text-align:center;"><div class="stat-num" style="color:var(--green);" x-text="db.tasks.filter(t=>t.approved).length"></div><div style="font-size:11px; color:var(--ink-3); margin-top:4px;">Aprobadas</div></div>
+          <div class="card" style="padding:16px; text-align:center;"><div class="stat-num" x-text="totalPointsInCirculation.toLocaleString()"></div><div style="font-size:11px; color:var(--ink-3); margin-top:4px;">Pts circulación</div></div>
         </div>
-        <div class="glass-elevated rounded-2xl p-5">
-          <h3 class="font-display font-semibold mb-4">Tareas pendientes de aprobación</h3>
-          <div class="space-y-3">
-            <template x-for="task in pendingTasks" :key="task.id">
-              <div class="flex items-center gap-3 py-2" style="border-bottom:1px solid var(--border-subtle)">
-                <div class="flex-1">
-                  <div class="font-display font-semibold text-sm" x-text="task.title"></div>
-                  <div class="text-xs mt-0.5 flex gap-2" style="color:var(--text-muted)">
-                    <span x-text="task.subject"></span> · <span x-text="task.level"></span> · por <span x-text="task.authorName"></span>
-                  </div>
-                </div>
-                <button @click="approveTask(task.id)" class="btn-teal text-xs px-3 py-1 rounded-lg">Aprobar</button>
-                <button @click="rejectTask(task.id)" class="text-xs px-3 py-1 rounded-lg" style="background:rgba(239,68,68,0.1); color:#f87171; border:1px solid rgba(239,68,68,0.2)">Rechazar</button>
+        <div class="card" style="overflow:hidden;">
+          <div style="padding:16px 18px 12px; font-size:16px; font-family:'Instrument Serif',serif;">Pendientes de aprobación</div>
+          <template x-for="task in pendingTasks" :key="task.id">
+            <div style="display:flex; align-items:center; gap:12px; padding:12px 18px; border-top:1px solid var(--line);">
+              <div style="flex:1; min-width:0;">
+                <div style="font-weight:500; font-size:13.5px;" x-text="task.title"></div>
+                <div style="font-size:11px; color:var(--ink-3); margin-top:1px;"><span x-text="task.subject"></span> · <span x-text="task.level"></span> · por <span x-text="task.authorName"></span></div>
               </div>
-            </template>
-            <div x-show="pendingTasks.length===0" class="text-center py-6 text-xs" style="color:var(--text-muted)">Sin tareas pendientes. ✓</div>
-          </div>
+              <div style="display:flex; gap:6px; flex-shrink:0;">
+                <button @click="approveTask(task.id)" class="btn btn-success btn-sm">Aprobar</button>
+                <button @click="rejectTask(task.id)" class="btn btn-danger btn-sm">Rechazar</button>
+              </div>
+            </div>
+          </template>
+          <div x-show="pendingTasks.length===0" style="padding:24px; text-align:center; color:var(--ink-3); font-size:13px; border-top:1px solid var(--line);">Sin tareas pendientes ✓</div>
         </div>
       </div>
 
-      <!-- Users -->
+      <!-- Users tab -->
       <div x-show="adminTab==='users'">
-        <div class="glass-elevated rounded-2xl p-5">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="font-display font-semibold">Gestión de Usuarios</h3>
-            <input x-model="adminUserSearch" type="text" placeholder="Buscar usuario..." class="input-field" style="max-width:200px"/>
+        <div class="card" style="overflow:hidden;">
+          <div style="padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; border-bottom:1px solid var(--line);">
+            <div style="font-size:16px; font-family:'Instrument Serif',serif;">Usuarios</div>
+            <input x-model="adminUserSearch" type="text" placeholder="Buscar..." class="input" style="max-width:200px;"/>
           </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-xs">
+          <div style="overflow-x:auto;">
+            <table>
               <thead>
-                <tr style="border-bottom:1px solid var(--border); color:var(--text-muted)">
-                  <th class="text-left py-2 px-2 font-display">Usuario</th>
-                  <th class="text-left py-2 px-2 font-display">Nivel</th>
-                  <th class="text-right py-2 px-2 font-display">Puntos</th>
-                  <th class="text-right py-2 px-2 font-display">↑</th>
-                  <th class="text-right py-2 px-2 font-display">↓</th>
-                  <th class="text-center py-2 px-2 font-display">Estado</th>
-                  <th class="text-center py-2 px-2 font-display">Acciones</th>
-                </tr>
+                <tr><th>Usuario</th><th>Nivel</th><th style="text-align:right;">Puntos</th><th style="text-align:center;">↑</th><th style="text-align:center;">↓</th><th style="text-align:center;">Estado</th><th style="text-align:center;">Acciones</th></tr>
               </thead>
               <tbody>
                 <template x-for="user in filteredAdminUsers" :key="user.id">
-                  <tr class="transition-all" style="border-bottom:1px solid var(--border-subtle)">
-                    <td class="py-2 px-2">
-                      <div class="flex items-center gap-2">
-                        <img :src="user.avatar||avatarUrl(user.username)" class="w-7 h-7 rounded-full object-cover"/>
+                  <tr>
+                    <td>
+                      <div style="display:flex; align-items:center; gap:8px;">
+                        <img :src="user.avatar||avatarUrl(user.username)" style="width:28px; height:28px; border-radius:50%; object-fit:cover;"/>
                         <div>
-                          <div class="font-semibold" x-text="user.username"></div>
-                          <div style="color:var(--text-muted)" x-text="user.email"></div>
+                          <div style="font-weight:500;" x-text="user.username"></div>
+                          <div style="font-size:11px; color:var(--ink-3);" x-text="user.email"></div>
                         </div>
                       </div>
                     </td>
-                    <td class="py-2 px-2" style="color:var(--text-secondary)" x-text="user.level||'—'"></td>
-                    <td class="py-2 px-2 text-right font-display font-semibold text-indigo-400" x-text="(user.points||0).toLocaleString()"></td>
-                    <td class="py-2 px-2 text-right" x-text="user.tasksUploaded||0"></td>
-                    <td class="py-2 px-2 text-right" x-text="user.tasksClaimed||0"></td>
-                    <td class="py-2 px-2 text-center">
-                      <span class="px-2 py-0.5 rounded-full font-display font-semibold"
-                        :class="user.banned ? 'text-red-400 bg-red-400/10' : 'text-green-400 bg-green-400/10'"
-                        x-text="user.banned?'Baneado':'Activo'"></span>
+                    <td style="color:var(--ink-2);" x-text="user.level||'—'"></td>
+                    <td style="text-align:right; font-family:'Geist Mono',monospace; font-weight:600;" x-text="(user.points||0).toLocaleString()"></td>
+                    <td style="text-align:center; color:var(--ink-2);" x-text="user.tasksUploaded||0"></td>
+                    <td style="text-align:center; color:var(--ink-2);" x-text="user.tasksClaimed||0"></td>
+                    <td style="text-align:center;">
+                      <span class="badge" :class="user.banned?'badge-red':'badge-green'" x-text="user.banned?'Baneado':'Activo'"></span>
                     </td>
-                    <td class="py-2 px-2">
-                      <div class="flex items-center justify-center gap-1">
-                        <button @click="openEditUser(user)" class="btn-ghost text-xs px-2 py-1 rounded-lg">Editar</button>
-                        <button @click="toggleBan(user.id)" class="text-xs px-2 py-1 rounded-lg transition-all"
-                          :class="user.banned ? 'text-green-400 bg-green-400/10' : 'text-red-400 bg-red-400/10'"
-                          x-text="user.banned?'Desbanear':'Banear'"></button>
+                    <td>
+                      <div style="display:flex; gap:4px; justify-content:center;">
+                        <button @click="openEditUser(user)" class="btn btn-outline btn-sm">Editar</button>
+                        <button @click="toggleBan(user.id)" class="btn btn-sm" :class="user.banned?'btn-success':'btn-danger'" x-text="user.banned?'Desbanear':'Banear'"></button>
                       </div>
                     </td>
                   </tr>
@@ -777,178 +779,171 @@
         </div>
       </div>
 
-      <!-- Tasks admin -->
+      <!-- Tasks tab -->
       <div x-show="adminTab==='tasks'">
-        <div class="glass-elevated rounded-2xl p-5">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="font-display font-semibold">Gestión de Tareas</h3>
-            <select x-model="adminTaskFilter" class="input-field text-xs" style="max-width:150px">
+        <div class="card" style="overflow:hidden;">
+          <div style="padding:14px 18px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line);">
+            <div style="font-size:16px; font-family:'Instrument Serif',serif;">Tareas</div>
+            <select x-model="adminTaskFilter" class="input" style="max-width:150px;">
               <option value="all">Todas</option>
               <option value="pending">Pendientes</option>
               <option value="approved">Aprobadas</option>
             </select>
           </div>
-          <div class="space-y-3">
-            <template x-for="task in adminFilteredTasks" :key="task.id">
-              <div class="flex items-center gap-3 py-3" style="border-bottom:1px solid var(--border-subtle)">
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center gap-2 mb-1">
-                    <span class="subject-pill text-xs" :class="subjectClass(task.subject)" x-text="task.subject"></span>
-                    <span class="text-xs px-2 py-0.5 rounded font-display font-semibold"
-                      :class="task.approved?'text-green-400 bg-green-400/10':'text-yellow-400 bg-yellow-400/10'"
-                      x-text="task.approved?'Aprobada':'Pendiente'"></span>
-                  </div>
-                  <div class="font-display font-semibold text-sm truncate" x-text="task.title"></div>
-                  <div class="text-xs mt-0.5" style="color:var(--text-muted)">por <span x-text="task.authorName"></span> · <span x-text="task.price"></span> pts</div>
+          <template x-for="task in adminFilteredTasks" :key="task.id">
+            <div style="display:flex; align-items:center; gap:12px; padding:12px 18px; border-top:1px solid var(--line);">
+              <div style="flex:1; min-width:0;">
+                <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px; flex-wrap:wrap;">
+                  <span class="pill" :class="subjectClass(task.subject)" x-text="task.subject"></span>
+                  <span class="badge" :class="task.approved?'badge-green':'badge-amber'" x-text="task.approved?'Aprobada':'Pendiente'"></span>
                 </div>
-                <div class="flex gap-1 flex-shrink-0">
-                  <template x-if="!task.approved">
-                    <button @click="approveTask(task.id)" class="btn-teal text-xs px-2 py-1 rounded-lg">✓</button>
-                  </template>
-                  <button @click="adminDeleteTask(task.id)" class="text-xs px-2 py-1 rounded-lg" style="background:rgba(239,68,68,0.1); color:#f87171">🗑</button>
-                </div>
+                <div style="font-weight:500; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" x-text="task.title"></div>
+                <div style="font-size:11px; color:var(--ink-3);">por <span x-text="task.authorName"></span> · <span x-text="task.price"></span> pts</div>
               </div>
-            </template>
-          </div>
+              <div style="display:flex; gap:6px; flex-shrink:0;">
+                <template x-if="!task.approved">
+                  <button @click="approveTask(task.id)" class="btn btn-success btn-sm">✓</button>
+                </template>
+                <button @click="adminDeleteTask(task.id)" class="btn btn-danger btn-sm">Eliminar</button>
+              </div>
+            </div>
+          </template>
         </div>
       </div>
 
-      <!-- Interface editor -->
+      <!-- Interface tab -->
       <div x-show="adminTab==='interface'">
-        <div class="glass-elevated rounded-2xl p-5">
-          <h3 class="font-display font-semibold mb-5">Editor de Interfaz</h3>
-          <div class="grid md:grid-cols-2 gap-5">
+        <div class="card" style="padding:24px;">
+          <div style="font-size:16px; font-family:'Instrument Serif',serif; margin-bottom:18px;">Editor de interfaz</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
             <div>
-              <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">NOMBRE DE LA PLATAFORMA</label>
-              <input x-model="configForm.platformName" type="text" class="input-field"/>
+              <div class="label" style="margin-bottom:6px;">Nombre de la plataforma</div>
+              <input x-model="configForm.platformName" type="text" class="input"/>
             </div>
             <div>
-              <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">DESCRIPCIÓN CORTA</label>
-              <input x-model="configForm.platformDescription" type="text" class="input-field"/>
-            </div>
-            <div>
-              <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">COLOR ACENTO (hex)</label>
-              <div class="flex gap-2">
-                <input x-model="configForm.accentColor" type="color" class="w-12 h-10 rounded-lg cursor-pointer" style="background:none; border:1px solid var(--border)"/>
-                <input x-model="configForm.accentColor" type="text" class="input-field flex-1" placeholder="#6366f1"/>
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">COLOR SECUNDARIO</label>
-              <div class="flex gap-2">
-                <input x-model="configForm.tealColor" type="color" class="w-12 h-10 rounded-lg cursor-pointer" style="background:none; border:1px solid var(--border)"/>
-                <input x-model="configForm.tealColor" type="text" class="input-field flex-1" placeholder="#0d9488"/>
-              </div>
+              <div class="label" style="margin-bottom:6px;">Descripción corta</div>
+              <input x-model="configForm.platformDescription" type="text" class="input"/>
             </div>
           </div>
-          <button @click="saveConfig()" :disabled="isLoading" class="btn-primary px-6 py-2 rounded-xl mt-5">Aplicar Cambios</button>
+          <button @click="saveConfig()" :disabled="isLoading" class="btn btn-primary" style="margin-top:16px;">Guardar</button>
         </div>
       </div>
 
-      <!-- Global config -->
+      <!-- Config tab -->
       <div x-show="adminTab==='config'">
-        <div class="glass-elevated rounded-2xl p-5">
-          <h3 class="font-display font-semibold mb-5">Configuración Global</h3>
-          <div class="grid md:grid-cols-2 gap-5">
+        <div class="card" style="padding:24px;">
+          <div style="font-size:16px; font-family:'Instrument Serif',serif; margin-bottom:18px;">Configuración global</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
             <div>
-              <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">PUNTOS BIENVENIDA</label>
-              <input x-model.number="configForm.welcomePoints" type="number" class="input-field"/>
+              <div class="label" style="margin-bottom:6px;">Puntos bienvenida</div>
+              <input x-model.number="configForm.welcomePoints" type="number" class="input"/>
             </div>
             <div>
-              <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">PUNTOS BASE POR SUBIR</label>
-              <input x-model.number="configForm.baseUploadPoints" type="number" class="input-field"/>
+              <div class="label" style="margin-bottom:6px;">Puntos base por subir</div>
+              <input x-model.number="configForm.baseUploadPoints" type="number" class="input"/>
             </div>
             <div>
-              <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">PUNTOS EXTRA POR RECLAMACIÓN</label>
-              <input x-model.number="configForm.pointsPerClaim" type="number" class="input-field"/>
+              <div class="label" style="margin-bottom:6px;">Puntos extra por reclamación</div>
+              <input x-model.number="configForm.pointsPerClaim" type="number" class="input"/>
             </div>
             <div>
-              <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">PRECIO MÍNIMO (pts)</label>
-              <input x-model.number="configForm.minPrice" type="number" class="input-field"/>
+              <div class="label" style="margin-bottom:6px;">Precio mínimo (pts)</div>
+              <input x-model.number="configForm.minPrice" type="number" class="input"/>
             </div>
             <div>
-              <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">PRECIO MÁXIMO (pts)</label>
-              <input x-model.number="configForm.maxPrice" type="number" class="input-field"/>
+              <div class="label" style="margin-bottom:6px;">Precio máximo (pts)</div>
+              <input x-model.number="configForm.maxPrice" type="number" class="input"/>
             </div>
             <div>
-              <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">LÍMITE DIARIO DE SUBIDAS</label>
-              <input x-model.number="configForm.dailyUploadLimit" type="number" class="input-field"/>
+              <div class="label" style="margin-bottom:6px;">Límite diario de subidas</div>
+              <input x-model.number="configForm.dailyUploadLimit" type="number" class="input"/>
             </div>
           </div>
-          <button @click="saveConfig()" :disabled="isLoading" class="btn-primary px-6 py-2 rounded-xl mt-5">Guardar Configuración</button>
+          <button @click="saveConfig()" :disabled="isLoading" class="btn btn-primary" style="margin-top:16px;">Guardar configuración</button>
         </div>
       </div>
     </div>
 
-    <div x-show="currentPage==='admin' && !currentUser?.isAdmin" class="p-8 text-center" style="color:var(--text-muted)">
-      <div class="text-5xl mb-4">🚫</div>
-      <p class="font-display">Acceso denegado. Solo para administradores.</p>
+    <div x-show="currentPage==='admin' && !currentUser?.isAdmin" style="padding:60px; text-align:center; color:var(--ink-3);">
+      <p style="font-size:15px;">Acceso denegado. Solo para administradores.</p>
     </div>
+
   </main>
 </div>
 
-<!-- TASK MODAL -->
-<div x-show="taskModal.open" x-cloak class="modal-overlay" @click.self="taskModal.open=false">
-  <div class="modal-box" x-show="taskModal.task">
-    <div class="p-6">
-      <div class="flex items-start justify-between mb-5">
-        <div class="flex-1">
-          <div class="flex items-center gap-2 flex-wrap mb-2">
-            <span class="subject-pill" :class="subjectClass(taskModal.task?.subject)" x-text="taskModal.task?.subject"></span>
-            <span class="level-badge" x-text="taskModal.task?.level"></span>
+<!-- ==================== TASK MODAL ==================== -->
+<div x-show="taskModal.open" x-cloak class="overlay" @click.self="taskModal.open=false">
+  <div class="modal" x-show="taskModal.task">
+    <div style="padding:24px;">
+      <!-- Header -->
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:20px;">
+        <div style="flex:1; padding-right:12px;">
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:8px;">
+            <span class="pill" :class="subjectClass(taskModal.task?.subject)" x-text="taskModal.task?.subject"></span>
+            <span class="badge badge-default" x-text="taskModal.task?.level"></span>
             <template x-if="taskModal.task?.hasFile">
-              <span class="tag">📎 Archivo adjunto</span>
+              <span class="badge badge-default">📎 Adjunto</span>
             </template>
           </div>
-          <h2 class="font-display font-bold text-lg" x-text="taskModal.task?.title"></h2>
+          <h2 style="font-size:22px; line-height:1.3;" x-text="taskModal.task?.title"></h2>
         </div>
-        <button @click="taskModal.open=false" class="ml-4 w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:bg-red-500/10 text-gray-500 hover:text-red-400 text-lg">✕</button>
+        <button @click="taskModal.open=false" class="btn btn-ghost" style="padding:4px 8px; flex-shrink:0; font-size:18px; color:var(--ink-3);">✕</button>
       </div>
-      <div class="flex items-center gap-3 p-3 rounded-xl mb-5" style="background:var(--bg-base)">
-        <img :src="avatarUrl(taskModal.task?.authorName)" class="w-9 h-9 rounded-full object-cover"/>
-        <div>
-          <div class="font-display font-semibold text-sm" x-text="taskModal.task?.authorName"></div>
-          <div class="text-xs" style="color:var(--text-muted)" x-text="formatDate(taskModal.task?.createdAt)"></div>
+
+      <!-- Author -->
+      <div style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:var(--bg-2); border-radius:6px; margin-bottom:18px;">
+        <img :src="avatarUrl(taskModal.task?.authorName)" style="width:32px; height:32px; border-radius:50%;"/>
+        <div style="flex:1;">
+          <div style="font-weight:500; font-size:13px;" x-text="taskModal.task?.authorName"></div>
+          <div style="font-size:11px; color:var(--ink-3);" x-text="formatDate(taskModal.task?.createdAt)"></div>
         </div>
-        <div class="ml-auto flex items-center gap-3 text-xs" style="color:var(--text-muted)">
+        <div style="display:flex; align-items:center; gap:10px; font-size:12px; color:var(--ink-3);">
           <span>👁 <span x-text="taskModal.task?.views||0"></span></span>
-          <button @click="likeTask(taskModal.task?.id)" class="flex items-center gap-1 transition-all hover:text-red-400 cursor-pointer">
-            ❤️ <span x-text="taskModal.task?.likes||0"></span>
+          <button @click="likeTask(taskModal.task?.id)" style="background:none; border:none; cursor:pointer; font-size:12px; color:var(--ink-3); display:flex; align-items:center; gap:3px; padding:0;" class="btn-ghost">
+            ♡ <span x-text="taskModal.task?.likes||0"></span>
           </button>
         </div>
       </div>
-      <div class="mb-5">
-        <div class="text-xs font-display font-semibold mb-2" style="color:var(--text-muted)">DESCRIPCIÓN</div>
-        <p class="text-sm leading-relaxed" style="color:var(--text-secondary)" x-text="taskModal.task?.description"></p>
+
+      <!-- Description -->
+      <div style="margin-bottom:16px;">
+        <div class="label" style="margin-bottom:6px;">Descripción</div>
+        <p style="font-size:13.5px; color:var(--ink-2); line-height:1.6;" x-text="taskModal.task?.description"></p>
       </div>
-      <div x-show="taskModal.task?.tags?.length" class="mb-5">
-        <div class="text-xs font-display font-semibold mb-2" style="color:var(--text-muted)">TAGS</div>
-        <div class="flex flex-wrap gap-2">
+
+      <!-- Tags -->
+      <div x-show="taskModal.task?.tags?.length" style="margin-bottom:20px;">
+        <div class="label" style="margin-bottom:6px;">Tags</div>
+        <div style="display:flex; flex-wrap:wrap; gap:4px;">
           <template x-for="tag in (taskModal.task?.tags||[])" :key="tag">
-            <span class="tag" x-text="'#'+tag"></span>
+            <span class="badge badge-default" x-text="'#'+tag"></span>
           </template>
         </div>
       </div>
-      <div class="rounded-xl p-4 flex items-center justify-between" style="background:var(--bg-base); border:1px solid var(--border)">
+
+      <hr style="margin-bottom:18px;"/>
+
+      <!-- Claim / price -->
+      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
         <div>
-          <div class="text-xs font-display font-semibold mb-1" style="color:var(--text-muted)">PRECIO DE RECLAMACIÓN</div>
-          <div class="text-2xl font-display font-bold" style="color:#a5b4fc" x-text="(taskModal.task?.price||0)+' puntos'"></div>
-          <div class="text-xs mt-0.5" style="color:var(--text-muted)">Tu saldo: <span x-text="(currentUser?.points||0).toLocaleString()"></span> pts</div>
+          <div class="label" style="margin-bottom:3px;">Precio de reclamación</div>
+          <div style="font-family:'Geist Mono',monospace; font-size:22px; font-weight:600; color:var(--ink);" x-text="(taskModal.task?.price||0)+' pts'"></div>
+          <div style="font-size:12px; color:var(--ink-3); margin-top:2px;">Tu saldo: <span class="mono" x-text="(currentUser?.points||0).toLocaleString()"></span> pts</div>
         </div>
         <div>
           <template x-if="isTaskClaimed(taskModal.task?.id)">
-            <div class="flex flex-col items-center gap-2">
-              <div class="text-xs px-4 py-2 rounded-xl font-display font-semibold text-teal-400" style="background:var(--teal-soft); border:1px solid rgba(13,148,136,0.3)">✓ Ya reclamada</div>
-              <button @click="downloadTask(taskModal.task)" class="btn-teal text-xs px-4 py-2 rounded-xl">📥 Descargar</button>
+            <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
+              <span class="badge badge-green" style="padding:4px 12px;">✓ Reclamada</span>
+              <button @click="downloadTask(taskModal.task)" class="btn btn-outline btn-sm">Descargar</button>
             </div>
           </template>
           <template x-if="!isTaskClaimed(taskModal.task?.id) && taskModal.task?.authorId !== currentUser?.id">
-            <button @click="claimTask(taskModal.task)" :disabled="isLoading" class="btn-primary px-6 py-3 rounded-xl">
+            <button @click="claimTask(taskModal.task)" :disabled="isLoading" class="btn btn-primary">
               Reclamar por <span x-text="taskModal.task?.price"></span> pts
             </button>
           </template>
           <template x-if="taskModal.task?.authorId === currentUser?.id">
-            <div class="text-xs px-4 py-2 rounded-xl font-display font-semibold" style="color:var(--text-muted); background:var(--bg-overlay)">Tu tarea</div>
+            <span class="badge badge-default" style="padding:6px 14px;">Tu tarea</span>
           </template>
         </div>
       </div>
@@ -956,87 +951,70 @@
   </div>
 </div>
 
-<!-- EDIT USER MODAL -->
-<div x-show="editUserModal.open" x-cloak class="modal-overlay" @click.self="editUserModal.open=false">
-  <div class="modal-box p-6">
-    <div class="flex items-center justify-between mb-5">
-      <h3 class="font-display font-bold text-lg">Editar Usuario: <span x-text="editUserModal.user?.username"></span></h3>
-      <button @click="editUserModal.open=false" class="text-gray-500 hover:text-white text-xl">✕</button>
-    </div>
-    <div class="space-y-4">
-      <div>
-        <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">PUNTOS</label>
-        <input x-model.number="editUserModal.points" type="number" class="input-field"/>
+<!-- ==================== EDIT USER MODAL ==================== -->
+<div x-show="editUserModal.open" x-cloak class="overlay" @click.self="editUserModal.open=false">
+  <div class="modal" style="max-width:440px;">
+    <div style="padding:24px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+        <h3 style="font-size:20px;">Editar: <span x-text="editUserModal.user?.username"></span></h3>
+        <button @click="editUserModal.open=false" class="btn btn-ghost" style="padding:4px 8px; color:var(--ink-3);">✕</button>
       </div>
-      <div>
-        <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">NIVEL ACADÉMICO</label>
-        <select x-model="editUserModal.level" class="input-field">
-          <template x-for="l in academicLevels" :key="l"><option :value="l" x-text="l"></option></template>
-        </select>
-      </div>
-      <div>
-        <label class="block text-xs font-display font-semibold mb-2" style="color:var(--text-secondary)">ROL ADMIN</label>
-        <label class="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" x-model="editUserModal.isAdmin" class="w-4 h-4"/>
-          <span class="text-sm" style="color:var(--text-secondary)">Es administrador</span>
-        </label>
-      </div>
-      <div class="flex gap-3 pt-2">
-        <button @click="saveEditUser()" :disabled="isLoading" class="btn-primary flex-1 py-2 rounded-xl">Guardar</button>
-        <button @click="editUserModal.open=false" class="btn-ghost flex-1 py-2 rounded-xl">Cancelar</button>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div>
+          <div class="label" style="margin-bottom:6px;">Puntos</div>
+          <input x-model.number="editUserModal.points" type="number" class="input"/>
+        </div>
+        <div>
+          <div class="label" style="margin-bottom:6px;">Nivel académico</div>
+          <select x-model="editUserModal.level" class="input">
+            <template x-for="l in academicLevels" :key="l"><option :value="l" x-text="l"></option></template>
+          </select>
+        </div>
+        <div>
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13.5px; color:var(--ink-2);">
+            <input type="checkbox" x-model="editUserModal.isAdmin" style="width:14px; height:14px;"/>
+            Es administrador
+          </label>
+        </div>
+        <div style="display:flex; gap:8px; padding-top:4px;">
+          <button @click="saveEditUser()" :disabled="isLoading" class="btn btn-primary" style="flex:1;">Guardar</button>
+          <button @click="editUserModal.open=false" class="btn btn-outline" style="flex:1;">Cancelar</button>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// ==============================
-// JSONBin API wrapper
-// ==============================
+// ============================================================
+// CONFIGURACIÓN DE JSONBIN — EDITAR AQUÍ
+// ============================================================
+const JSONBIN_API_KEY = '$2a$10$ucM0OlKyXRD85828hDFs6uTS8srl1RM6v7vTjUhPMFwo0I9a4OCzq';  // ← Pegá tu Secret Access Key de JSONBin acá
+const JSONBIN_BIN_ID  = '69fcb2c2adc21f119a693adf';  // ← Pegá tu Bin ID acá (vacío = crear nuevo)
+// ============================================================
+
 const JSONBIN_BASE = 'https://api.jsonbin.io/v3';
 
 async function jbGet(binId, apiKey) {
-  const r = await fetch(`${JSONBIN_BASE}/b/${binId}/latest`, {
-    headers: { 'X-Master-Key': apiKey }
-  });
-  if (!r.ok) throw new Error('GET failed: ' + r.status);
-  const d = await r.json();
-  return d.record;
+  const r = await fetch(`${JSONBIN_BASE}/b/${binId}/latest`, { headers: { 'X-Master-Key': apiKey } });
+  if (!r.ok) throw new Error('GET ' + r.status);
+  return (await r.json()).record;
 }
-
 async function jbSet(binId, apiKey, data) {
-  const r = await fetch(`${JSONBIN_BASE}/b/${binId}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', 'X-Master-Key': apiKey },
-    body: JSON.stringify(data)
-  });
-  if (!r.ok) throw new Error('PUT failed: ' + r.status);
-  const d = await r.json();
-  return d.record;
+  const r = await fetch(`${JSONBIN_BASE}/b/${binId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-Master-Key': apiKey }, body: JSON.stringify(data) });
+  if (!r.ok) throw new Error('PUT ' + r.status);
+  return (await r.json()).record;
 }
-
 async function jbCreate(apiKey, data, name) {
-  const r = await fetch(`${JSONBIN_BASE}/b`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-Master-Key': apiKey, 'X-Bin-Name': name, 'X-Bin-Private': 'true' },
-    body: JSON.stringify(data)
-  });
-  if (!r.ok) throw new Error('CREATE failed: ' + r.status);
-  const d = await r.json();
-  return d.metadata.id;
+  const r = await fetch(`${JSONBIN_BASE}/b`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Master-Key': apiKey, 'X-Bin-Name': name, 'X-Bin-Private': 'true' }, body: JSON.stringify(data) });
+  if (!r.ok) throw new Error('CREATE ' + r.status);
+  return (await r.json()).metadata.id;
 }
 
-// ==============================
-// Alpine App
-// ==============================
 function app() {
   return {
-    // State
     isLoading: true,
-    loadingMsg: 'Conectando con el backend...',
-    setupDone: false,
-    setupApiKey: '',
-    setupError: '',
+    loadingMsg: 'Cargando...',
     currentUser: null,
     currentPage: 'home',
     authMode: 'login',
@@ -1048,15 +1026,9 @@ function app() {
     exploreSort: 'recent',
     adminUserSearch: '',
     adminTaskFilter: 'all',
-
-    // Backend refs
     apiKey: '',
     binId: '',
-
-    // In-memory DB (synced with JSONBin)
     db: { users: [], tasks: [], config: {} },
-
-    // Forms
     loginForm: { username: '', password: '' },
     registerForm: { username: '', email: '', password: '', level: '' },
     uploadForm: { title: '', description: '', subject: '', level: '', price: 50, tagsStr: '', hasFile: false },
@@ -1065,25 +1037,22 @@ function app() {
     editUserModal: { open: false, user: null, points: 0, level: '', isAdmin: false },
     taskModal: { open: false, task: null },
     toast: { show: false, message: '', type: 'success' },
-
-    // Static data
     config: {},
     subjects: ['Matemáticas','Física','Química','Historia','Literatura','Biología','Programación','Inglés','Geografía','Filosofía','Arte','Economía'],
     academicLevels: ['Secundaria','Preuniversitario','Universitario 1er año','Universitario 2do año','Universitario 3er año','Posgrado'],
     adminTabs: [
-      { id: 'dashboard', label: '📊 Dashboard' },
-      { id: 'users', label: '👥 Usuarios' },
-      { id: 'tasks', label: '📋 Tareas' },
-      { id: 'interface', label: '🎨 Interfaz' },
-      { id: 'config', label: '⚙️ Config' },
+      { id:'dashboard', label:'Dashboard' },
+      { id:'users', label:'Usuarios' },
+      { id:'tasks', label:'Tareas' },
+      { id:'interface', label:'Interfaz' },
+      { id:'config', label:'Config' },
     ],
 
-    // ---- Computed ----
     get featuredTasks() { return this.db.tasks.filter(t=>t.approved).sort((a,b)=>(b.likes||0)-(a.likes||0)).slice(0,6); },
     get recentTasks() { return this.db.tasks.filter(t=>t.approved).sort((a,b)=>b.createdAt-a.createdAt).slice(0,8); },
     get filteredTasks() {
       let tasks = this.db.tasks.filter(t=>t.approved);
-      if (this.exploreSearch) { const q=this.exploreSearch.toLowerCase(); tasks=tasks.filter(t=>t.title.toLowerCase().includes(q)||t.description.toLowerCase().includes(q)||(t.tags||[]).some(tag=>tag.toLowerCase().includes(q))); }
+      if (this.exploreSearch) { const q=this.exploreSearch.toLowerCase(); tasks=tasks.filter(t=>t.title.toLowerCase().includes(q)||t.description.toLowerCase().includes(q)||(t.tags||[]).some(g=>g.toLowerCase().includes(q))); }
       if (this.exploreSubject) tasks=tasks.filter(t=>t.subject===this.exploreSubject);
       if (this.exploreLevel) tasks=tasks.filter(t=>t.level===this.exploreLevel);
       if (this.exploreSort==='recent') tasks.sort((a,b)=>b.createdAt-a.createdAt);
@@ -1098,445 +1067,225 @@ function app() {
     get pendingTasks() { return this.db.tasks.filter(t=>!t.approved); },
     get filteredAdminUsers() { const q=this.adminUserSearch.toLowerCase(); return this.db.users.filter(u=>!q||u.username.toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q)); },
     get adminFilteredTasks() { if (this.adminTaskFilter==='pending') return this.db.tasks.filter(t=>!t.approved); if (this.adminTaskFilter==='approved') return this.db.tasks.filter(t=>t.approved); return this.db.tasks; },
-    get totalPointsInCirculation() { return this.db.users.reduce((sum,u)=>sum+(u.points||0),0); },
+    get totalPointsInCirculation() { return this.db.users.reduce((s,u)=>s+(u.points||0),0); },
 
-    // ---- Init ----
     async init() {
       this.isLoading = true;
-      this.loadingMsg = 'Verificando configuración...';
+      this.loadingMsg = 'Conectando...';
 
-      // Check if already configured
-      const savedKey = localStorage.getItem('tc_api_key');
-      const savedBin = localStorage.getItem('tc_bin_id');
+      // Use hardcoded keys first, then fall back to localStorage
+      this.apiKey = JSONBIN_API_KEY || localStorage.getItem('tc_api_key') || '';
+      this.binId  = JSONBIN_BIN_ID  || localStorage.getItem('tc_bin_id')  || '';
 
-      if (savedKey && savedBin) {
-        this.apiKey = savedKey;
-        this.binId = savedBin;
+      if (this.apiKey && this.binId) {
         try {
           await this.loadDB();
-          this.setupDone = true;
           this.applyConfig();
-          // Restore session
-          const sessionId = localStorage.getItem('tc_session');
-          if (sessionId) {
-            const user = this.db.users.find(u => u.id === sessionId);
-            if (user && !user.banned) {
-              this.currentUser = user;
-              this.initProfileForm();
-            }
+          const sid = localStorage.getItem('tc_session');
+          if (sid) {
+            const u = this.db.users.find(u=>u.id===sid);
+            if (u && !u.banned) { this.currentUser = u; this.initProfileForm(); }
           }
         } catch(e) {
-          // Stored config is invalid, reset
-          localStorage.removeItem('tc_api_key');
-          localStorage.removeItem('tc_bin_id');
-          this.setupDone = false;
+          console.warn('Backend error:', e);
         }
-      }
-
-      this.isLoading = false;
-    },
-
-    async initializeBackend() {
-      if (!this.setupApiKey) return;
-      this.isLoading = true;
-      this.loadingMsg = 'Creando base de datos en JSONBin...';
-      this.setupError = '';
-
-      try {
-        const initialDB = this.buildInitialDB();
-        const id = await jbCreate(this.setupApiKey, initialDB, 'taskcult-db');
-        this.apiKey = this.setupApiKey;
-        this.binId = id;
-        localStorage.setItem('tc_api_key', this.apiKey);
-        localStorage.setItem('tc_bin_id', this.binId);
-        this.db = initialDB;
-        this.applyConfig();
-        this.setupDone = true;
-        this.showToast('¡Backend inicializado correctamente!', 'success');
-      } catch(e) {
-        this.setupError = 'Error al conectar con JSONBin. Verificá tu API key e intentá de nuevo. (' + e.message + ')';
+      } else if (this.apiKey && !this.binId) {
+        // API key present but no bin — create one
+        try {
+          this.loadingMsg = 'Inicializando base de datos...';
+          const initial = this.buildInitialDB();
+          const id = await jbCreate(this.apiKey, initial, 'taskcult-db');
+          this.binId = id;
+          localStorage.setItem('tc_api_key', this.apiKey);
+          localStorage.setItem('tc_bin_id', id);
+          this.db = initial;
+          this.applyConfig();
+        } catch(e) {
+          console.warn('Could not create bin:', e);
+        }
       }
 
       this.isLoading = false;
     },
 
     buildInitialDB() {
-      const cfg = {
-        platformName: 'TaskCult',
-        platformDescription: 'La economía del conocimiento académico',
-        welcomePoints: 100,
-        baseUploadPoints: 50,
-        pointsPerClaim: 10,
-        minPrice: 10,
-        maxPrice: 500,
-        dailyUploadLimit: 5,
-        accentColor: '#6366f1',
-        tealColor: '#0d9488',
-      };
-      const adminUser = {
-        id: 'admin-001',
-        username: 'admin',
-        email: 'admin@taskcult.com',
-        password: 'admin123',
-        bio: 'Administrador de la plataforma TaskCult.',
-        level: 'Posgrado',
-        points: 9999,
-        tasksUploaded: 5,
-        tasksClaimed: 0,
-        claimedTaskIds: [],
-        likedTaskIds: [],
-        transactions: [{ id: 'tx-0', description: 'Cuenta admin creada', amount: 9999, date: Date.now() }],
-        isAdmin: true,
-        avatar: '',
-        createdAt: Date.now(),
-        banned: false
-      };
+      const cfg = { platformName:'TaskCult', platformDescription:'La economía del conocimiento académico', welcomePoints:100, baseUploadPoints:50, pointsPerClaim:10, minPrice:10, maxPrice:500, dailyUploadLimit:5 };
+      const admin = { id:'admin-001', username:'admin', email:'admin@taskcult.com', password:'admin123', bio:'Administrador de la plataforma.', level:'Posgrado', points:9999, tasksUploaded:5, tasksClaimed:0, claimedTaskIds:[], likedTaskIds:[], transactions:[{id:'tx-0',description:'Cuenta admin creada',amount:9999,date:Date.now()}], isAdmin:true, avatar:'', createdAt:Date.now(), banned:false };
       const now = Date.now();
-      const sampleTasks = [
-        { id: 'task-s1', title: 'Resolución completa de Integrales Dobles con cambio de variable', description: 'Guía exhaustiva con 15 ejercicios resueltos de integrales dobles en coordenadas cartesianas y polares. Incluye cambio de variable, Jacobiano y aplicaciones.', subject: 'Matemáticas', level: 'Universitario 2do año', price: 80, tags:['integral','cálculo','ejercicios'], authorId:'admin-001', authorName:'admin', approved:true, likes:12, views:87, hasFile:true, earnedPoints:80, createdAt:now-86400000*3 },
-        { id: 'task-s2', title: 'Apuntes de Mecánica Cuántica: Principio de Heisenberg', description: 'Apuntes detallados sobre el principio de incertidumbre de Heisenberg, con derivaciones matemáticas, ejemplos físicos y análisis filosófico.', subject: 'Física', level: 'Universitario 3er año', price: 120, tags:['cuántica','heisenberg','física moderna'], authorId:'admin-001', authorName:'admin', approved:true, likes:8, views:54, hasFile:true, earnedPoints:120, createdAt:now-86400000*2 },
-        { id: 'task-s3', title: 'Análisis completo de La Metamorfosis de Kafka', description: 'Ensayo académico de 10 páginas. Cubre estructura narrativa, simbolismo, alienación como tema central y contexto biográfico de Kafka.', subject: 'Literatura', level: 'Preuniversitario', price: 50, tags:['kafka','ensayo','literatura moderna'], authorId:'admin-001', authorName:'admin', approved:true, likes:19, views:130, hasFile:true, earnedPoints:50, createdAt:now-86400000 },
-        { id: 'task-s4', title: 'Proyecto Python: Sistema de gestión de inventario con SQLite', description: 'Código completo y documentado de un sistema de inventario en Python con SQLite, CRUD completo, reportes y autenticación básica.', subject: 'Programación', level: 'Universitario 1er año', price: 150, tags:['python','sqlite','proyecto'], authorId:'admin-001', authorName:'admin', approved:true, likes:33, views:210, hasFile:true, earnedPoints:150, createdAt:now-43200000 },
-        { id: 'task-s5', title: 'Línea de tiempo: Primera y Segunda Guerra Mundial', description: 'Presentación con cronología comparativa, causas, consecuencias, mapas y análisis de los tratados de paz de ambas guerras mundiales.', subject: 'Historia', level: 'Secundaria', price: 30, tags:['historia','guerra','siglo XX'], authorId:'admin-001', authorName:'admin', approved:true, likes:5, views:41, hasFile:true, earnedPoints:30, createdAt:now-7200000 },
+      const tasks = [
+        {id:'task-s1',title:'Resolución completa de Integrales Dobles con cambio de variable',description:'Guía exhaustiva con 15 ejercicios resueltos de integrales dobles en coordenadas cartesianas y polares. Incluye cambio de variable, Jacobiano y aplicaciones.',subject:'Matemáticas',level:'Universitario 2do año',price:80,tags:['integral','cálculo','ejercicios'],authorId:'admin-001',authorName:'admin',approved:true,likes:12,views:87,hasFile:true,earnedPoints:80,createdAt:now-86400000*3},
+        {id:'task-s2',title:'Apuntes de Mecánica Cuántica: Principio de Heisenberg',description:'Apuntes detallados sobre el principio de incertidumbre con derivaciones matemáticas, ejemplos físicos y análisis filosófico.',subject:'Física',level:'Universitario 3er año',price:120,tags:['cuántica','heisenberg'],authorId:'admin-001',authorName:'admin',approved:true,likes:8,views:54,hasFile:true,earnedPoints:120,createdAt:now-86400000*2},
+        {id:'task-s3',title:'Análisis completo de La Metamorfosis de Kafka',description:'Ensayo académico de 10 páginas. Estructura narrativa, simbolismo, alienación como tema central y contexto biográfico.',subject:'Literatura',level:'Preuniversitario',price:50,tags:['kafka','ensayo'],authorId:'admin-001',authorName:'admin',approved:true,likes:19,views:130,hasFile:true,earnedPoints:50,createdAt:now-86400000},
+        {id:'task-s4',title:'Proyecto Python: Sistema de gestión de inventario con SQLite',description:'Código completo y documentado con CRUD, reportes y autenticación básica.',subject:'Programación',level:'Universitario 1er año',price:150,tags:['python','sqlite','proyecto'],authorId:'admin-001',authorName:'admin',approved:true,likes:33,views:210,hasFile:true,earnedPoints:150,createdAt:now-43200000},
+        {id:'task-s5',title:'Línea de tiempo: Primera y Segunda Guerra Mundial',description:'Presentación con cronología comparativa, causas, consecuencias, mapas y análisis de los tratados de paz.',subject:'Historia',level:'Secundaria',price:30,tags:['historia','guerra'],authorId:'admin-001',authorName:'admin',approved:true,likes:5,views:41,hasFile:true,earnedPoints:30,createdAt:now-7200000},
       ];
-      return { users: [adminUser], tasks: sampleTasks, config: cfg };
+      return { users:[admin], tasks, config:cfg };
     },
 
     async loadDB() {
       this.loadingMsg = 'Cargando datos...';
       this.db = await jbGet(this.binId, this.apiKey);
-      // Ensure structure
       if (!this.db.users) this.db.users = [];
       if (!this.db.tasks) this.db.tasks = [];
       if (!this.db.config) this.db.config = {};
     },
 
-    async saveDB() {
-      await jbSet(this.binId, this.apiKey, this.db);
-    },
+    async saveDB() { await jbSet(this.binId, this.apiKey, this.db); },
 
     applyConfig() {
-      const defaults = { platformName:'TaskCult', platformDescription:'La economía del conocimiento académico', welcomePoints:100, baseUploadPoints:50, pointsPerClaim:10, minPrice:10, maxPrice:500, dailyUploadLimit:5, accentColor:'#6366f1', tealColor:'#0d9488' };
-      this.config = { ...defaults, ...(this.db.config || {}) };
+      const d = { platformName:'TaskCult', platformDescription:'La economía del conocimiento académico', welcomePoints:100, baseUploadPoints:50, pointsPerClaim:10, minPrice:10, maxPrice:500, dailyUploadLimit:5 };
+      this.config = { ...d, ...(this.db.config||{}) };
       this.configForm = { ...this.config };
-      document.documentElement.style.setProperty('--accent', this.config.accentColor || '#6366f1');
-      document.documentElement.style.setProperty('--accent-soft', this.shadeColor(this.config.accentColor || '#6366f1', -20));
-      document.documentElement.style.setProperty('--teal', this.config.tealColor || '#0d9488');
     },
 
-    shadeColor(color, percent) {
-      let num = parseInt(color.replace('#',''), 16);
-      let r = Math.max(0, Math.min(255, (num >> 16) + percent));
-      let g = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + percent));
-      let b = Math.max(0, Math.min(255, (num & 0x0000FF) + percent));
-      return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-    },
-
-    // ---- Auth ----
     async doLogin() {
-      const user = this.db.users.find(u => (u.username === this.loginForm.username || u.email === this.loginForm.username) && u.password === this.loginForm.password);
-      if (!user) { this.showToast('Usuario o contraseña incorrectos.', 'error'); return; }
-      if (user.banned) { this.showToast('Tu cuenta ha sido baneada.', 'error'); return; }
-      this.currentUser = user;
-      localStorage.setItem('tc_session', user.id);
+      const u = this.db.users.find(u=>(u.username===this.loginForm.username||u.email===this.loginForm.username)&&u.password===this.loginForm.password);
+      if (!u) { this.showToast('Usuario o contraseña incorrectos.','error'); return; }
+      if (u.banned) { this.showToast('Tu cuenta ha sido baneada.','error'); return; }
+      this.currentUser = u;
+      localStorage.setItem('tc_session', u.id);
       this.initProfileForm();
-      this.showToast('¡Bienvenido, ' + user.username + '!', 'success');
-      this.loginForm = { username: '', password: '' };
+      this.showToast('Bienvenido, '+u.username+'!','success');
+      this.loginForm = { username:'', password:'' };
     },
 
     async doRegister() {
-      if (!this.registerForm.username || !this.registerForm.email || !this.registerForm.password || !this.registerForm.level) { this.showToast('Completá todos los campos.', 'error'); return; }
-      if (this.registerForm.password.length < 6) { this.showToast('La contraseña debe tener mínimo 6 caracteres.', 'error'); return; }
-      if (this.db.users.find(u => u.username === this.registerForm.username)) { this.showToast('Ese nombre de usuario ya existe.', 'error'); return; }
-      if (this.db.users.find(u => u.email === this.registerForm.email)) { this.showToast('Ese email ya está registrado.', 'error'); return; }
-
-      this.isLoading = true;
-      this.loadingMsg = 'Creando cuenta...';
+      if (!this.registerForm.username||!this.registerForm.email||!this.registerForm.password||!this.registerForm.level) { this.showToast('Completá todos los campos.','error'); return; }
+      if (this.registerForm.password.length < 6) { this.showToast('Contraseña mínimo 6 caracteres.','error'); return; }
+      if (this.db.users.find(u=>u.username===this.registerForm.username)) { this.showToast('Ese usuario ya existe.','error'); return; }
+      if (this.db.users.find(u=>u.email===this.registerForm.email)) { this.showToast('Ese email ya está registrado.','error'); return; }
+      this.isLoading = true; this.loadingMsg = 'Creando cuenta...';
       try {
-        const wp = this.config.welcomePoints || 100;
-        const newUser = {
-          id: 'user-' + Date.now(),
-          username: this.registerForm.username,
-          email: this.registerForm.email,
-          password: this.registerForm.password,
-          level: this.registerForm.level,
-          bio: '',
-          points: wp,
-          tasksUploaded: 0,
-          tasksClaimed: 0,
-          claimedTaskIds: [],
-          likedTaskIds: [],
-          transactions: [{ id:'tx-reg-'+Date.now(), description:'Puntos de bienvenida', amount:wp, date:Date.now() }],
-          isAdmin: false,
-          avatar: '',
-          createdAt: Date.now(),
-          banned: false
-        };
-        this.db.users.push(newUser);
-        await this.saveDB();
-        this.currentUser = newUser;
-        localStorage.setItem('tc_session', newUser.id);
+        const wp = this.config.welcomePoints||100;
+        const nu = { id:'user-'+Date.now(), username:this.registerForm.username, email:this.registerForm.email, password:this.registerForm.password, level:this.registerForm.level, bio:'', points:wp, tasksUploaded:0, tasksClaimed:0, claimedTaskIds:[], likedTaskIds:[], transactions:[{id:'tx-r'+Date.now(),description:'Puntos de bienvenida',amount:wp,date:Date.now()}], isAdmin:false, avatar:'', createdAt:Date.now(), banned:false };
+        this.db.users.push(nu);
+        if (this.binId) await this.saveDB();
+        this.currentUser = nu;
+        localStorage.setItem('tc_session', nu.id);
         this.initProfileForm();
-        this.showToast('¡Cuenta creada! Recibiste ' + wp + ' pts de bienvenida.', 'success');
+        this.showToast('Cuenta creada. Recibiste '+wp+' pts.','success');
         this.registerForm = { username:'', email:'', password:'', level:'' };
-      } catch(e) {
-        this.showToast('Error al guardar. Intentá de nuevo.', 'error');
-      }
+      } catch(e) { this.showToast('Error al guardar.','error'); }
       this.isLoading = false;
     },
 
-    doLogout() {
-      this.currentUser = null;
-      localStorage.removeItem('tc_session');
-      this.currentPage = 'home';
-    },
+    doLogout() { this.currentUser = null; localStorage.removeItem('tc_session'); this.currentPage = 'home'; },
 
-    // ---- Tasks ----
     async doUploadTask() {
-      if (!this.uploadForm.title || !this.uploadForm.description || !this.uploadForm.subject || !this.uploadForm.level) { this.showToast('Completá todos los campos obligatorios.', 'error'); return; }
+      if (!this.uploadForm.title||!this.uploadForm.description||!this.uploadForm.subject||!this.uploadForm.level) { this.showToast('Completá todos los campos.','error'); return; }
       const price = Number(this.uploadForm.price);
-      if (!price || price < (this.config.minPrice||10)) { this.showToast('El precio mínimo es ' + (this.config.minPrice||10) + ' puntos.', 'error'); return; }
-      if (price > (this.config.maxPrice||500)) { this.showToast('El precio máximo es ' + (this.config.maxPrice||500) + ' puntos.', 'error'); return; }
-
-      this.isLoading = true;
-      this.loadingMsg = 'Subiendo tarea...';
+      if (!price||price<(this.config.minPrice||10)) { this.showToast('Precio mínimo: '+(this.config.minPrice||10)+' pts.','error'); return; }
+      if (price>(this.config.maxPrice||500)) { this.showToast('Precio máximo: '+(this.config.maxPrice||500)+' pts.','error'); return; }
+      this.isLoading = true; this.loadingMsg = 'Subiendo tarea...';
       try {
         const tags = this.uploadForm.tagsStr ? this.uploadForm.tagsStr.split(',').map(t=>t.trim().toLowerCase()).filter(Boolean) : [];
-        const task = {
-          id: 'task-' + Date.now(),
-          title: this.uploadForm.title,
-          description: this.uploadForm.description,
-          subject: this.uploadForm.subject,
-          level: this.uploadForm.level,
-          price,
-          tags,
-          authorId: this.currentUser.id,
-          authorName: this.currentUser.username,
-          approved: !!this.currentUser.isAdmin,
-          likes: 0,
-          views: 0,
-          hasFile: this.uploadForm.hasFile,
-          earnedPoints: 0,
-          createdAt: Date.now()
-        };
+        const task = { id:'task-'+Date.now(), title:this.uploadForm.title, description:this.uploadForm.description, subject:this.uploadForm.subject, level:this.uploadForm.level, price, tags, authorId:this.currentUser.id, authorName:this.currentUser.username, approved:!!this.currentUser.isAdmin, likes:0, views:0, hasFile:this.uploadForm.hasFile, earnedPoints:0, createdAt:Date.now() };
         this.db.tasks.push(task);
-        const pts = this.config.baseUploadPoints || 50;
-        const uIdx = this.db.users.findIndex(u => u.id === this.currentUser.id);
-        if (uIdx !== -1) {
-          this.db.users[uIdx].points = (this.db.users[uIdx].points || 0) + pts;
-          this.db.users[uIdx].tasksUploaded = (this.db.users[uIdx].tasksUploaded || 0) + 1;
-          this.db.users[uIdx].transactions = [...(this.db.users[uIdx].transactions || []), { id:'tx-'+Date.now(), description:'Tarea subida: '+task.title.substring(0,40), amount:pts, date:Date.now() }];
+        const pts = this.config.baseUploadPoints||50;
+        const ui = this.db.users.findIndex(u=>u.id===this.currentUser.id);
+        if (ui!==-1) {
+          this.db.users[ui].points=(this.db.users[ui].points||0)+pts;
+          this.db.users[ui].tasksUploaded=(this.db.users[ui].tasksUploaded||0)+1;
+          this.db.users[ui].transactions=[...(this.db.users[ui].transactions||[]),{id:'tx-'+Date.now(),description:'Tarea subida: '+task.title.substring(0,40),amount:pts,date:Date.now()}];
         }
-        await this.saveDB();
-        this.currentUser = this.db.users[uIdx];
-        this.showToast('¡Tarea subida! Ganaste ' + pts + ' pts.' + (!this.currentUser.isAdmin ? ' Pendiente de aprobación.' : ''), 'success');
+        if (this.binId) await this.saveDB();
+        this.currentUser = this.db.users[ui];
+        this.showToast('¡Tarea subida! +'+pts+' pts.'+(this.currentUser.isAdmin?'':' Pendiente de aprobación.'),'success');
         this.uploadForm = { title:'', description:'', subject:'', level:'', price:50, tagsStr:'', hasFile:false };
         this.setPage('library');
-      } catch(e) {
-        this.showToast('Error al subir la tarea. Intentá de nuevo.', 'error');
-      }
+      } catch(e) { this.showToast('Error al subir.','error'); }
       this.isLoading = false;
     },
 
     async openTask(task) {
       if (!task) return;
-      // Increment views
-      const idx = this.db.tasks.findIndex(t => t.id === task.id);
-      if (idx !== -1) {
-        this.db.tasks[idx].views = (this.db.tasks[idx].views || 0) + 1;
-        // Fire and forget view count save
-        this.saveDB().catch(() => {});
-      }
-      this.taskModal.task = { ...task, views: (task.views || 0) + 1 };
+      const idx = this.db.tasks.findIndex(t=>t.id===task.id);
+      if (idx!==-1) { this.db.tasks[idx].views=(this.db.tasks[idx].views||0)+1; if (this.binId) this.saveDB().catch(()=>{}); }
+      this.taskModal.task = { ...task, views:(task.views||0)+1 };
       this.taskModal.open = true;
     },
 
-    isTaskClaimed(taskId) {
-      if (!this.currentUser || !taskId) return false;
-      return (this.currentUser.claimedTaskIds || []).includes(taskId);
-    },
+    isTaskClaimed(id) { if (!this.currentUser||!id) return false; return (this.currentUser.claimedTaskIds||[]).includes(id); },
 
     async claimTask(task) {
       if (!task) return;
-      if (this.isTaskClaimed(task.id)) { this.showToast('Ya reclamaste esta tarea.', 'warning'); return; }
-      if (task.authorId === this.currentUser.id) { this.showToast('No podés reclamar tu propia tarea.', 'warning'); return; }
-      if ((this.currentUser.points || 0) < task.price) { this.showToast('No tenés suficientes puntos.', 'error'); return; }
-
-      this.isLoading = true;
-      this.loadingMsg = 'Procesando reclamación...';
+      if (this.isTaskClaimed(task.id)) { this.showToast('Ya reclamaste esta tarea.','warning'); return; }
+      if (task.authorId===this.currentUser.id) { this.showToast('No podés reclamar tu propia tarea.','warning'); return; }
+      if ((this.currentUser.points||0)<task.price) { this.showToast('No tenés suficientes puntos.','error'); return; }
+      this.isLoading = true; this.loadingMsg = 'Procesando...';
       try {
-        const authorBonus = this.config.pointsPerClaim || 10;
-        const claimerIdx = this.db.users.findIndex(u => u.id === this.currentUser.id);
-        const authorIdx = this.db.users.findIndex(u => u.id === task.authorId);
-        const taskIdx = this.db.tasks.findIndex(t => t.id === task.id);
-
-        if (claimerIdx !== -1) {
-          this.db.users[claimerIdx].points -= task.price;
-          this.db.users[claimerIdx].claimedTaskIds = [...(this.db.users[claimerIdx].claimedTaskIds || []), task.id];
-          this.db.users[claimerIdx].tasksClaimed = (this.db.users[claimerIdx].tasksClaimed || 0) + 1;
-          this.db.users[claimerIdx].transactions = [...(this.db.users[claimerIdx].transactions || []), { id:'tx-'+Date.now(), description:'Reclamó tarea: '+task.title.substring(0,40), amount:-task.price, date:Date.now() }];
-        }
-        if (authorIdx !== -1) {
-          this.db.users[authorIdx].points = (this.db.users[authorIdx].points || 0) + task.price + authorBonus;
-          this.db.users[authorIdx].transactions = [...(this.db.users[authorIdx].transactions || []), { id:'tx-'+Date.now()+1, description:'Te reclamaron: '+task.title.substring(0,40), amount:task.price+authorBonus, date:Date.now() }];
-        }
-        if (taskIdx !== -1) {
-          this.db.tasks[taskIdx].earnedPoints = (this.db.tasks[taskIdx].earnedPoints || 0) + task.price;
-        }
-        await this.saveDB();
-        if (claimerIdx !== -1) this.currentUser = this.db.users[claimerIdx];
-        this.showToast('¡Tarea reclamada! Se descontaron ' + task.price + ' pts.', 'success');
+        const bonus = this.config.pointsPerClaim||10;
+        const ci = this.db.users.findIndex(u=>u.id===this.currentUser.id);
+        const ai = this.db.users.findIndex(u=>u.id===task.authorId);
+        const ti = this.db.tasks.findIndex(t=>t.id===task.id);
+        if (ci!==-1) { this.db.users[ci].points-=task.price; this.db.users[ci].claimedTaskIds=[...(this.db.users[ci].claimedTaskIds||[]),task.id]; this.db.users[ci].tasksClaimed=(this.db.users[ci].tasksClaimed||0)+1; this.db.users[ci].transactions=[...(this.db.users[ci].transactions||[]),{id:'tx-'+Date.now(),description:'Reclamó: '+task.title.substring(0,40),amount:-task.price,date:Date.now()}]; }
+        if (ai!==-1) { this.db.users[ai].points=(this.db.users[ai].points||0)+task.price+bonus; this.db.users[ai].transactions=[...(this.db.users[ai].transactions||[]),{id:'tx-'+Date.now()+1,description:'Te reclamaron: '+task.title.substring(0,40),amount:task.price+bonus,date:Date.now()}]; }
+        if (ti!==-1) this.db.tasks[ti].earnedPoints=(this.db.tasks[ti].earnedPoints||0)+task.price;
+        if (this.binId) await this.saveDB();
+        if (ci!==-1) this.currentUser = this.db.users[ci];
+        this.showToast('Tarea reclamada. −'+task.price+' pts.','success');
         this.taskModal.open = false;
-      } catch(e) {
-        this.showToast('Error al reclamar. Intentá de nuevo.', 'error');
-      }
+      } catch(e) { this.showToast('Error al reclamar.','error'); }
       this.isLoading = false;
     },
 
-    downloadTask(task) {
-      this.showToast('Descargando: ' + task.title + ' (simulado)', 'success');
-    },
+    downloadTask(task) { this.showToast('Descargando: '+task.title+' (simulado)','success'); },
 
     async likeTask(taskId) {
       if (!taskId) return;
-      const likedIds = this.currentUser.likedTaskIds || [];
-      if (likedIds.includes(taskId)) { this.showToast('Ya le diste like a esta tarea.', 'warning'); return; }
-
+      if ((this.currentUser.likedTaskIds||[]).includes(taskId)) { this.showToast('Ya le diste like.','warning'); return; }
       try {
-        const taskIdx = this.db.tasks.findIndex(t => t.id === taskId);
-        const userIdx = this.db.users.findIndex(u => u.id === this.currentUser.id);
-        if (taskIdx !== -1) this.db.tasks[taskIdx].likes = (this.db.tasks[taskIdx].likes || 0) + 1;
-        if (userIdx !== -1) this.db.users[userIdx].likedTaskIds = [...likedIds, taskId];
-        await this.saveDB();
-        this.currentUser = this.db.users[userIdx];
-        if (this.taskModal.task && this.taskModal.task.id === taskId) {
-          this.taskModal.task = { ...this.taskModal.task, likes: (this.taskModal.task.likes || 0) + 1 };
-        }
-        this.showToast('¡Like añadido!', 'success');
-      } catch(e) {
-        this.showToast('Error al guardar like.', 'error');
-      }
+        const ti = this.db.tasks.findIndex(t=>t.id===taskId);
+        const ui = this.db.users.findIndex(u=>u.id===this.currentUser.id);
+        if (ti!==-1) this.db.tasks[ti].likes=(this.db.tasks[ti].likes||0)+1;
+        if (ui!==-1) this.db.users[ui].likedTaskIds=[...(this.db.users[ui].likedTaskIds||[]),taskId];
+        if (this.binId) await this.saveDB();
+        this.currentUser = this.db.users[ui];
+        if (this.taskModal.task?.id===taskId) this.taskModal.task = { ...this.taskModal.task, likes:(this.taskModal.task.likes||0)+1 };
+        this.showToast('Like añadido.','success');
+      } catch(e) { this.showToast('Error.','error'); }
     },
 
-    // ---- Admin ----
-    async approveTask(taskId) {
-      try {
-        const idx = this.db.tasks.findIndex(t => t.id === taskId);
-        if (idx !== -1) { this.db.tasks[idx].approved = true; await this.saveDB(); }
-        this.showToast('Tarea aprobada.', 'success');
-      } catch(e) { this.showToast('Error al aprobar.', 'error'); }
-    },
+    async approveTask(id) { try { const i=this.db.tasks.findIndex(t=>t.id===id); if(i!==-1){this.db.tasks[i].approved=true; if(this.binId)await this.saveDB();} this.showToast('Tarea aprobada.','success'); } catch(e){this.showToast('Error.','error');} },
+    async rejectTask(id) { try { this.db.tasks=this.db.tasks.filter(t=>t.id!==id); if(this.binId)await this.saveDB(); this.showToast('Tarea rechazada.','warning'); } catch(e){this.showToast('Error.','error');} },
+    async adminDeleteTask(id) { if(!confirm('¿Eliminar esta tarea?'))return; try{this.db.tasks=this.db.tasks.filter(t=>t.id!==id); if(this.binId)await this.saveDB(); this.showToast('Eliminada.','success');}catch(e){this.showToast('Error.','error');} },
 
-    async rejectTask(taskId) {
-      try {
-        this.db.tasks = this.db.tasks.filter(t => t.id !== taskId);
-        await this.saveDB();
-        this.showToast('Tarea rechazada y eliminada.', 'warning');
-      } catch(e) { this.showToast('Error al rechazar.', 'error'); }
-    },
+    async toggleBan(id) { try { const i=this.db.users.findIndex(u=>u.id===id); if(i!==-1){this.db.users[i].banned=!this.db.users[i].banned; if(this.binId)await this.saveDB(); this.showToast(this.db.users[i].banned?'Usuario baneado.':'Usuario desbaneado.','warning');}} catch(e){this.showToast('Error.','error');} },
 
-    async adminDeleteTask(taskId) {
-      if (!confirm('¿Eliminar esta tarea?')) return;
-      try {
-        this.db.tasks = this.db.tasks.filter(t => t.id !== taskId);
-        await this.saveDB();
-        this.showToast('Tarea eliminada.', 'success');
-      } catch(e) { this.showToast('Error al eliminar.', 'error'); }
-    },
-
-    async toggleBan(userId) {
-      try {
-        const idx = this.db.users.findIndex(u => u.id === userId);
-        if (idx !== -1) {
-          this.db.users[idx].banned = !this.db.users[idx].banned;
-          await this.saveDB();
-          this.showToast(this.db.users[idx].banned ? 'Usuario baneado.' : 'Usuario desbaneado.', 'warning');
-        }
-      } catch(e) { this.showToast('Error al actualizar usuario.', 'error'); }
-    },
-
-    openEditUser(user) {
-      this.editUserModal = { open: true, user, points: user.points, level: user.level, isAdmin: user.isAdmin };
-    },
+    openEditUser(user) { this.editUserModal = { open:true, user, points:user.points, level:user.level, isAdmin:user.isAdmin }; },
 
     async saveEditUser() {
       try {
-        const idx = this.db.users.findIndex(u => u.id === this.editUserModal.user.id);
-        if (idx !== -1) {
-          this.db.users[idx].points = this.editUserModal.points;
-          this.db.users[idx].level = this.editUserModal.level;
-          this.db.users[idx].isAdmin = this.editUserModal.isAdmin;
-          await this.saveDB();
-          if (this.currentUser.id === this.editUserModal.user.id) this.currentUser = this.db.users[idx];
-        }
-        this.editUserModal.open = false;
-        this.showToast('Usuario actualizado.', 'success');
-      } catch(e) { this.showToast('Error al guardar.', 'error'); }
+        const i=this.db.users.findIndex(u=>u.id===this.editUserModal.user.id);
+        if(i!==-1){this.db.users[i].points=this.editUserModal.points; this.db.users[i].level=this.editUserModal.level; this.db.users[i].isAdmin=this.editUserModal.isAdmin; if(this.binId)await this.saveDB(); if(this.currentUser.id===this.editUserModal.user.id)this.currentUser=this.db.users[i];}
+        this.editUserModal.open=false;
+        this.showToast('Usuario actualizado.','success');
+      } catch(e){this.showToast('Error.','error');}
     },
 
     async saveConfig() {
-      try {
-        this.db.config = { ...this.configForm };
-        await this.saveDB();
-        this.applyConfig();
-        this.showToast('Configuración guardada.', 'success');
-      } catch(e) { this.showToast('Error al guardar configuración.', 'error'); }
+      try { this.db.config={...this.configForm}; if(this.binId)await this.saveDB(); this.applyConfig(); this.showToast('Config guardada.','success'); } catch(e){this.showToast('Error.','error');}
     },
 
-    // ---- Profile ----
-    initProfileForm() {
-      this.profileForm = { bio: this.currentUser?.bio || '', level: this.currentUser?.level || '', avatar: this.currentUser?.avatar || '' };
-    },
+    initProfileForm() { this.profileForm = { bio:this.currentUser?.bio||'', level:this.currentUser?.level||'', avatar:this.currentUser?.avatar||'' }; },
 
     async saveProfile() {
       try {
-        const idx = this.db.users.findIndex(u => u.id === this.currentUser.id);
-        if (idx !== -1) {
-          this.db.users[idx].bio = this.profileForm.bio;
-          this.db.users[idx].level = this.profileForm.level;
-          this.db.users[idx].avatar = this.profileForm.avatar;
-          await this.saveDB();
-          this.currentUser = this.db.users[idx];
-        }
-        this.showToast('Perfil actualizado.', 'success');
-      } catch(e) { this.showToast('Error al guardar perfil.', 'error'); }
+        const i=this.db.users.findIndex(u=>u.id===this.currentUser.id);
+        if(i!==-1){this.db.users[i].bio=this.profileForm.bio; this.db.users[i].level=this.profileForm.level; this.db.users[i].avatar=this.profileForm.avatar; if(this.binId)await this.saveDB(); this.currentUser=this.db.users[i];}
+        this.showToast('Perfil actualizado.','success');
+      } catch(e){this.showToast('Error.','error');}
     },
 
-    // ---- Utils ----
-    setPage(page) { this.currentPage = page; window.scrollTo(0,0); },
-
-    avatarUrl(username) {
-      if (!username) return 'https://api.dicebear.com/7.x/shapes/svg?seed=default';
-      return `https://api.dicebear.com/7.x/shapes/svg?seed=${encodeURIComponent(username)}&backgroundColor=1a2232,131920,0d1117`;
-    },
-
-    subjectClass(subject) {
-      const map = { 'Matemáticas':'subject-math','Física':'subject-physics','Química':'subject-chemistry','Historia':'subject-history','Literatura':'subject-literature','Biología':'subject-biology','Programación':'subject-programming','Inglés':'subject-english' };
-      return map[subject] || 'subject-other';
-    },
-
-    formatDate(ts) {
-      if (!ts) return '—';
-      return new Date(ts).toLocaleDateString('es-AR', { day:'2-digit', month:'short', year:'numeric' });
-    },
-
-    timeAgo(ts) {
-      if (!ts) return '';
-      const diff = Date.now() - ts;
-      const min = Math.floor(diff/60000);
-      if (min < 1) return 'ahora';
-      if (min < 60) return 'hace ' + min + 'm';
-      const hr = Math.floor(min/60);
-      if (hr < 24) return 'hace ' + hr + 'h';
-      return 'hace ' + Math.floor(hr/24) + 'd';
-    },
-
-    showToast(message, type = 'success') {
-      this.toast = { show: true, message, type };
-      setTimeout(() => { this.toast.show = false; }, 3500);
-    },
+    setPage(p) { this.currentPage=p; window.scrollTo(0,0); },
+    avatarUrl(u) { if(!u)return'https://api.dicebear.com/7.x/initials/svg?seed=?'; return`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(u)}&backgroundColor=e5e3de&textColor=57534e`; },
+    subjectClass(s) { const m={'Matemáticas':'pill-math','Física':'pill-physics','Química':'pill-chem','Historia':'pill-hist','Literatura':'pill-lit','Biología':'pill-bio','Programación':'pill-prog','Inglés':'pill-eng'}; return m[s]||'pill-other'; },
+    formatDate(ts) { if(!ts)return'—'; return new Date(ts).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'}); },
+    timeAgo(ts) { if(!ts)return''; const d=Date.now()-ts,m=Math.floor(d/60000); if(m<1)return'ahora'; if(m<60)return'hace '+m+'m'; const h=Math.floor(m/60); if(h<24)return'hace '+h+'h'; return'hace '+Math.floor(h/24)+'d'; },
+    showToast(msg,type='success') { this.toast={show:true,message:msg,type}; setTimeout(()=>{this.toast.show=false;},3000); },
   };
 }
 </script>
 </body>
 </html>
+
