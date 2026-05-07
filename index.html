@@ -2127,6 +2127,49 @@ document.addEventListener("keydown", e => {
     e.preventDefault();
     document.getElementById("global-search")?.focus();
   }
+   // ========================================
+// PARCHE INTERNO PARA EL LOGOUT
+// PEGAR DENTRO DE LA FUNCIÓN logout()
+// O signOut()
+// O handleLogout()
+// ========================================
+
+// LIMPIAR SESIÓN
+[
+  "currentUser",
+  "user",
+  "auth",
+  "session",
+  "token",
+  "loggedUser",
+  "app_user",
+  "app_session"
+].forEach(key => {
+  localStorage.removeItem(key);
+  sessionStorage.removeItem(key);
+});
+
+// LIMPIAR VARIABLES GLOBALES
+if (window.currentUser) {
+  window.currentUser = null;
+}
+
+// LIMPIAR UI
+document.body.classList.remove(
+  "logged-in",
+  "authenticated",
+  "admin-mode"
+);
+
+// ACTUALIZAR INTERFAZ
+window.dispatchEvent(
+  new Event("storage")
+);
+
+// REDIRECCIÓN SEGURA
+setTimeout(() => {
+  window.location.href = "./index.html";
+}, 100);
 });
 </script>
 </body>
