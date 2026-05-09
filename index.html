@@ -7,10 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════════════
-   CONFIG SECTION — Editar aquí tus credenciales
-   ═══════════════════════════════════════════════ */
-
-/* ═══════════════════════════════════════════════
    RESET & BASE
    ═══════════════════════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -280,6 +276,8 @@ img{max-width:100%;display:block}
 .badge-rejected{background:var(--red-dim);color:var(--red);border:1px solid rgba(238,85,85,.2)}
 .badge-gray{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
 .badge-blue{background:rgba(74,158,255,.12);color:var(--blue);border:1px solid rgba(74,158,255,.2)}
+/* FIX: added missing ml-2 utility class */
+.ml-2{margin-left:8px}
 .subject-tag{
   padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;
   background:var(--bg3);color:var(--text2);
@@ -777,9 +775,9 @@ img{max-width:100%;display:block}
           <p>Control total de la plataforma</p>
         </div>
         <div class="admin-tabs">
-          <div class="admin-tab active" onclick="switchAdminTab('tasks')">Tareas pendientes <span class="badge badge-pending ml-2" id="admin-pending-count">0</span></div>
-          <div class="admin-tab" onclick="switchAdminTab('users')">Usuarios</div>
-          <div class="admin-tab" onclick="switchAdminTab('logs')">Logs</div>
+          <div class="admin-tab active" id="admin-tab-tasks" onclick="switchAdminTab('tasks')">Tareas pendientes <span class="badge badge-pending ml-2" id="admin-pending-count">0</span></div>
+          <div class="admin-tab" id="admin-tab-users" onclick="switchAdminTab('users')">Usuarios</div>
+          <div class="admin-tab" id="admin-tab-logs" onclick="switchAdminTab('logs')">Logs</div>
         </div>
         <div class="admin-section active" id="admin-tasks">
           <div id="admin-pending-list"></div>
@@ -930,27 +928,17 @@ img{max-width:100%;display:block}
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════
-   ██████╗ ██████╗ ███╗   ██╗███████╗██╗ ██████╗
-  ██╔════╝██╔═══██╗████╗  ██║██╔════╝██║██╔════╝
-  ██║     ██║   ██║██╔██╗ ██║█████╗  ██║██║  ███╗
-  ██║     ██║   ██║██║╚██╗██║██╔══╝  ██║██║   ██║
-  ╚██████╗╚██████╔╝██║ ╚████║██║     ██║╚██████╔╝
-   ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝
+   CONFIG
    ═══════════════════════════════════════════════════════════════════ */
-
-// ═══════════════════════════════════════════════
-// 1. CONFIGURATION — Editar aquí tus credenciales
-// ═══════════════════════════════════════════════
 const CONFIG = {
-  JSONBIN_KEY: "$2a$10$ucM0OlKyXRD85828hDFs6uTS8srl1RM6v7vTjUhPMFwo0I9a4OCzq",           // JSONBin Master API Key ($2a$10b$...)
-  USERS_BIN: "69fd0b97250b1311c31b6bac",             // BIN ID para usuarios
-  TASKS_BIN: "69fd0bb5c0954111d8f07d2e",              // BIN ID para tareas generales
-  LEADERBOARD_BIN: "69fd0bc7c0954111d8f07d7a",        // BIN ID para ranking
-  CONFIG_BIN: "69fd0bd9adc21f119a6b39f4",             // BIN ID para configuración global
-  LOGS_BIN: "69fd0be5adc21f119a6b3a3c",               // BIN ID para logs de acciones
-  ANALYTICS_BIN: "69fd0bf7adc21f119a6b3a8c",         // BIN ID para analytics
+  JSONBIN_KEY: "$2a$10$ucM0OlKyXRD85828hDFs6uTS8srl1RM6v7vTjUhPMFwo0I9a4OCzq",
+  USERS_BIN: "69fd0b97250b1311c31b6bac",
+  TASKS_BIN: "69fd0bb5c0954111d8f07d2e",
+  LEADERBOARD_BIN: "69fd0bc7c0954111d8f07d7a",
+  CONFIG_BIN: "69fd0bd9adc21f119a6b39f4",
+  LOGS_BIN: "69fd0be5adc21f119a6b3a3c",
+  ANALYTICS_BIN: "69fd0bf7adc21f119a6b3a8c",
 
-  // Bins por materia (opcional, para escalabilidad)
   BINS_BY_SUBJECT: {
     matematica: "69fd0c13250b1311c31b6dcb",
     lengua: "69fd0c22250b1311c31b6e0c",
@@ -977,22 +965,19 @@ const CONFIG = {
     robotica: "69fd0d8e250b1311c31b73cb",
   },
 
-  // Cloudinary para archivos reales
-  CLOUDINARY_CLOUD: "dmfnhnpje",       // tu cloud name
-  CLOUDINARY_UPLOAD_PRESET: "Proyecto", // upload preset (unsigned)
+  CLOUDINARY_CLOUD: "dmfnhnpje",
+  CLOUDINARY_UPLOAD_PRESET: "Proyecto",
 
-  // Admin credentials
   ADMIN_USERNAME: "admin",
   ADMIN_PASSWORD: "admin123",
 
-  // App config
   MAX_FILE_SIZE_MB: 10,
   JSONBIN_BASE: "https://api.jsonbin.io/v3/b",
 };
 
-// ═══════════════════════════════════════════════
-// 2. SUBJECTS / MATERIAS
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   SUBJECTS
+   ═══════════════════════════════════════════════ */
 const SUBJECTS = [
   {id:"matematica",     name:"Matemática",        icon:"∑",  color:"#4a9eff"},
   {id:"lengua",         name:"Lengua",             icon:"Aa", color:"#10a37f"},
@@ -1019,9 +1004,9 @@ const SUBJECTS = [
   {id:"robotica",       name:"Robótica",           icon:"◫",  color:"#7dd3fc"},
 ];
 
-// ═══════════════════════════════════════════════
-// 3. STATE
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   STATE
+   ═══════════════════════════════════════════════ */
 const STATE = {
   user: null,
   users: [],
@@ -1038,9 +1023,9 @@ const STATE = {
   editingTaskId: null,
 };
 
-// ═══════════════════════════════════════════════
-// 4. JSONBIN API
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   JSONBIN API
+   ═══════════════════════════════════════════════ */
 const API = {
   headers() {
     return {
@@ -1068,9 +1053,9 @@ const API = {
   },
 };
 
-// ═══════════════════════════════════════════════
-// 5. LOCAL STORAGE PERSISTENCE (fallback/demo)
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   LOCAL STORAGE
+   ═══════════════════════════════════════════════ */
 const LS = {
   get(k, def = null) {
     try { const v = localStorage.getItem("edu_"+k); return v ? JSON.parse(v) : def; } catch { return def; }
@@ -1083,20 +1068,19 @@ const LS = {
 function loadData() {
   STATE.users = LS.get("users", []);
   STATE.tasks = LS.get("tasks", []);
-  STATE.logs = LS.get("logs", []);
+  STATE.logs  = LS.get("logs",  []);
 }
 
 function saveUsers() { LS.set("users", STATE.users); }
 function saveTasks() { LS.set("tasks", STATE.tasks); }
-function saveLogs() { LS.set("logs", STATE.logs); }
+function saveLogs()  { LS.set("logs",  STATE.logs);  }
 
-// Sync to JSONBin if configured
 async function syncToCloud(type) {
   if (!CONFIG.JSONBIN_KEY) return;
   try {
     if (type === "tasks" && CONFIG.TASKS_BIN) await API.set(CONFIG.TASKS_BIN, STATE.tasks);
     if (type === "users" && CONFIG.USERS_BIN) await API.set(CONFIG.USERS_BIN, STATE.users);
-    if (type === "logs"  && CONFIG.LOGS_BIN)  await API.set(CONFIG.LOGS_BIN, STATE.logs);
+    if (type === "logs"  && CONFIG.LOGS_BIN)  await API.set(CONFIG.LOGS_BIN,  STATE.logs);
   } catch (e) { console.warn("Cloud sync failed:", e.message); }
 }
 
@@ -1109,13 +1093,15 @@ async function loadFromCloud() {
   } catch (e) { console.warn("Cloud load failed:", e.message); }
 }
 
-// ═══════════════════════════════════════════════
-// 6. AUTH
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   AUTH
+   ═══════════════════════════════════════════════ */
 function switchAuthTab(tab) {
   STATE.authTab = tab;
-  document.querySelectorAll(".auth-tab").forEach((t,i) => t.classList.toggle("active", (i===0&&tab==="login")||(i===1&&tab==="register")));
-  document.querySelectorAll(".register-fields").forEach(f => f.classList.toggle("show", tab==="register"));
+  document.querySelectorAll(".auth-tab").forEach((t, i) =>
+    t.classList.toggle("active", (i === 0 && tab === "login") || (i === 1 && tab === "register"))
+  );
+  document.querySelectorAll(".register-fields").forEach(f => f.classList.toggle("show", tab === "register"));
   document.getElementById("auth-btn-text").textContent = tab === "login" ? "Iniciar sesión" : "Crear cuenta";
   clearAuthMessages();
 }
@@ -1127,14 +1113,17 @@ function clearAuthMessages() {
 
 function showAuthError(msg) {
   const el = document.getElementById("auth-error");
-  el.textContent = msg; el.style.display = "block";
+  el.textContent = msg;
+  el.style.display = "block";
 }
 
 function showAuthSuccess(msg) {
   const el = document.getElementById("auth-success");
-  el.textContent = msg; el.style.display = "block";
+  el.textContent = msg;
+  el.style.display = "block";
 }
 
+/* FIX: added return after loginAs for admin branch so execution stops there */
 async function handleAuth() {
   clearAuthMessages();
   const username = document.getElementById("auth-user").value.trim();
@@ -1145,7 +1134,6 @@ async function handleAuth() {
   setAuthLoading(true);
 
   if (STATE.authTab === "login") {
-    // Check admin
     if (username === CONFIG.ADMIN_USERNAME && password === CONFIG.ADMIN_PASSWORD) {
       loginAs({ username: "admin", name: "Administrador", role: "admin", email: "admin@edu.com", points: 0, tasks: 0, joined: Date.now(), status: "active" });
       return;
@@ -1197,9 +1185,9 @@ function setAuthLoading(on) {
   document.getElementById("auth-submit").disabled = on;
 }
 
-// ═══════════════════════════════════════════════
-// 7. APP INIT
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   APP INIT
+   ═══════════════════════════════════════════════ */
 function showApp() {
   document.getElementById("auth-screen").style.display = "none";
   document.getElementById("app").style.display = "flex";
@@ -1230,9 +1218,9 @@ function tryAutoLogin() {
   if (user && user.status !== "suspended") loginAs(user);
 }
 
-// ═══════════════════════════════════════════════
-// 8. NAVIGATION
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════════════════════ */
 const PAGE_TITLES = {
   dashboard: "Dashboard",
   explorer: "Explorar",
@@ -1249,16 +1237,16 @@ function navigate(page) {
   document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
   document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
 
-  const pageEl = document.getElementById("page-"+page);
+  const pageEl = document.getElementById("page-" + page);
   if (pageEl) pageEl.classList.add("active");
 
   document.querySelectorAll(".nav-item").forEach(n => {
-    if (n.getAttribute("onclick")?.includes("'"+page+"'")) n.classList.add("active");
+    if (n.getAttribute("onclick") && n.getAttribute("onclick").includes("'" + page + "'")) {
+      n.classList.add("active");
+    }
   });
 
   document.getElementById("topbar-title").textContent = PAGE_TITLES[page] || page;
-
-  // Close dropdown if open
   document.querySelectorAll(".dropdown-menu.open").forEach(m => m.classList.remove("open"));
 
   renderCurrentPage();
@@ -1277,15 +1265,15 @@ function renderCurrentPage() {
   updateBadges();
 }
 
-// ═══════════════════════════════════════════════
-// 9. DASHBOARD
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   DASHBOARD
+   ═══════════════════════════════════════════════ */
 function renderDashboard() {
   const u = STATE.user;
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Buenos días" : hour < 19 ? "Buenas tardes" : "Buenas noches";
   document.getElementById("dashboard-greeting").textContent = `${greeting}, ${u.name || u.username}`;
-  document.getElementById("dashboard-sub").textContent = `${new Date().toLocaleDateString("es-AR",{weekday:"long",day:"numeric",month:"long"})}`;
+  document.getElementById("dashboard-sub").textContent = new Date().toLocaleDateString("es-AR", {weekday:"long", day:"numeric", month:"long"});
 
   const myTasks = STATE.tasks.filter(t => t.author === u.username);
   const approved = myTasks.filter(t => t.status === "approved");
@@ -1302,7 +1290,7 @@ function renderDashboard() {
     <div class="stat-card">
       <div class="stat-label">Mis puntos</div>
       <div class="stat-value stat-accent">${u.points || 0}</div>
-      <div class="stat-sub">Rank #${userRank === -1 ? "—" : userRank+1}</div>
+      <div class="stat-sub">Rank #${userRank === -1 ? "—" : userRank + 1}</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Pendientes</div>
@@ -1316,38 +1304,40 @@ function renderDashboard() {
     </div>
   `;
 
-  // Recent tasks
-  const recent = [...STATE.tasks].sort((a,b) => b.created - a.created).slice(0,4);
-  document.getElementById("dash-recent-tasks").innerHTML = recent.length ? recent.map(t => miniTaskCard(t)).join("") :
-    `<div class="empty-state"><div class="empty-icon">◫</div><div class="empty-title">Sin tareas aún</div></div>`;
+  const recent = [...STATE.tasks].sort((a, b) => b.created - a.created).slice(0, 4);
+  document.getElementById("dash-recent-tasks").innerHTML = recent.length
+    ? recent.map(t => miniTaskCard(t)).join("")
+    : `<div class="empty-state"><div class="empty-icon">◫</div><div class="empty-title">Sin tareas aún</div></div>`;
 
-  // Mini leaderboard
-  const lb = getLeaderboard().slice(0,5);
-  document.getElementById("dash-leaderboard").innerHTML = lb.length ? lb.map((entry,i) => `
-    <div class="flex items-center gap-2 mb-3">
-      <div class="lb-rank ${i===0?"gold":i===1?"silver":i===2?"bronze":""}">${i+1}</div>
-      <div style="flex:1"><div class="text-sm font-medium">${entry.name}</div></div>
-      <div class="text-accent font-medium">${entry.points}</div>
-    </div>
-  `).join("") : `<div class="text-muted text-sm">Sin datos aún</div>`;
+  const lb = getLeaderboard().slice(0, 5);
+  document.getElementById("dash-leaderboard").innerHTML = lb.length
+    ? lb.map((entry, i) => `
+        <div class="flex items-center gap-2 mb-3">
+          <div class="lb-rank ${i===0?"gold":i===1?"silver":i===2?"bronze":""}">${i+1}</div>
+          <div style="flex:1"><div class="text-sm font-medium">${esc(entry.name)}</div></div>
+          <div class="text-accent font-medium">${entry.points}</div>
+        </div>
+      `).join("")
+    : `<div class="text-muted text-sm">Sin datos aún</div>`;
 
-  // Subject bars
   const bySubject = {};
-  STATE.tasks.filter(t=>t.status==="approved").forEach(t => { bySubject[t.subject] = (bySubject[t.subject]||0)+1; });
-  const max = Math.max(...Object.values(bySubject), 1);
-  const sorted = Object.entries(bySubject).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  document.getElementById("subject-activity-bars").innerHTML = sorted.length ? sorted.map(([sid,cnt]) => {
-    const subj = SUBJECTS.find(s=>s.id===sid);
-    return `<div class="bar-row">
-      <div class="bar-label truncate">${subj ? subj.name : sid}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt/max*100)}%"></div></div>
-      <div class="bar-val">${cnt}</div>
-    </div>`;
-  }).join("") : `<div class="text-muted text-sm">Sin datos aún</div>`;
+  STATE.tasks.filter(t => t.status === "approved").forEach(t => { bySubject[t.subject] = (bySubject[t.subject] || 0) + 1; });
+  const maxVal = Math.max(...Object.values(bySubject), 1);
+  const sorted = Object.entries(bySubject).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  document.getElementById("subject-activity-bars").innerHTML = sorted.length
+    ? sorted.map(([sid, cnt]) => {
+        const subj = SUBJECTS.find(s => s.id === sid);
+        return `<div class="bar-row">
+          <div class="bar-label truncate">${subj ? subj.name : sid}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt / maxVal * 100)}%"></div></div>
+          <div class="bar-val">${cnt}</div>
+        </div>`;
+      }).join("")
+    : `<div class="text-muted text-sm">Sin datos aún</div>`;
 }
 
 function miniTaskCard(t) {
-  const subj = SUBJECTS.find(s=>s.id===t.subject);
+  const subj = SUBJECTS.find(s => s.id === t.subject);
   return `<div class="flex items-center gap-2 mb-2 task-card card-sm" style="padding:10px 12px;cursor:pointer" onclick="openTaskDetail('${t.id}')">
     <span style="font-size:18px">${subj ? subj.icon : "◫"}</span>
     <div style="flex:1;min-width:0">
@@ -1358,54 +1348,66 @@ function miniTaskCard(t) {
   </div>`;
 }
 
-// ═══════════════════════════════════════════════
-// 10. EXPLORER
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   EXPLORER
+   ═══════════════════════════════════════════════ */
 function renderExplorer() {
-  // Filters
   const filterEl = document.getElementById("explorer-filters");
-  filterEl.innerHTML = `<button class="filter-chip ${STATE.explorerFilter==="all"?"active":""}" onclick="setExplorerFilter('all',this)">Todas</button>` +
-    SUBJECTS.map(s => `<button class="filter-chip ${STATE.explorerFilter===s.id?"active":""}" onclick="setExplorerFilter('${s.id}',this)">${s.icon} ${s.name}</button>`).join("");
+  /* FIX: pass 'all' value; chip activation handled inside setExplorerFilter safely */
+  filterEl.innerHTML =
+    `<button class="filter-chip ${STATE.explorerFilter === "all" ? "active" : ""}" onclick="setExplorerFilter('all', this)">Todas</button>` +
+    SUBJECTS.map(s =>
+      `<button class="filter-chip ${STATE.explorerFilter === s.id ? "active" : ""}" onclick="setExplorerFilter('${s.id}', this)">${s.icon} ${s.name}</button>`
+    ).join("");
 
   let tasks = STATE.tasks.filter(t => t.status === "approved");
   if (STATE.explorerFilter !== "all") tasks = tasks.filter(t => t.subject === STATE.explorerFilter);
-  if (STATE.searchQuery) tasks = tasks.filter(t => t.title.toLowerCase().includes(STATE.searchQuery) || (t.description||"").toLowerCase().includes(STATE.searchQuery));
-  tasks = [...tasks].sort((a,b) => b.created - a.created);
+  if (STATE.searchQuery) tasks = tasks.filter(t =>
+    t.title.toLowerCase().includes(STATE.searchQuery) ||
+    (t.description || "").toLowerCase().includes(STATE.searchQuery)
+  );
+  tasks = [...tasks].sort((a, b) => b.created - a.created);
 
-  document.getElementById("explorer-tasks").innerHTML = tasks.length ? `<div class="tasks-list">${tasks.map(t=>taskCard(t,false)).join("")}</div>` :
-    `<div class="empty-state"><div class="empty-icon">◫</div><div class="empty-title">No hay tareas</div><div class="empty-sub">Todavía no hay tareas aprobadas para esta materia</div></div>`;
+  document.getElementById("explorer-tasks").innerHTML = tasks.length
+    ? `<div class="tasks-list">${tasks.map(t => taskCard(t, false)).join("")}</div>`
+    : `<div class="empty-state"><div class="empty-icon">◫</div><div class="empty-title">No hay tareas</div><div class="empty-sub">Todavía no hay tareas aprobadas para esta materia</div></div>`;
 }
 
+/* FIX: guard against null el parameter (called from subjects page) */
 function setExplorerFilter(val, el) {
   STATE.explorerFilter = val;
+  if (el) {
+    document.querySelectorAll("#explorer-filters .filter-chip").forEach(c => c.classList.remove("active"));
+    el.classList.add("active");
+  }
   renderExplorer();
 }
 
-// ═══════════════════════════════════════════════
-// 11. MY TASKS
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   MY TASKS
+   ═══════════════════════════════════════════════ */
 function renderMyTasks() {
   let tasks = STATE.tasks.filter(t => t.author === STATE.user.username);
   if (STATE.myTasksFilter !== "all") tasks = tasks.filter(t => t.status === STATE.myTasksFilter);
-  tasks = [...tasks].sort((a,b) => b.created - a.created);
+  tasks = [...tasks].sort((a, b) => b.created - a.created);
 
-  const el = document.getElementById("my-tasks-list");
-  el.innerHTML = tasks.length ? `<div class="tasks-list">${tasks.map(t=>taskCard(t,true)).join("")}</div>` :
-    `<div class="empty-state"><div class="empty-icon">✓</div><div class="empty-title">Sin tareas</div><div class="empty-sub">Subí tu primera tarea con el botón "+ Nueva tarea"</div></div>`;
+  document.getElementById("my-tasks-list").innerHTML = tasks.length
+    ? `<div class="tasks-list">${tasks.map(t => taskCard(t, true)).join("")}</div>`
+    : `<div class="empty-state"><div class="empty-icon">✓</div><div class="empty-title">Sin tareas</div><div class="empty-sub">Subí tu primera tarea con el botón "+ Nueva tarea"</div></div>`;
 }
 
 function filterMyTasks(val, el) {
   STATE.myTasksFilter = val;
-  document.querySelectorAll("#page-my-tasks .filter-chip").forEach(c=>c.classList.remove("active"));
+  document.querySelectorAll("#page-my-tasks .filter-chip").forEach(c => c.classList.remove("active"));
   el.classList.add("active");
   renderMyTasks();
 }
 
-// ═══════════════════════════════════════════════
-// 12. TASK CARD (reutilizable)
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   TASK CARD
+   ═══════════════════════════════════════════════ */
 function taskCard(t, showActions) {
-  const subj = SUBJECTS.find(s=>s.id===t.subject);
+  const subj = SUBJECTS.find(s => s.id === t.subject);
   const isOwner = t.author === STATE.user.username;
   const isAdmin = STATE.user.role === "admin";
   return `<div class="task-card ${t.status}" onclick="openTaskDetail('${t.id}')">
@@ -1422,96 +1424,95 @@ function taskCard(t, showActions) {
     </div>
     <div class="task-actions" onclick="event.stopPropagation()">
       <span class="badge badge-${t.status}">${statusLabel(t.status)}</span>
-      ${(showActions && isOwner && t.status !== "approved") || isAdmin ? `
+      ${((showActions && isOwner && t.status !== "approved") || isAdmin) ? `
         <button class="btn btn-icon btn-ghost" onclick="event.stopPropagation();editTask('${t.id}')" title="Editar">✎</button>
       ` : ""}
-      ${(showActions && isOwner) || isAdmin ? `
+      ${((showActions && isOwner) || isAdmin) ? `
         <button class="btn btn-icon btn-ghost" style="color:var(--red)" onclick="event.stopPropagation();confirmDeleteTask('${t.id}')" title="Eliminar">✕</button>
       ` : ""}
     </div>
   </div>`;
 }
 
-// ═══════════════════════════════════════════════
-// 13. SUBJECTS PAGE
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   SUBJECTS PAGE
+   ═══════════════════════════════════════════════ */
 function renderSubjects() {
   const counts = {};
-  STATE.tasks.filter(t=>t.status==="approved").forEach(t => { counts[t.subject] = (counts[t.subject]||0)+1; });
+  STATE.tasks.filter(t => t.status === "approved").forEach(t => { counts[t.subject] = (counts[t.subject] || 0) + 1; });
+  /* FIX: pass null as el safely — setExplorerFilter guards against null */
   document.getElementById("subjects-grid").innerHTML = SUBJECTS.map(s => `
-    <div class="subject-card" onclick="setExplorerFilter('${s.id}',null);navigate('explorer')">
+    <div class="subject-card" onclick="setExplorerFilter('${s.id}', null); navigate('explorer')">
       <div class="subject-icon" style="color:${s.color}">${s.icon}</div>
       <div class="subject-name">${s.name}</div>
-      <div class="subject-count">${counts[s.id]||0} tareas</div>
+      <div class="subject-count">${counts[s.id] || 0} tareas</div>
     </div>
   `).join("");
 }
 
-// ═══════════════════════════════════════════════
-// 14. LEADERBOARD
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   LEADERBOARD
+   ═══════════════════════════════════════════════ */
 function getLeaderboard() {
   const scores = {};
-  const names = {};
+  const names  = {};
   const filtered = STATE.tasks.filter(t => {
     if (t.status !== "approved") return false;
-    if (STATE.lbFilter === "weekly") {
-      return Date.now() - t.created < 7*24*3600*1000;
-    }
-    if (STATE.lbFilter === "monthly") {
-      return Date.now() - t.created < 30*24*3600*1000;
-    }
+    if (STATE.lbFilter === "weekly")  return Date.now() - t.created < 7  * 24 * 3600 * 1000;
+    if (STATE.lbFilter === "monthly") return Date.now() - t.created < 30 * 24 * 3600 * 1000;
     return true;
   });
   filtered.forEach(t => {
-    scores[t.author] = (scores[t.author]||0) + (t.points||10);
-    const u = STATE.users.find(x=>x.username===t.author);
+    scores[t.author] = (scores[t.author] || 0) + (t.points || 10);
+    const u = STATE.users.find(x => x.username === t.author);
     names[t.author] = u ? u.name : t.author;
   });
   return Object.entries(scores)
-    .map(([username,points])=>({username,name:names[username]||username,points}))
-    .sort((a,b)=>b.points-a.points);
+    .map(([username, points]) => ({username, name: names[username] || username, points}))
+    .sort((a, b) => b.points - a.points);
 }
 
 function getRank(username) {
-  return getLeaderboard().findIndex(e=>e.username===username);
+  return getLeaderboard().findIndex(e => e.username === username);
 }
 
 function renderLeaderboard() {
   const lb = getLeaderboard();
-  document.getElementById("leaderboard-list").innerHTML = lb.length ? lb.map((entry,i) => `
-    <div class="lb-item ${entry.username===STATE.user.username?"":""}">
-      <div class="lb-rank ${i===0?"gold":i===1?"silver":i===2?"bronze":""}">${i+1}</div>
-      <div class="avatar sm">${entry.name.charAt(0).toUpperCase()}</div>
-      <div class="lb-info">
-        <div class="lb-name">${esc(entry.name)} ${entry.username===STATE.user.username?"(vos)":""}</div>
-        <div class="lb-sub">${entry.username}</div>
-      </div>
-      <div>
-        <div class="lb-score">${entry.points}</div>
-        <div class="lb-pts">puntos</div>
-      </div>
-    </div>
-  `).join("") : `<div class="empty-state"><div class="empty-icon">◆</div><div class="empty-title">Sin datos aún</div></div>`;
+  document.getElementById("leaderboard-list").innerHTML = lb.length
+    ? lb.map((entry, i) => `
+        <div class="lb-item">
+          <div class="lb-rank ${i===0?"gold":i===1?"silver":i===2?"bronze":""}">${i+1}</div>
+          <div class="avatar sm">${entry.name.charAt(0).toUpperCase()}</div>
+          <div class="lb-info">
+            <div class="lb-name">${esc(entry.name)}${entry.username === STATE.user.username ? " (vos)" : ""}</div>
+            <div class="lb-sub">${entry.username}</div>
+          </div>
+          <div>
+            <div class="lb-score">${entry.points}</div>
+            <div class="lb-pts">puntos</div>
+          </div>
+        </div>
+      `).join("")
+    : `<div class="empty-state"><div class="empty-icon">◆</div><div class="empty-title">Sin datos aún</div></div>`;
 }
 
 function filterLeaderboard(val, el) {
   STATE.lbFilter = val;
-  document.querySelectorAll("#page-leaderboard .filter-chip").forEach(c=>c.classList.remove("active"));
+  document.querySelectorAll("#page-leaderboard .filter-chip").forEach(c => c.classList.remove("active"));
   if (el) el.classList.add("active");
   renderLeaderboard();
 }
 
-// ═══════════════════════════════════════════════
-// 15. TASK DETAIL MODAL
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   TASK DETAIL MODAL
+   ═══════════════════════════════════════════════ */
 function openTaskDetail(id) {
-  const t = STATE.tasks.find(x=>x.id===id);
+  const t = STATE.tasks.find(x => x.id === id);
   if (!t) return;
-  const subj = SUBJECTS.find(s=>s.id===t.subject);
+  const subj   = SUBJECTS.find(s => s.id === t.subject);
   const isAdmin = STATE.user.role === "admin";
   const isOwner = t.author === STATE.user.username;
-  const author = STATE.users.find(u=>u.username===t.author);
+  const author  = STATE.users.find(u => u.username === t.author);
 
   document.getElementById("detail-modal-title").textContent = t.title;
   document.getElementById("detail-modal-body").innerHTML = `
@@ -1526,14 +1527,14 @@ function openTaskDetail(id) {
     ${t.description ? `<div class="detail-section"><h4>Descripción</h4><p style="font-size:14px;color:var(--text2);line-height:1.6">${esc(t.description)}</p></div>` : ""}
     <div class="detail-section">
       <h4>Detalles</h4>
-      <div class="detail-row"><span class="detail-label">Autor</span><span class="detail-value">${author ? author.name : t.author}</span></div>
+      <div class="detail-row"><span class="detail-label">Autor</span><span class="detail-value">${author ? esc(author.name) : esc(t.author)}</span></div>
       <div class="detail-row"><span class="detail-label">Publicado</span><span class="detail-value">${new Date(t.created).toLocaleDateString("es-AR",{day:"numeric",month:"long",year:"numeric"})}</span></div>
       ${t.points ? `<div class="detail-row"><span class="detail-label">Puntos</span><span class="detail-value text-accent">${t.points}</span></div>` : ""}
     </div>
     ${t.files && t.files.length ? `
       <div class="detail-section">
         <h4>Archivos adjuntos</h4>
-        ${t.files.map(f=>`
+        ${t.files.map(f => `
           <div class="file-item">
             <span>📎</span>
             <span class="file-name">${esc(f.name)}</span>
@@ -1571,66 +1572,73 @@ function openTaskDetail(id) {
   openModal("detail-modal");
 }
 
-// ═══════════════════════════════════════════════
-// 16. UPLOAD / EDIT TASK
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   UPLOAD / EDIT TASK
+   ═══════════════════════════════════════════════ */
 function openUploadModal() {
   STATE.editingTaskId = null;
   STATE.uploadedFiles = [];
   document.getElementById("upload-modal-title").textContent = "Nueva tarea";
-  document.getElementById("task-title").value = "";
-  document.getElementById("task-desc").value = "";
+  document.getElementById("task-title").value   = "";
+  document.getElementById("task-desc").value    = "";
   document.getElementById("task-subject").value = "";
-  document.getElementById("task-year").value = "";
-  document.getElementById("task-type").value = "";
+  document.getElementById("task-year").value    = "";
+  document.getElementById("task-type").value    = "";
   document.getElementById("file-list").innerHTML = "";
   document.getElementById("submit-task-btn").textContent = "Publicar tarea";
   openModal("upload-modal");
 }
 
 function editTask(id) {
-  const t = STATE.tasks.find(x=>x.id===id);
+  const t = STATE.tasks.find(x => x.id === id);
   if (!t) return;
   STATE.editingTaskId = id;
-  STATE.uploadedFiles = t.files || [];
+  STATE.uploadedFiles = t.files ? [...t.files] : [];
   document.getElementById("upload-modal-title").textContent = "Editar tarea";
-  document.getElementById("task-title").value = t.title;
-  document.getElementById("task-desc").value = t.description || "";
+  document.getElementById("task-title").value   = t.title;
+  document.getElementById("task-desc").value    = t.description || "";
   document.getElementById("task-subject").value = t.subject;
-  document.getElementById("task-year").value = t.year || "";
-  document.getElementById("task-type").value = t.type || "";
+  document.getElementById("task-year").value    = t.year || "";
+  document.getElementById("task-type").value    = t.type || "";
   renderFileList();
   document.getElementById("submit-task-btn").textContent = "Guardar cambios";
   openModal("upload-modal");
 }
 
 async function submitTask() {
-  const title = document.getElementById("task-title").value.trim();
+  const title   = document.getElementById("task-title").value.trim();
   const subject = document.getElementById("task-subject").value;
-  const desc = document.getElementById("task-desc").value.trim();
-  const year = document.getElementById("task-year").value;
-  const type = document.getElementById("task-type").value;
+  const desc    = document.getElementById("task-desc").value.trim();
+  const year    = document.getElementById("task-year").value;
+  const type    = document.getElementById("task-type").value;
 
-  if (!title) { toast("El título es obligatorio", "error"); return; }
+  if (!title)   { toast("El título es obligatorio", "error"); return; }
   if (!subject) { toast("Seleccioná una materia", "error"); return; }
 
   const btn = document.getElementById("submit-task-btn");
   const isEditing = !!STATE.editingTaskId;
-  btn.disabled = true; btn.textContent = "Guardando...";
+  btn.disabled = true;
+  btn.textContent = "Guardando...";
 
   try {
     if (isEditing) {
-      const idx = STATE.tasks.findIndex(t=>t.id===STATE.editingTaskId);
+      const idx = STATE.tasks.findIndex(t => t.id === STATE.editingTaskId);
       if (idx > -1) {
-        STATE.tasks[idx] = {...STATE.tasks[idx], title, subject, description:desc, year, type, files: STATE.uploadedFiles, updated: Date.now()};
+        STATE.tasks[idx] = {
+          ...STATE.tasks[idx],
+          title, subject, description: desc, year, type,
+          files: STATE.uploadedFiles,
+          updated: Date.now(),
+        };
         addLog(`Tarea editada: ${title} (${STATE.user.username})`);
       }
     } else {
       const task = {
-        id: genId(), title, subject, description:desc, year, type,
+        id: genId(), title, subject, description: desc, year, type,
         author: STATE.user.username,
         status: STATE.user.role === "admin" ? "approved" : "pending",
-        created: Date.now(), points: 10,
+        created: Date.now(),
+        points: 10,
         files: STATE.uploadedFiles,
       };
       STATE.tasks.push(task);
@@ -1652,42 +1660,42 @@ async function submitTask() {
   }
 }
 
-// ═══════════════════════════════════════════════
-// 17. ADMIN PANEL
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   ADMIN PANEL
+   ═══════════════════════════════════════════════ */
 function renderAdmin() {
   if (STATE.user.role !== "admin") return;
 
-  const pending = STATE.tasks.filter(t=>t.status==="pending");
+  const pending = STATE.tasks.filter(t => t.status === "pending");
   document.getElementById("admin-pending-count").textContent = pending.length;
 
-  // Pending tasks
-  document.getElementById("admin-pending-list").innerHTML = pending.length ? `<div class="tasks-list">${pending.map(t=>adminTaskCard(t)).join("")}</div>` :
-    `<div class="empty-state"><div class="empty-icon">✓</div><div class="empty-title">Sin tareas pendientes</div></div>`;
+  document.getElementById("admin-pending-list").innerHTML = pending.length
+    ? `<div class="tasks-list">${pending.map(t => adminTaskCard(t)).join("")}</div>`
+    : `<div class="empty-state"><div class="empty-icon">✓</div><div class="empty-title">Sin tareas pendientes</div></div>`;
 
-  // Users table
   renderAdminUsers(STATE.users);
 
-  // Logs
-  const logs = [...STATE.logs].reverse().slice(0,50);
-  document.getElementById("admin-logs-list").innerHTML = logs.length ? logs.map(l=>`
-    <div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">
-      <span class="text-muted" style="margin-right:8px">${new Date(l.ts).toLocaleString("es-AR")}</span>
-      ${esc(l.msg)}
-    </div>
-  `).join("") : `<div class="text-muted text-sm">Sin logs</div>`;
+  const logs = [...STATE.logs].reverse().slice(0, 50);
+  document.getElementById("admin-logs-list").innerHTML = logs.length
+    ? logs.map(l => `
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">
+          <span class="text-muted" style="margin-right:8px">${new Date(l.ts).toLocaleString("es-AR")}</span>
+          ${esc(l.msg)}
+        </div>
+      `).join("")
+    : `<div class="text-muted text-sm">Sin logs</div>`;
 }
 
 function adminTaskCard(t) {
-  const subj = SUBJECTS.find(s=>s.id===t.subject);
-  const author = STATE.users.find(u=>u.username===t.author);
+  const subj   = SUBJECTS.find(s => s.id === t.subject);
+  const author = STATE.users.find(u => u.username === t.author);
   return `<div class="task-card pending" onclick="openTaskDetail('${t.id}')">
     <div style="font-size:24px">${subj ? subj.icon : "◫"}</div>
     <div class="task-main">
       <div class="task-title">${esc(t.title)}</div>
       <div class="task-meta">
         ${subj ? `<span class="subject-tag">${subj.name}</span>` : ""}
-        <span class="text-xs text-muted">por ${author ? author.name : t.author}</span>
+        <span class="text-xs text-muted">por ${author ? esc(author.name) : esc(t.author)}</span>
         <span class="task-date">${timeAgo(t.created)}</span>
       </div>
     </div>
@@ -1699,16 +1707,22 @@ function adminTaskCard(t) {
 }
 
 async function adminAction(taskId, action) {
-  const t = STATE.tasks.find(x=>x.id===taskId);
+  const t = STATE.tasks.find(x => x.id === taskId);
   if (!t) return;
-  const comment = document.getElementById("admin-comment-input") ? document.getElementById("admin-comment-input").value.trim() : "";
-  t.status = action;
+  /* FIX: safely read comment input — it may not exist if called from task card buttons */
+  const commentInput = document.getElementById("admin-comment-input");
+  const comment = commentInput ? commentInput.value.trim() : "";
+  t.status      = action;
   t.adminComment = comment;
-  t.reviewedAt = Date.now();
+  t.reviewedAt  = Date.now();
 
   if (action === "approved") {
-    const author = STATE.users.find(u=>u.username===t.author);
-    if (author) { author.points = (author.points||0) + (t.points||10); author.tasks = (author.tasks||0)+1; saveUsers(); }
+    const author = STATE.users.find(u => u.username === t.author);
+    if (author) {
+      author.points = (author.points || 0) + (t.points || 10);
+      author.tasks  = (author.tasks  || 0) + 1;
+      saveUsers();
+    }
   }
 
   saveTasks();
@@ -1723,45 +1737,50 @@ async function adminAction(taskId, action) {
 
 function renderAdminUsers(users) {
   const body = document.getElementById("admin-users-body");
-  body.innerHTML = users.map(u=>`
-    <tr>
-      <td><code style="font-size:12px;color:var(--text2)">${esc(u.username)}</code></td>
-      <td>${esc(u.name||"—")}</td>
-      <td style="color:var(--text3)">${esc(u.email||"—")}</td>
-      <td><span class="badge ${u.role==="admin"?"badge-blue":"badge-gray"}">${u.role}</span></td>
-      <td>${u.tasks||0}</td>
-      <td><span class="badge ${u.status==="suspended"?"badge-rejected":"badge-approved"}">${u.status==="suspended"?"Suspendido":"Activo"}</span></td>
-      <td>
-        <button class="btn btn-sm btn-ghost" onclick="toggleSuspend('${u.username}')">${u.status==="suspended"?"Activar":"Suspender"}</button>
-        <button class="btn btn-sm btn-ghost" style="color:var(--red)" onclick="confirmDeleteUser('${u.username}')">Eliminar</button>
-      </td>
-    </tr>
-  `).join("") || `<tr><td colspan="7" class="text-muted" style="text-align:center;padding:20px">Sin usuarios</td></tr>`;
+  if (!body) return;
+  body.innerHTML = users.length
+    ? users.map(u => `
+        <tr>
+          <td><code style="font-size:12px;color:var(--text2)">${esc(u.username)}</code></td>
+          <td>${esc(u.name || "—")}</td>
+          <td style="color:var(--text3)">${esc(u.email || "—")}</td>
+          <td><span class="badge ${u.role === "admin" ? "badge-blue" : "badge-gray"}">${u.role}</span></td>
+          <td>${u.tasks || 0}</td>
+          <td><span class="badge ${u.status === "suspended" ? "badge-rejected" : "badge-approved"}">${u.status === "suspended" ? "Suspendido" : "Activo"}</span></td>
+          <td>
+            <button class="btn btn-sm btn-ghost" onclick="toggleSuspend('${u.username}')">${u.status === "suspended" ? "Activar" : "Suspender"}</button>
+            <button class="btn btn-sm btn-ghost" style="color:var(--red)" onclick="confirmDeleteUser('${u.username}')">Eliminar</button>
+          </td>
+        </tr>
+      `).join("")
+    : `<tr><td colspan="7" class="text-muted" style="text-align:center;padding:20px">Sin usuarios</td></tr>`;
 }
 
 function filterAdminUsers(q) {
-  const lower = q.toLowerCase();
+  const lower    = q.toLowerCase();
   const filtered = STATE.users.filter(u =>
-    u.username.toLowerCase().includes(lower) || (u.name||"").toLowerCase().includes(lower) || (u.email||"").toLowerCase().includes(lower)
+    u.username.toLowerCase().includes(lower) ||
+    (u.name  || "").toLowerCase().includes(lower) ||
+    (u.email || "").toLowerCase().includes(lower)
   );
   renderAdminUsers(filtered);
 }
 
 async function toggleSuspend(username) {
-  const u = STATE.users.find(x=>x.username===username);
+  const u = STATE.users.find(x => x.username === username);
   if (!u) return;
   u.status = u.status === "suspended" ? "active" : "suspended";
   saveUsers();
-  addLog(`Usuario ${username} ${u.status==="suspended"?"suspendido":"activado"} por admin`);
+  addLog(`Usuario ${username} ${u.status === "suspended" ? "suspendido" : "activado"} por admin`);
   await syncToCloud("users");
   renderAdmin();
-  toast(`Usuario ${u.status==="suspended"?"suspendido":"activado"}`, "info");
+  toast(`Usuario ${u.status === "suspended" ? "suspendido" : "activado"}`, "info");
 }
 
 function confirmDeleteUser(username) {
   showConfirm(`¿Eliminar al usuario "${username}"? Esta acción no se puede deshacer.`, async () => {
-    STATE.users = STATE.users.filter(u=>u.username!==username);
-    STATE.tasks = STATE.tasks.filter(t=>t.author!==username);
+    STATE.users = STATE.users.filter(u => u.username !== username);
+    STATE.tasks = STATE.tasks.filter(t => t.author  !== username);
     saveUsers(); saveTasks();
     addLog(`Usuario ${username} eliminado por admin`);
     await syncToCloud("users");
@@ -1771,23 +1790,26 @@ function confirmDeleteUser(username) {
   });
 }
 
+/* FIX: switchAdminTab now uses element ids instead of fragile onclick-string matching */
 function switchAdminTab(tab) {
   STATE.adminTab = tab;
-  document.querySelectorAll(".admin-tab").forEach((t,i) => t.classList.toggle("active", t.getAttribute("onclick")?.includes("'"+tab+"'")));
-  document.querySelectorAll(".admin-section").forEach(s => s.classList.remove("active"));
-  const el = document.getElementById("admin-"+tab);
-  if (el) el.classList.add("active");
+  ["tasks", "users", "logs"].forEach(t => {
+    const tabEl = document.getElementById("admin-tab-" + t);
+    if (tabEl) tabEl.classList.toggle("active", t === tab);
+    const secEl = document.getElementById("admin-" + t);
+    if (secEl) secEl.classList.toggle("active", t === tab);
+  });
 }
 
-// ═══════════════════════════════════════════════
-// 18. ANALYTICS
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   ANALYTICS
+   ═══════════════════════════════════════════════ */
 function renderAnalytics() {
   if (STATE.user.role !== "admin") return;
-  const tasks = STATE.tasks;
-  const approved = tasks.filter(t=>t.status==="approved").length;
-  const pending  = tasks.filter(t=>t.status==="pending").length;
-  const rejected = tasks.filter(t=>t.status==="rejected").length;
+  const tasks    = STATE.tasks;
+  const approved = tasks.filter(t => t.status === "approved").length;
+  const pending  = tasks.filter(t => t.status === "pending").length;
+  const rejected = tasks.filter(t => t.status === "rejected").length;
 
   document.getElementById("analytics-stats").innerHTML = `
     <div class="stat-card"><div class="stat-label">Total tareas</div><div class="stat-value">${tasks.length}</div></div>
@@ -1796,48 +1818,54 @@ function renderAnalytics() {
     <div class="stat-card"><div class="stat-label">Usuarios</div><div class="stat-value">${STATE.users.length}</div></div>
   `;
 
-  const bySubj = {};
-  tasks.filter(t=>t.status==="approved").forEach(t=>{bySubj[t.subject]=(bySubj[t.subject]||0)+1;});
-  const maxSubj = Math.max(...Object.values(bySubj),1);
-  document.getElementById("analytics-by-subject").innerHTML = Object.entries(bySubj).sort((a,b)=>b[1]-a[1]).map(([sid,cnt])=>{
-    const s = SUBJECTS.find(x=>x.id===sid);
-    return `<div class="bar-row"><div class="bar-label truncate">${s?s.name:sid}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt/maxSubj*100)}%"></div></div><div class="bar-val">${cnt}</div></div>`;
-  }).join("") || `<div class="text-muted text-sm">Sin datos</div>`;
+  const bySubj   = {};
+  tasks.filter(t => t.status === "approved").forEach(t => { bySubj[t.subject] = (bySubj[t.subject] || 0) + 1; });
+  const maxSubj  = Math.max(...Object.values(bySubj), 1);
+  document.getElementById("analytics-by-subject").innerHTML = Object.entries(bySubj)
+    .sort((a, b) => b[1] - a[1])
+    .map(([sid, cnt]) => {
+      const s = SUBJECTS.find(x => x.id === sid);
+      return `<div class="bar-row">
+        <div class="bar-label truncate">${s ? s.name : sid}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt / maxSubj * 100)}%"></div></div>
+        <div class="bar-val">${cnt}</div>
+      </div>`;
+    }).join("") || `<div class="text-muted text-sm">Sin datos</div>`;
 
   const total = tasks.length || 1;
   document.getElementById("analytics-by-status").innerHTML = [
     ["Aprobadas", approved, "var(--accent)"],
-    ["Pendientes", pending, "var(--yellow)"],
+    ["Pendientes", pending,  "var(--yellow)"],
     ["Rechazadas", rejected, "var(--red)"],
-  ].map(([label,cnt,color])=>`
+  ].map(([label, cnt, color]) => `
     <div class="bar-row">
       <div class="bar-label">${label}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt/total*100)}%;background:${color}"></div></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt / total * 100)}%;background:${color}"></div></div>
       <div class="bar-val">${cnt}</div>
     </div>
   `).join("");
 }
 
-// ═══════════════════════════════════════════════
-// 19. PROFILE
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   PROFILE
+   ═══════════════════════════════════════════════ */
 function renderProfile() {
-  const u = STATE.user;
-  const myTasks = STATE.tasks.filter(t=>t.author===u.username);
-  const approved = myTasks.filter(t=>t.status==="approved");
-  const rank = getRank(u.username);
+  const u       = STATE.user;
+  const myTasks = STATE.tasks.filter(t => t.author === u.username);
+  const approved = myTasks.filter(t => t.status === "approved");
+  const rank     = getRank(u.username);
 
   document.getElementById("profile-content").innerHTML = `
     <div class="profile-header">
-      <div class="avatar lg">${(u.avatar||u.name||u.username).charAt(0).toUpperCase()}</div>
+      <div class="avatar lg">${(u.avatar || u.name || u.username).charAt(0).toUpperCase()}</div>
       <div class="profile-info">
-        <div class="profile-name">${esc(u.name||u.username)}</div>
+        <div class="profile-name">${esc(u.name || u.username)}</div>
         <div class="profile-role">${u.role === "admin" ? "Administrador" : "Estudiante"} · @${u.username}</div>
         <div class="profile-stats">
-          <div class="profile-stat"><div class="profile-stat-val">${u.points||0}</div><div class="profile-stat-label">Puntos</div></div>
+          <div class="profile-stat"><div class="profile-stat-val">${u.points || 0}</div><div class="profile-stat-label">Puntos</div></div>
           <div class="profile-stat"><div class="profile-stat-val">${myTasks.length}</div><div class="profile-stat-label">Tareas</div></div>
           <div class="profile-stat"><div class="profile-stat-val">${approved.length}</div><div class="profile-stat-label">Aprobadas</div></div>
-          <div class="profile-stat"><div class="profile-stat-val">#${rank===-1?"—":rank+1}</div><div class="profile-stat-label">Ranking</div></div>
+          <div class="profile-stat"><div class="profile-stat-val">#${rank === -1 ? "—" : rank + 1}</div><div class="profile-stat-label">Ranking</div></div>
         </div>
       </div>
     </div>
@@ -1846,23 +1874,28 @@ function renderProfile() {
         <span class="font-medium">Historial de tareas</span>
         <span class="text-xs text-muted">${myTasks.length} en total</span>
       </div>
-      ${myTasks.length ? `<div class="tasks-list">${[...myTasks].sort((a,b)=>b.created-a.created).map(t=>taskCard(t,true)).join("")}</div>` : `<div class="empty-state" style="padding:30px 0"><div class="empty-icon" style="font-size:24px">◫</div><div class="empty-title">Sin tareas aún</div></div>`}
+      ${myTasks.length
+        ? `<div class="tasks-list">${[...myTasks].sort((a, b) => b.created - a.created).map(t => taskCard(t, true)).join("")}</div>`
+        : `<div class="empty-state" style="padding:30px 0"><div class="empty-icon" style="font-size:24px">◫</div><div class="empty-title">Sin tareas aún</div></div>`
+      }
     </div>
   `;
 }
 
-// ═══════════════════════════════════════════════
-// 20. FILE UPLOAD (Cloudinary)
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   FILE UPLOAD
+   ═══════════════════════════════════════════════ */
 function handleFileSelect(files) {
   Array.from(files).forEach(f => addFile(f));
+  /* FIX: reset file input so the same file can be re-selected after removal */
+  document.getElementById("file-input").value = "";
 }
 
 function handleDragOver(e) {
   e.preventDefault();
   document.getElementById("upload-zone").classList.add("dragover");
 }
-function handleDragLeave(e) {
+function handleDragLeave() {
   document.getElementById("upload-zone").classList.remove("dragover");
 }
 function handleDrop(e) {
@@ -1884,7 +1917,6 @@ function addFile(file) {
   if (CONFIG.CLOUDINARY_CLOUD && CONFIG.CLOUDINARY_UPLOAD_PRESET) {
     uploadToCloudinary(file, entry);
   } else {
-    // Demo: usar URL.createObjectURL como fallback local
     entry.url = URL.createObjectURL(file);
     entry.uploading = false;
     renderFileList();
@@ -1896,43 +1928,44 @@ async function uploadToCloudinary(file, entry) {
   fd.append("file", file);
   fd.append("upload_preset", CONFIG.CLOUDINARY_UPLOAD_PRESET);
 
-  const bar = document.getElementById("upload-bar");
+  const bar  = document.getElementById("upload-bar");
   const prog = document.getElementById("upload-progress");
   prog.style.display = "block";
 
   try {
-    const xhr = new XMLHttpRequest();
-    xhr.upload.addEventListener("progress", e => {
-      if (e.lengthComputable) {
-        bar.style.width = Math.round(e.loaded/e.total*100)+"%";
-      }
-    });
     const result = await new Promise((res, rej) => {
-      xhr.onload = () => res(JSON.parse(xhr.responseText));
-      xhr.onerror = rej;
+      const xhr = new XMLHttpRequest();
+      xhr.upload.addEventListener("progress", e => {
+        if (e.lengthComputable) bar.style.width = Math.round(e.loaded / e.total * 100) + "%";
+      });
+      xhr.onload  = () => {
+        try { res(JSON.parse(xhr.responseText)); }
+        catch { rej(new Error("Respuesta inválida del servidor")); }
+      };
+      xhr.onerror = () => rej(new Error("Error de red"));
       xhr.open("POST", `https://api.cloudinary.com/v1_1/${CONFIG.CLOUDINARY_CLOUD}/upload`);
       xhr.send(fd);
     });
-    entry.url = result.secure_url;
+    entry.url       = result.secure_url;
     entry.uploading = false;
     toast("Archivo subido ✓", "success");
   } catch (e) {
-    STATE.uploadedFiles = STATE.uploadedFiles.filter(f=>f.id!==entry.id);
+    STATE.uploadedFiles = STATE.uploadedFiles.filter(f => f.id !== entry.id);
     toast("Error al subir archivo: " + e.message, "error");
   } finally {
     prog.style.display = "none";
-    bar.style.width = "0";
+    bar.style.width    = "0";
     renderFileList();
   }
 }
 
 function removeFile(id) {
-  STATE.uploadedFiles = STATE.uploadedFiles.filter(f=>f.id!==id);
+  STATE.uploadedFiles = STATE.uploadedFiles.filter(f => f.id !== id);
   renderFileList();
 }
 
 function renderFileList() {
-  document.getElementById("file-list").innerHTML = STATE.uploadedFiles.map(f=>`
+  document.getElementById("file-list").innerHTML = STATE.uploadedFiles.map(f => `
     <div class="file-item">
       <span>📎</span>
       <span class="file-name">${esc(f.name)}</span>
@@ -1943,66 +1976,65 @@ function renderFileList() {
   `).join("");
 }
 
-// ═══════════════════════════════════════════════
-// 21. UTILITIES
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   UTILITIES
+   ═══════════════════════════════════════════════ */
 function genId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
 function esc(str) {
-  if (!str) return "";
-  return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  if (str == null) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 function timeAgo(ts) {
   if (!ts) return "";
   const diff = Date.now() - ts;
-  if (diff < 60000) return "hace un momento";
-  if (diff < 3600000) return `hace ${Math.floor(diff/60000)}m`;
-  if (diff < 86400000) return `hace ${Math.floor(diff/3600000)}h`;
-  if (diff < 2592000000) return `hace ${Math.floor(diff/86400000)}d`;
+  if (diff < 60000)     return "hace un momento";
+  if (diff < 3600000)   return `hace ${Math.floor(diff / 60000)}m`;
+  if (diff < 86400000)  return `hace ${Math.floor(diff / 3600000)}h`;
+  if (diff < 2592000000)return `hace ${Math.floor(diff / 86400000)}d`;
   return new Date(ts).toLocaleDateString("es-AR");
 }
 
 function formatSize(bytes) {
   if (!bytes) return "";
-  if (bytes < 1024) return bytes + " B";
-  if (bytes < 1048576) return (bytes/1024).toFixed(1) + " KB";
-  return (bytes/1048576).toFixed(1) + " MB";
+  if (bytes < 1024)    return bytes + " B";
+  if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
+  return (bytes / 1048576).toFixed(1) + " MB";
 }
 
 function statusLabel(s) {
-  return {pending:"Pendiente",approved:"Aprobada",rejected:"Rechazada"}[s] || s;
+  return {pending: "Pendiente", approved: "Aprobada", rejected: "Rechazada"}[s] || s;
 }
 
 function addLog(msg) {
-  STATE.logs.push({ts:Date.now(), msg, user: STATE.user?.username||"?"});
+  STATE.logs.push({ts: Date.now(), msg, user: STATE.user ? STATE.user.username : "?"});
   if (STATE.logs.length > 200) STATE.logs = STATE.logs.slice(-200);
   saveLogs();
   syncToCloud("logs");
 }
 
 function updateBadges() {
-  const pending = STATE.tasks.filter(t=>t.status==="pending").length;
-  const myTasks = STATE.tasks.filter(t=>t.author===STATE.user?.username).length;
+  const pending = STATE.tasks.filter(t => t.status === "pending").length;
+  const myTasks = STATE.tasks.filter(t => t.author === STATE.user?.username).length;
   const pb = document.getElementById("pending-badge");
   const mb = document.getElementById("my-tasks-badge");
   if (pb) { pb.textContent = pending; pb.style.display = pending > 0 ? "inline" : "none"; }
   if (mb) { mb.textContent = myTasks; mb.style.display = myTasks > 0 ? "inline" : "none"; }
 }
 
-// ═══════════════════════════════════════════════
-// 22. MODALS
-// ═══════════════════════════════════════════════
-function openModal(id) {
-  document.getElementById(id).classList.add("open");
-}
-function closeModal(id) {
-  document.getElementById(id).classList.remove("open");
-}
+/* ═══════════════════════════════════════════════
+   MODALS
+   ═══════════════════════════════════════════════ */
+function openModal(id)  { document.getElementById(id).classList.add("open"); }
+function closeModal(id) { document.getElementById(id).classList.remove("open"); }
 
-// Close modal on overlay click
 document.addEventListener("click", e => {
   if (e.target.classList.contains("modal-overlay")) closeModal(e.target.id);
 });
@@ -2015,9 +2047,9 @@ function showConfirm(text, onConfirm) {
 
 async function confirmDeleteTask(id) {
   showConfirm("¿Eliminar esta tarea? Esta acción no se puede deshacer.", async () => {
-    STATE.tasks = STATE.tasks.filter(t=>t.id!==id);
+    STATE.tasks = STATE.tasks.filter(t => t.id !== id);
     saveTasks();
-    addLog("Tarea eliminada id:"+id);
+    addLog("Tarea eliminada id:" + id);
     await syncToCloud("tasks");
     renderCurrentPage();
     updateBadges();
@@ -2025,9 +2057,9 @@ async function confirmDeleteTask(id) {
   });
 }
 
-// ═══════════════════════════════════════════════
-// 23. TOAST NOTIFICATIONS
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   TOASTS
+   ═══════════════════════════════════════════════ */
 function toast(msg, type = "info") {
   const c = document.getElementById("toasts");
   const t = document.createElement("div");
@@ -2040,89 +2072,86 @@ function toast(msg, type = "info") {
   }, 3500);
 }
 
-// ═══════════════════════════════════════════════
-// 24. SEARCH (debounced)
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   SEARCH
+   ═══════════════════════════════════════════════ */
 let _searchTimer = null;
 function debounceSearch(val) {
   clearTimeout(_searchTimer);
   _searchTimer = setTimeout(() => {
     STATE.searchQuery = val.toLowerCase().trim();
-    if (STATE.currentPage === "explorer") renderExplorer();
-    if (STATE.currentPage === "my-tasks") renderMyTasks();
+    if (STATE.currentPage === "explorer")  renderExplorer();
+    if (STATE.currentPage === "my-tasks")  renderMyTasks();
   }, 200);
 }
 
-// ═══════════════════════════════════════════════
-// 25. SIDEBAR TOGGLE
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   SIDEBAR / DROPDOWN
+   ═══════════════════════════════════════════════ */
 function toggleSidebar() {
   document.getElementById("sidebar").classList.toggle("collapsed");
 }
 
-// ═══════════════════════════════════════════════
-// 26. DROPDOWN
-// ═══════════════════════════════════════════════
 function toggleDropdown(id) {
   const el = document.getElementById(id);
   const wasOpen = el.classList.contains("open");
-  document.querySelectorAll(".dropdown-menu.open").forEach(m=>m.classList.remove("open"));
+  document.querySelectorAll(".dropdown-menu.open").forEach(m => m.classList.remove("open"));
   if (!wasOpen) el.classList.add("open");
 }
+
 document.addEventListener("click", e => {
   if (!e.target.closest(".dropdown")) {
-    document.querySelectorAll(".dropdown-menu.open").forEach(m=>m.classList.remove("open"));
+    document.querySelectorAll(".dropdown-menu.open").forEach(m => m.classList.remove("open"));
   }
 });
 
-// ═══════════════════════════════════════════════
-// 27. POPULATE SUBJECT SELECT
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   SUBJECT SELECT
+   ═══════════════════════════════════════════════ */
 function populateSubjectSelect() {
   const sel = document.getElementById("task-subject");
   sel.innerHTML = `<option value="">Seleccionar materia...</option>` +
-    SUBJECTS.map(s=>`<option value="${s.id}">${s.icon} ${s.name}</option>`).join("");
+    SUBJECTS.map(s => `<option value="${s.id}">${s.icon} ${s.name}</option>`).join("");
 }
 
-// ═══════════════════════════════════════════════
-// 28. DEMO DATA (si no hay datos aún)
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   DEMO DATA
+   ═══════════════════════════════════════════════ */
 function loadDemoData() {
   if (STATE.tasks.length > 0) return;
   const demos = [
-    {title:"Ecuaciones de segundo grado",subject:"matematica",description:"Resolución completa con fórmula cuadrática y ejemplos prácticos.",year:"4° año",type:"Trabajo práctico",points:15},
-    {title:"Análisis literario: Borges",subject:"literatura",description:"Análisis del cuento 'El Aleph' con estructura narrativa y simbolismo.",year:"5° año",type:"Trabajo práctico",points:20},
-    {title:"Revolución Francesa — Causas y consecuencias",subject:"historia",description:"Resumen completo con cronología y mapa conceptual.",year:"3° año",type:"Resumen",points:10},
-    {title:"Introducción a Python",subject:"programacion",description:"Variables, tipos de datos, condicionales y bucles. Ejercicios resueltos.",year:"4° año",type:"Apunte",points:12},
-    {title:"Circuitos eléctricos — Ley de Ohm",subject:"electronica",description:"Teoría y resolución de ejercicios con ley de Ohm y Kirchhoff.",year:"5° año",type:"Trabajo práctico",points:18},
-    {title:"Biomas del mundo",subject:"geografia",description:"Clasificación, ubicación y características principales de cada bioma.",year:"2° año",type:"Resumen",points:8},
+    {title:"Ecuaciones de segundo grado",     subject:"matematica",  description:"Resolución completa con fórmula cuadrática y ejemplos prácticos.", year:"4° año", type:"Trabajo práctico", points:15},
+    {title:"Análisis literario: Borges",       subject:"literatura",  description:"Análisis del cuento 'El Aleph' con estructura narrativa y simbolismo.", year:"5° año", type:"Trabajo práctico", points:20},
+    {title:"Revolución Francesa",              subject:"historia",    description:"Resumen completo con cronología y mapa conceptual.", year:"3° año", type:"Resumen", points:10},
+    {title:"Introducción a Python",            subject:"programacion",description:"Variables, tipos de datos, condicionales y bucles. Ejercicios resueltos.", year:"4° año", type:"Apunte", points:12},
+    {title:"Circuitos eléctricos — Ley de Ohm",subject:"electronica", description:"Teoría y resolución de ejercicios con ley de Ohm y Kirchhoff.", year:"5° año", type:"Trabajo práctico", points:18},
+    {title:"Biomas del mundo",                 subject:"geografia",   description:"Clasificación, ubicación y características principales de cada bioma.", year:"2° año", type:"Resumen", points:8},
   ];
-  demos.forEach((d,i) => {
+  demos.forEach((d, i) => {
     STATE.tasks.push({
       id: genId(), ...d,
       author: "demo_user",
       status: "approved",
-      created: Date.now() - i*86400000*3,
+      created: Date.now() - i * 86400000 * 3,
       files: [],
     });
   });
   saveTasks();
 }
 
-// ═══════════════════════════════════════════════
-// 29. BOOTSTRAP
-// ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   BOOTSTRAP
+   ═══════════════════════════════════════════════ */
 document.addEventListener("DOMContentLoaded", () => {
   loadData();
   loadDemoData();
   tryAutoLogin();
 });
 
-// Keyboard shortcuts
 document.addEventListener("keydown", e => {
   if (e.key === "Escape") {
-    document.querySelectorAll(".modal-overlay.open").forEach(m=>m.classList.remove("open"));
-    document.querySelectorAll(".dropdown-menu.open").forEach(m=>m.classList.remove("open"));
+    document.querySelectorAll(".modal-overlay.open").forEach(m => m.classList.remove("open"));
+    document.querySelectorAll(".dropdown-menu.open").forEach(m => m.classList.remove("open"));
   }
   if ((e.ctrlKey || e.metaKey) && e.key === "k") {
     e.preventDefault();
