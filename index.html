@@ -726,7 +726,7 @@ img{max-width:100%;display:block}
     </nav>
     <div class="sidebar-footer">
       <div class="dropdown">
-        <div class="user-widget" onclick="toggleDropdown('user-dd')">
+        <div class="user-widget" onclick="toggleDropdown('user-dd', event)">
           <div class="avatar" id="sidebar-avatar">?</div>
           <div class="user-info">
             <div class="user-name" id="sidebar-username">—</div>
@@ -2149,8 +2149,17 @@ function updateBadges() {
 function openModal(id)  { document.getElementById(id).classList.add("open"); }
 function closeModal(id) { document.getElementById(id).classList.remove("open"); }
 
+// Listener único: maneja cierre de modal-overlay Y cierre de dropdowns
 document.addEventListener("click", e => {
-  if (e.target.classList.contains("modal-overlay")) closeModal(e.target.id);
+  // Cerrar modal al click en el fondo
+  if (e.target.classList.contains("modal-overlay")) {
+    closeModal(e.target.id);
+    return;
+  }
+  // Cerrar dropdowns al click fuera de ellos
+  if (!e.target.closest(".dropdown")) {
+    document.querySelectorAll(".dropdown-menu.open").forEach(m => m.classList.remove("open"));
+  }
 });
 
 function showConfirm(text, onConfirm) {
@@ -2223,18 +2232,13 @@ function closeSidebarMobile() {
   }
 }
 
-function toggleDropdown(id) {
+function toggleDropdown(id, event) {
+  if (event) event.stopPropagation();
   const el = document.getElementById(id);
   const wasOpen = el.classList.contains("open");
   document.querySelectorAll(".dropdown-menu.open").forEach(m => m.classList.remove("open"));
   if (!wasOpen) el.classList.add("open");
 }
-
-document.addEventListener("click", e => {
-  if (!e.target.closest(".dropdown")) {
-    document.querySelectorAll(".dropdown-menu.open").forEach(m => m.classList.remove("open"));
-  }
-});
 
 /* ═══════════════════════════════════════════════
    SUBJECT SELECT
