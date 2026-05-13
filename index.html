@@ -737,7 +737,7 @@ img{max-width:100%;display:block}
           </div>
           <span style="color:var(--text3);font-size:14px">⋮</span>
         </div>
-        <div class="dropdown-menu open" id="user-dd">
+    <div class="dropdown-menu" id="user-dd">
           <div class="dropdown-item" onclick="navigate('profile');toggleDropdown('user-dd')">
             <span>◎</span> Mi perfil
           </div>
@@ -2305,6 +2305,28 @@ window.addEventListener("resize", () => {
       document.getElementById("sidebar").classList.remove("collapsed");
     }
   }
+});
+   // ═══════════════════════════════
+// FIX DROPDOWN USER MENU
+// ═══════════════════════════════
+
+document.addEventListener("click", function(e){
+
+  const dropdown = document.getElementById("user-dd");
+  const widget = document.querySelector(".user-widget");
+
+  if(!dropdown || !widget) return;
+
+  // click en los 3 puntos / perfil
+  if(widget.contains(e.target)){
+    dropdown.classList.toggle("open");
+    e.stopPropagation();
+    return;
+  }
+
+  // click afuera
+  dropdown.classList.remove("open");
+
 });
 </script>
 </body>
