@@ -662,7 +662,7 @@ img{max-width:100%;display:block}
     </div>
     <div class="form-group">
       <label class="form-label">Usuario</label>
-      <input class="form-input" id="auth-user" type="text" placeholder="nombre_usuario" autocomplete="username">
+      <input class="form-input" id="auth-user" type="text" placeholder="nombre_usuario" autocomplete="username" onkeydown="if(event.key==='Enter')handleAuth()">
     </div>
     <div class="form-group register-fields" id="reg-email-field">
       <label class="form-label">Email</label>
@@ -670,7 +670,7 @@ img{max-width:100%;display:block}
     </div>
     <div class="form-group">
       <label class="form-label">Contraseña</label>
-      <input class="form-input" id="auth-pass" type="password" placeholder="••••••••" autocomplete="current-password">
+      <input class="form-input" id="auth-pass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')handleAuth()">
     </div>
     <button class="btn btn-primary mb-3" id="auth-submit" onclick="handleAuth()">
       <span id="auth-btn-text">Iniciar sesión</span>
@@ -686,7 +686,7 @@ img{max-width:100%;display:block}
   <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebarMobile()"></div>
 
   <!-- SIDEBAR -->
-  <aside class="sidebar" id="sidebar">
+  <aside class="sidebar collapsed" id="sidebar">
     <div class="sidebar-header">
       <div class="logo">
         <div class="logo-icon">E</div>
@@ -1212,6 +1212,14 @@ function showAuthSuccess(msg) {
   el.style.display = "block";
 }
 
+/* ═══════════════════════════════════════════════
+   SECURITY — simple password hashing
+   ═══════════════════════════════════════════════ */
+async function hashPassword(pass) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pass + "edu_salt_2025"));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
+}
+
 /* FIX: added return after loginAs for admin branch so execution stops there */
 async function handleAuth() {
   clearAuthMessages();
@@ -1227,7 +1235,8 @@ async function handleAuth() {
       loginAs({ username: "admin", name: "Administrador", role: "admin", email: "admin@edu.com", points: 0, tasks: 0, joined: Date.now(), status: "active" });
       return;
     }
-    const user = STATE.users.find(u => u.username === username && u.password === password);
+    const hashed = await hashPassword(password);
+    const user = STATE.users.find(u => u.username === username && u.password === hashed);
     if (!user) { setAuthLoading(false); showAuthError("Usuario o contraseña incorrectos."); return; }
     if (user.status === "suspended") { setAuthLoading(false); showAuthError("Tu cuenta está suspendida. Contactá al administrador."); return; }
     loginAs(user);
@@ -1236,8 +1245,9 @@ async function handleAuth() {
     const email = document.getElementById("reg-email").value.trim();
     if (!name || !email) { setAuthLoading(false); showAuthError("Completá todos los campos."); return; }
     if (STATE.users.find(u => u.username === username)) { setAuthLoading(false); showAuthError("Ese nombre de usuario ya está en uso."); return; }
+    const hashed = await hashPassword(password);
     const newUser = {
-      id: genId(), username, name, email, password,
+      id: genId(), username, name, email, password: hashed,
       role: "student", points: 0, tasks: 0,
       joined: Date.now(), status: "active", avatar: name.charAt(0).toUpperCase(),
     };
@@ -1261,6 +1271,15 @@ function loginAs(user) {
 function logout() {
   LS.set("session", null);
   STATE.user = null;
+  STATE.uploadedFiles = [];
+  STATE.editingTaskId = null;
+  // Cerrar sidebar overlay si estaba abierto en mobile
+  document.getElementById("sidebar-overlay").classList.remove("visible");
+  document.getElementById("sidebar").classList.add("collapsed");
+  // Ocultar nav de admin
+  document.getElementById("admin-nav").style.display = "none";
+  // Cerrar cualquier modal abierto
+  document.querySelectorAll(".modal-overlay.open").forEach(m => m.classList.remove("open"));
   document.getElementById("app").style.display = "none";
   document.getElementById("auth-screen").style.display = "flex";
   document.getElementById("auth-user").value = "";
@@ -1288,6 +1307,11 @@ function showApp() {
 
   if (u.role === "admin") {
     document.getElementById("admin-nav").style.display = "block";
+  }
+
+  // En desktop abre sidebar; en mobile la deja colapsada
+  if (!isMobile()) {
+    document.getElementById("sidebar").classList.remove("collapsed");
   }
 
   populateSubjectSelect();
@@ -1337,6 +1361,7 @@ function navigate(page) {
 
   document.getElementById("topbar-title").textContent = PAGE_TITLES[page] || page;
   document.querySelectorAll(".dropdown-menu.open").forEach(m => m.classList.remove("open"));
+  if (isMobile()) closeSidebarMobile();
 
   renderCurrentPage();
 }
@@ -2177,8 +2202,25 @@ function debounceSearch(val) {
 /* ═══════════════════════════════════════════════
    SIDEBAR / DROPDOWN
    ═══════════════════════════════════════════════ */
+function isMobile() {
+  return window.innerWidth <= 900;
+}
+
 function toggleSidebar() {
-  document.getElementById("sidebar").classList.toggle("collapsed");
+  const sb = document.getElementById("sidebar");
+  const ov = document.getElementById("sidebar-overlay");
+  const isCollapsed = sb.classList.contains("collapsed");
+  sb.classList.toggle("collapsed");
+  if (isMobile()) {
+    ov.classList.toggle("visible", isCollapsed);
+  }
+}
+
+function closeSidebarMobile() {
+  if (isMobile()) {
+    document.getElementById("sidebar").classList.add("collapsed");
+    document.getElementById("sidebar-overlay").classList.remove("visible");
+  }
 }
 
 function toggleDropdown(id) {
@@ -2245,6 +2287,16 @@ document.addEventListener("keydown", e => {
   if ((e.ctrlKey || e.metaKey) && e.key === "k") {
     e.preventDefault();
     document.getElementById("global-search")?.focus();
+  }
+});
+
+// Al pasar a desktop, remover overlay y abrir sidebar si estaba colapsada por mobile
+window.addEventListener("resize", () => {
+  if (!isMobile()) {
+    document.getElementById("sidebar-overlay").classList.remove("visible");
+    if (STATE.user) {
+      document.getElementById("sidebar").classList.remove("collapsed");
+    }
   }
 });
 </script>
