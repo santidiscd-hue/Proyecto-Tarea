@@ -4,14 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EduPlatform</title>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════════════
-   RESET & BASE
-   ═══════════════════════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px;height:100%}
-body{font-family:'Geist',system-ui,sans-serif;background:#212121;color:#ececec;height:100%;overflow:hidden;line-height:1.5}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#1a1a1a;color:#e8e8e8;height:100%;overflow:hidden;line-height:1.5}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
 input,textarea,select{font-family:inherit;color:inherit;background:none;border:none;outline:none}
 a{color:inherit;text-decoration:none}
@@ -20,674 +17,526 @@ img{max-width:100%;display:block}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:#3a3a3a;border-radius:2px}
-::-webkit-scrollbar-thumb:hover{background:#555}
 
-/* ═══════════════════════════════════════════════
-   CSS VARIABLES
-   ═══════════════════════════════════════════════ */
 :root{
-  --bg:#212121;
-  --bg2:#2f2f2f;
-  --bg3:#383838;
-  --bg4:#404040;
-  --border:#3a3a3a;
-  --border2:#4a4a4a;
-  --text:#ececec;
-  --text2:#a1a1a1;
-  --text3:#6b6b6b;
-  --accent:#10a37f;
-  --accent-hover:#0d8f6e;
-  --accent-dim:rgba(16,163,127,0.12);
-  --red:#e55;
-  --red-dim:rgba(238,85,85,0.12);
-  --yellow:#f5a623;
-  --blue:#4a9eff;
-  --radius:8px;
-  --radius-lg:12px;
-  --radius-xl:16px;
-  --shadow:0 1px 3px rgba(0,0,0,0.4);
-  --shadow-lg:0 8px 24px rgba(0,0,0,0.5);
-  --trans:all 0.15s ease;
+  --bg:#1a1a1a;
+  --bg2:#222222;
+  --bg3:#2a2a2a;
+  --bg4:#333333;
+  --border:#2e2e2e;
+  --border2:#3d3d3d;
+  --text:#e8e8e8;
+  --text2:#9a9a9a;
+  --text3:#5a5a5a;
+  --accent:#00b894;
+  --accent-hover:#00a381;
+  --accent-dim:rgba(0,184,148,0.1);
+  --accent2:#0984e3;
+  --accent2-dim:rgba(9,132,227,0.1);
+  --red:#d63031;
+  --red-dim:rgba(214,48,49,0.1);
+  --yellow:#fdcb6e;
+  --yellow-dim:rgba(253,203,110,0.1);
+  --purple:#a29bfe;
+  --orange:#e17055;
+  --radius:6px;
+  --radius-lg:10px;
+  --radius-xl:14px;
+  --shadow:0 2px 8px rgba(0,0,0,0.4);
+  --shadow-lg:0 12px 40px rgba(0,0,0,0.6);
+  --trans:all 0.12s ease;
+  --mono:'DM Mono',monospace;
 }
 
-/* ═══════════════════════════════════════════════
-   LAYOUT
-   ═══════════════════════════════════════════════ */
+/* ── LAYOUT ── */
 #app{display:flex;height:100vh;overflow:hidden}
-.sidebar{width:240px;min-width:240px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:var(--trans);z-index:100}
-.sidebar.collapsed{width:0;min-width:0;overflow:hidden}
-.main{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.sidebar{width:232px;min-width:232px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:transform 0.2s ease;z-index:100}
+.sidebar.collapsed{transform:translateX(-100%);position:fixed;top:0;left:0;height:100vh}
+.main{flex:1;overflow:hidden;display:flex;flex-direction:column;min-width:0}
 .page{display:none;flex:1;overflow:hidden;flex-direction:column}
 .page.active{display:flex}
 
-/* ═══════════════════════════════════════════════
-   AUTH SCREENS
-   ═══════════════════════════════════════════════ */
+/* ── AUTH ── */
 #auth-screen{
   display:flex;align-items:center;justify-content:center;
   min-height:100vh;background:var(--bg);padding:16px;
 }
 .auth-box{
-  width:100%;max-width:360px;padding:40px 32px;
+  width:100%;max-width:340px;
   background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--radius-xl);
+  border-radius:var(--radius-xl);overflow:hidden;
 }
-.auth-logo{
-  text-align:center;margin-bottom:32px;
+.auth-hero{
+  background:linear-gradient(135deg,#00b894 0%,#0984e3 100%);
+  padding:28px 28px 24px;text-align:center;
 }
-.auth-logo .logo-mark{
-  width:40px;height:40px;background:var(--accent);border-radius:10px;
-  display:inline-flex;align-items:center;justify-content:center;
-  font-size:20px;font-weight:600;color:#fff;margin-bottom:12px;
+.auth-hero .logo-mark{
+  width:44px;height:44px;background:rgba(255,255,255,0.15);
+  border:1.5px solid rgba(255,255,255,0.3);
+  border-radius:12px;display:inline-flex;align-items:center;
+  justify-content:center;font-size:22px;font-weight:700;color:#fff;margin-bottom:10px;
+  backdrop-filter:blur(8px);
 }
-.auth-logo h1{font-size:20px;font-weight:500;color:var(--text)}
-.auth-logo p{font-size:13px;color:var(--text2);margin-top:4px}
-.auth-tabs{display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:24px}
-.auth-tab{flex:1;padding:8px;font-size:13px;font-weight:500;color:var(--text2);background:transparent;transition:var(--trans)}
+.auth-hero h1{font-size:18px;font-weight:600;color:#fff;margin-bottom:3px}
+.auth-hero p{font-size:12px;color:rgba(255,255,255,0.75)}
+.auth-body{padding:24px}
+.auth-tabs{display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px}
+.auth-tab{flex:1;padding:7px;font-size:13px;font-weight:500;color:var(--text2);background:transparent;transition:var(--trans)}
 .auth-tab.active{background:var(--bg3);color:var(--text)}
-.form-group{margin-bottom:16px}
-.form-label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:500;letter-spacing:.03em;text-transform:uppercase}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:11px;color:var(--text3);margin-bottom:5px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;font-family:var(--mono)}
 .form-input{
-  width:100%;padding:10px 12px;
+  width:100%;padding:9px 11px;
   background:var(--bg);border:1px solid var(--border);
-  border-radius:var(--radius);font-size:14px;color:var(--text);
+  border-radius:var(--radius);font-size:13px;color:var(--text);
   transition:var(--trans);
 }
 .form-input:focus{border-color:var(--accent)}
 .form-input::placeholder{color:var(--text3)}
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:6px;
-  padding:10px 16px;border-radius:var(--radius);font-size:14px;
+  padding:9px 14px;border-radius:var(--radius);font-size:13px;
   font-weight:500;transition:var(--trans);cursor:pointer;
 }
-.btn-primary{background:var(--accent);color:#fff;width:100%;padding:11px}
-.btn-primary:hover{background:var(--accent-hover)}
+.btn-primary{background:var(--accent);color:#fff;width:100%;padding:10px}
+.btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px)}
 .btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
 .btn-secondary:hover{background:var(--bg4)}
-.btn-ghost{color:var(--text2);padding:6px 10px;border-radius:var(--radius)}
+.btn-ghost{color:var(--text2);padding:5px 9px;border-radius:var(--radius)}
 .btn-ghost:hover{background:var(--bg3);color:var(--text)}
-.btn-danger{background:var(--red-dim);color:var(--red);border:1px solid rgba(238,85,85,.25)}
-.btn-danger:hover{background:rgba(238,85,85,.2)}
-.btn-sm{padding:6px 10px;font-size:13px}
-.btn-icon{width:32px;height:32px;padding:0;border-radius:var(--radius);display:inline-flex;align-items:center;justify-content:center}
+.btn-danger{background:var(--red-dim);color:var(--red);border:1px solid rgba(214,48,49,.2)}
+.btn-danger:hover{background:rgba(214,48,49,.2)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-icon{width:30px;height:30px;padding:0;border-radius:var(--radius);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
 .btn-icon:hover{background:var(--bg3)}
 .auth-error{
-  background:var(--red-dim);border:1px solid rgba(238,85,85,.2);
-  color:var(--red);padding:10px 12px;border-radius:var(--radius);
-  font-size:13px;margin-bottom:16px;display:none;
+  background:var(--red-dim);border:1px solid rgba(214,48,49,.2);
+  color:var(--red);padding:9px 11px;border-radius:var(--radius);
+  font-size:12px;margin-bottom:14px;display:none;
 }
 .auth-success{
-  background:var(--accent-dim);border:1px solid rgba(16,163,127,.2);
-  color:var(--accent);padding:10px 12px;border-radius:var(--radius);
-  font-size:13px;margin-bottom:16px;display:none;
+  background:var(--accent-dim);border:1px solid rgba(0,184,148,.2);
+  color:var(--accent);padding:9px 11px;border-radius:var(--radius);
+  font-size:12px;margin-bottom:14px;display:none;
 }
-.auth-divider{text-align:center;font-size:12px;color:var(--text3);margin:16px 0}
 .register-fields{display:none}
 .register-fields.show{display:block}
 
-/* ═══════════════════════════════════════════════
-   SIDEBAR
-   ═══════════════════════════════════════════════ */
+/* ── SIDEBAR ── */
 .sidebar-header{
-  padding:16px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:10px;
+  padding:14px 12px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
 }
-.logo{display:flex;align-items:center;gap:10px;flex:1}
+.logo{display:flex;align-items:center;gap:8px;flex:1}
 .logo-icon{
-  width:28px;height:28px;background:var(--accent);border-radius:7px;
+  width:26px;height:26px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:7px;
   display:flex;align-items:center;justify-content:center;
-  font-size:14px;font-weight:700;color:#fff;flex-shrink:0;
+  font-size:13px;font-weight:700;color:#fff;flex-shrink:0;
 }
-.logo-text{font-size:15px;font-weight:600;color:var(--text)}
-.sidebar-toggle{
-  width:28px;height:28px;border-radius:6px;
-  display:flex;align-items:center;justify-content:center;
-  color:var(--text3);transition:var(--trans);cursor:pointer;
-}
-.sidebar-toggle:hover{background:var(--bg3);color:var(--text2)}
-.sidebar-nav{flex:1;overflow-y:auto;padding:8px}
-.nav-section{margin-bottom:4px}
+.logo-text{font-size:14px;font-weight:600;color:var(--text)}
+.sidebar-nav{flex:1;overflow-y:auto;padding:6px}
+.nav-section{margin-bottom:2px}
 .nav-section-title{
-  font-size:10px;font-weight:600;color:var(--text3);
-  padding:8px 8px 4px;letter-spacing:.08em;text-transform:uppercase;
+  font-size:9px;font-weight:600;color:var(--text3);
+  padding:8px 8px 4px;letter-spacing:.1em;text-transform:uppercase;font-family:var(--mono);
 }
 .nav-item{
   display:flex;align-items:center;gap:8px;
-  padding:7px 8px;border-radius:var(--radius);
+  padding:6px 8px;border-radius:var(--radius);
   font-size:13px;font-weight:400;color:var(--text2);
   cursor:pointer;transition:var(--trans);margin-bottom:1px;
-  position:relative;
 }
 .nav-item:hover{background:var(--bg3);color:var(--text)}
 .nav-item.active{background:var(--accent-dim);color:var(--accent)}
-.nav-item.active .nav-icon{color:var(--accent)}
-.nav-icon{font-size:16px;width:18px;text-align:center;flex-shrink:0}
+.nav-icon{font-size:15px;width:18px;text-align:center;flex-shrink:0}
 .nav-badge{
   margin-left:auto;background:var(--accent);color:#fff;
-  font-size:10px;font-weight:600;padding:1px 5px;border-radius:10px;
+  font-size:10px;font-weight:600;padding:1px 5px;border-radius:10px;font-family:var(--mono);
 }
 .nav-badge.gray{background:var(--bg4);color:var(--text2)}
-.sidebar-footer{
-  padding:12px;border-top:1px solid var(--border);
-}
+.sidebar-footer{padding:10px;border-top:1px solid var(--border)}
 .user-widget{
-  display:flex;align-items:center;gap:10px;
-  padding:8px;border-radius:var(--radius);cursor:pointer;transition:var(--trans);
+  display:flex;align-items:center;gap:9px;
+  padding:7px;border-radius:var(--radius);cursor:pointer;transition:var(--trans);
+  position:relative;
 }
 .user-widget:hover{background:var(--bg3)}
 .avatar{
-  width:32px;height:32px;border-radius:50%;
+  width:30px;height:30px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  font-size:13px;font-weight:600;color:#fff;flex-shrink:0;
-  background:var(--accent);
+  font-size:12px;font-weight:600;color:#fff;flex-shrink:0;
 }
-.avatar.sm{width:26px;height:26px;font-size:11px}
-.avatar.lg{width:48px;height:48px;font-size:18px}
-.user-info{flex:1;overflow:hidden}
+.avatar.sm{width:24px;height:24px;font-size:10px}
+.avatar.lg{width:52px;height:52px;font-size:20px}
+.user-info{flex:1;overflow:hidden;min-width:0}
 .user-name{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.user-role{font-size:11px;color:var(--text2)}
+.user-role{font-size:11px;color:var(--text3);font-family:var(--mono)}
 
-/* ═══════════════════════════════════════════════
-   TOP BAR
-   ═══════════════════════════════════════════════ */
+/* ── USER DROPDOWN ── */
+.user-dd{
+  position:absolute;bottom:calc(100% + 6px);left:0;right:0;
+  background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-lg);
+  padding:4px;z-index:200;
+  opacity:0;pointer-events:none;transform:translateY(4px);
+  transition:opacity 0.12s ease,transform 0.12s ease;
+  box-shadow:var(--shadow-lg);
+}
+.user-dd.open{opacity:1;pointer-events:all;transform:translateY(0)}
+.dd-item{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 9px;border-radius:var(--radius);font-size:13px;
+  color:var(--text2);cursor:pointer;transition:var(--trans);
+}
+.dd-item:hover{background:var(--bg4);color:var(--text)}
+.dd-item.danger{color:var(--red)}
+.dd-item.danger:hover{background:var(--red-dim)}
+.dd-divider{height:1px;background:var(--border);margin:4px 0}
+
+/* ── TOPBAR ── */
 .topbar{
-  height:52px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:8px;padding:0 12px 0 16px;
+  height:50px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;padding:0 12px 0 14px;
   background:var(--bg);flex-shrink:0;min-width:0;
 }
-.topbar-title{font-size:15px;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.topbar-title{font-size:14px;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
 .topbar-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .search-box{
-  display:flex;align-items:center;gap:8px;
+  display:flex;align-items:center;gap:7px;
   background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--radius);padding:6px 12px;
-  width:220px;transition:var(--trans);
+  border-radius:var(--radius);padding:5px 10px;
+  width:200px;transition:var(--trans);
 }
-.search-box:focus-within{border-color:var(--accent);width:260px}
+.search-box:focus-within{border-color:var(--accent);width:240px}
 .search-box input{font-size:13px;color:var(--text);flex:1;min-width:0}
 .search-box input::placeholder{color:var(--text3)}
-.search-icon{color:var(--text3);font-size:14px;flex-shrink:0}
 
-/* ═══════════════════════════════════════════════
-   CONTENT AREA
-   ═══════════════════════════════════════════════ */
-.content{flex:1;overflow-y:auto;padding:24px}
-.page-header{margin-bottom:24px}
-.page-header h2{font-size:22px;font-weight:500;color:var(--text);margin-bottom:4px}
-.page-header p{font-size:14px;color:var(--text2)}
+/* ── CONTENT ── */
+.content{flex:1;overflow-y:auto;padding:20px}
+.page-header{margin-bottom:20px}
+.page-header h2{font-size:20px;font-weight:600;color:var(--text);margin-bottom:3px}
+.page-header p{font-size:13px;color:var(--text2)}
 
-/* ═══════════════════════════════════════════════
-   CARDS & GRIDS
-   ═══════════════════════════════════════════════ */
-.card{
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--radius-lg);padding:20px;
-}
-.card-sm{padding:16px}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:24px}
-.stat-card{
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--radius-lg);padding:16px;
-}
-.stat-label{font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:500}
-.stat-value{font-size:24px;font-weight:600;color:var(--text)}
-.stat-sub{font-size:12px;color:var(--text3);margin-top:2px}
+/* ── CARDS ── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;transition:var(--trans)}
+.stat-card:hover{border-color:var(--border2)}
+.stat-label{font-size:11px;color:var(--text3);margin-bottom:5px;font-weight:500;font-family:var(--mono);letter-spacing:.04em;text-transform:uppercase}
+.stat-value{font-size:22px;font-weight:600;color:var(--text);font-family:var(--mono)}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:2px}
 .stat-accent{color:var(--accent)}
-.stat-up{color:#4ade80;font-size:11px}
-.stat-down{color:var(--red);font-size:11px}
 
-/* ═══════════════════════════════════════════════
-   TASKS
-   ═══════════════════════════════════════════════ */
-.tasks-filters{
-  display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;
+/* ── POINTS / LEVELS ── */
+.level-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600;
+  font-family:var(--mono);
 }
+.level-0{background:rgba(90,90,90,.2);color:#888;border:1px solid rgba(90,90,90,.3)}
+.level-1{background:rgba(116,185,255,.12);color:#74b9ff;border:1px solid rgba(116,185,255,.2)}
+.level-2{background:rgba(0,184,148,.12);color:var(--accent);border:1px solid rgba(0,184,148,.2)}
+.level-3{background:rgba(253,203,110,.12);color:var(--yellow);border:1px solid rgba(253,203,110,.2)}
+.level-4{background:rgba(162,155,254,.12);color:var(--purple);border:1px solid rgba(162,155,254,.2)}
+.level-5{background:rgba(225,112,85,.12);color:var(--orange);border:1px solid rgba(225,112,85,.2)}
+.xp-bar-wrap{background:var(--bg3);border-radius:3px;height:5px;overflow:hidden;margin-top:4px}
+.xp-bar{height:100%;border-radius:3px;transition:width .6s ease}
+
+/* ── TASKS ── */
+.tasks-filters{display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap}
 .filter-chip{
-  padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;
+  padding:4px 11px;border-radius:20px;font-size:12px;font-weight:500;
   border:1px solid var(--border);color:var(--text2);cursor:pointer;transition:var(--trans);
-  background:transparent;
+  background:transparent;font-family:var(--mono);
 }
 .filter-chip:hover{border-color:var(--border2);color:var(--text)}
-.filter-chip.active{background:var(--accent-dim);border-color:rgba(16,163,127,.3);color:var(--accent)}
-.tasks-list{display:flex;flex-direction:column;gap:8px}
+.filter-chip.active{background:var(--accent-dim);border-color:rgba(0,184,148,.3);color:var(--accent)}
+.tasks-list{display:flex;flex-direction:column;gap:6px}
 .task-card{
   background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--radius-lg);padding:16px 20px;
-  display:flex;align-items:flex-start;gap:14px;
+  border-radius:var(--radius-lg);padding:14px 16px;
+  display:flex;align-items:flex-start;gap:12px;
   cursor:pointer;transition:var(--trans);
 }
 .task-card:hover{border-color:var(--border2);background:var(--bg3)}
-.task-card.pending{border-left:3px solid var(--yellow)}
-.task-card.approved{border-left:3px solid var(--accent)}
-.task-card.rejected{border-left:3px solid var(--red)}
+.task-card.pending{border-left:2px solid var(--yellow)}
+.task-card.approved{border-left:2px solid var(--accent)}
+.task-card.rejected{border-left:2px solid var(--red)}
 .task-main{flex:1;min-width:0}
 .task-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px}
-.task-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.task-subject{font-size:12px;color:var(--text2)}
-.task-date{font-size:12px;color:var(--text3)}
-.task-desc{font-size:13px;color:var(--text2);margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.task-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
-.badge{
-  display:inline-flex;align-items:center;gap:4px;
-  padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600;
-}
-.badge-pending{background:rgba(245,166,35,.15);color:var(--yellow);border:1px solid rgba(245,166,35,.2)}
-.badge-approved{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(16,163,127,.2)}
-.badge-rejected{background:var(--red-dim);color:var(--red);border:1px solid rgba(238,85,85,.2)}
+.task-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.task-date{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.task-desc{font-size:12px;color:var(--text2);margin-top:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.task-actions{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600;font-family:var(--mono)}
+.badge-pending{background:var(--yellow-dim);color:var(--yellow);border:1px solid rgba(253,203,110,.25)}
+.badge-approved{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(0,184,148,.2)}
+.badge-rejected{background:var(--red-dim);color:var(--red);border:1px solid rgba(214,48,49,.2)}
 .badge-gray{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
-.badge-blue{background:rgba(74,158,255,.12);color:var(--blue);border:1px solid rgba(74,158,255,.2)}
-/* FIX: added missing ml-2 utility class */
-.ml-2{margin-left:8px}
+.badge-blue{background:var(--accent2-dim);color:var(--accent2);border:1px solid rgba(9,132,227,.2)}
 .subject-tag{
-  padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;
-  background:var(--bg3);color:var(--text2);
+  padding:2px 7px;border-radius:4px;font-size:11px;font-weight:500;
+  background:var(--bg3);color:var(--text2);font-family:var(--mono);
+}
+.pts-tag{
+  padding:2px 7px;border-radius:4px;font-size:11px;font-weight:600;
+  background:var(--accent-dim);color:var(--accent);font-family:var(--mono);
 }
 
-/* ═══════════════════════════════════════════════
-   CATEGORIES / SUBJECTS
-   ═══════════════════════════════════════════════ */
-.subjects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+/* ── SUBJECTS ── */
+.subjects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
 .subject-card{
   background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--radius-lg);padding:16px;cursor:pointer;
-  transition:var(--trans);display:flex;flex-direction:column;gap:8px;
-}
-.subject-card:hover{border-color:var(--border2);transform:translateY(-1px)}
-.subject-icon{font-size:22px}
-.subject-name{font-size:13px;font-weight:500;color:var(--text)}
-.subject-count{font-size:11px;color:var(--text2)}
-
-/* ═══════════════════════════════════════════════
-   LEADERBOARD
-   ═══════════════════════════════════════════════ */
-.leaderboard-list{display:flex;flex-direction:column;gap:4px}
-.lb-item{
-  display:flex;align-items:center;gap:14px;
-  padding:12px 16px;border-radius:var(--radius);
-  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:14px;cursor:pointer;
   transition:var(--trans);
 }
-.lb-item:hover{background:var(--bg3)}
-.lb-rank{
-  width:28px;height:28px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:700;flex-shrink:0;
-  background:var(--bg3);color:var(--text2);
+.subject-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.subject-icon{font-size:20px;margin-bottom:7px}
+.subject-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px}
+.subject-count{font-size:11px;color:var(--text3);font-family:var(--mono)}
+
+/* ── LEADERBOARD ── */
+.leaderboard-list{display:flex;flex-direction:column;gap:3px}
+.lb-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;border-radius:var(--radius);
+  background:var(--bg2);border:1px solid var(--border);transition:var(--trans);
 }
-.lb-rank.gold{background:rgba(245,166,35,.15);color:var(--yellow)}
-.lb-rank.silver{background:rgba(161,161,161,.15);color:#aaa}
+.lb-item:hover{background:var(--bg3)}
+.lb-item.me{border-color:rgba(0,184,148,.3);background:var(--accent-dim)}
+.lb-rank{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;background:var(--bg3);color:var(--text2);font-family:var(--mono)}
+.lb-rank.gold{background:rgba(253,203,110,.15);color:var(--yellow)}
+.lb-rank.silver{background:rgba(200,200,200,.15);color:#bbb}
 .lb-rank.bronze{background:rgba(180,100,50,.15);color:#c47a3a}
 .lb-info{flex:1}
-.lb-name{font-size:14px;font-weight:500;color:var(--text)}
-.lb-sub{font-size:12px;color:var(--text2)}
-.lb-score{font-size:16px;font-weight:600;color:var(--accent)}
-.lb-pts{font-size:11px;color:var(--text3)}
+.lb-name{font-size:13px;font-weight:500;color:var(--text)}
+.lb-sub{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.lb-score{font-size:15px;font-weight:700;color:var(--accent);font-family:var(--mono)}
 
-/* ═══════════════════════════════════════════════
-   MODAL
-   ═══════════════════════════════════════════════ */
+/* ── MODAL ── */
 .modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,0.6);
+  position:fixed;inset:0;background:rgba(0,0,0,0.65);
   display:flex;align-items:center;justify-content:center;
-  z-index:1000;padding:20px;opacity:0;pointer-events:none;
-  transition:opacity 0.15s ease;
+  z-index:1000;padding:16px;opacity:0;pointer-events:none;
+  transition:opacity 0.12s ease;
 }
 .modal-overlay.open{opacity:1;pointer-events:all}
 .modal{
   background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--radius-xl);width:100%;max-width:560px;
-  max-height:85vh;overflow:hidden;display:flex;flex-direction:column;
-  transform:translateY(8px);transition:transform 0.15s ease;
+  border-radius:var(--radius-xl);width:100%;max-width:540px;
+  max-height:88vh;overflow:hidden;display:flex;flex-direction:column;
+  transform:translateY(6px);transition:transform 0.12s ease;
   box-shadow:var(--shadow-lg);
 }
 .modal-overlay.open .modal{transform:translateY(0)}
 .modal-header{
-  padding:20px 24px 16px;border-bottom:1px solid var(--border);
+  padding:18px 20px 14px;border-bottom:1px solid var(--border);
   display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
 }
-.modal-header h3{font-size:16px;font-weight:500;color:var(--text)}
-.modal-body{padding:20px 24px;overflow-y:auto;flex:1}
-.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}
-.modal-lg{max-width:720px}
+.modal-header h3{font-size:15px;font-weight:600;color:var(--text)}
+.modal-body{padding:18px 20px;overflow-y:auto;flex:1}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:7px;justify-content:flex-end;flex-shrink:0}
+.modal-lg{max-width:660px}
 
-/* ═══════════════════════════════════════════════
-   FILE UPLOAD
-   ═══════════════════════════════════════════════ */
+/* ── FILE UPLOAD ── */
 .upload-zone{
-  border:2px dashed var(--border);border-radius:var(--radius-lg);
-  padding:32px;text-align:center;cursor:pointer;transition:var(--trans);
+  border:2px dashed var(--border2);border-radius:var(--radius-lg);
+  padding:24px;text-align:center;cursor:pointer;transition:var(--trans);
 }
-.upload-zone:hover,.upload-zone.dragover{
-  border-color:var(--accent);background:var(--accent-dim);
-}
-.upload-icon{font-size:32px;color:var(--text3);margin-bottom:10px}
-.upload-text{font-size:14px;color:var(--text2)}
-.upload-sub{font-size:12px;color:var(--text3);margin-top:4px}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--accent);background:var(--accent-dim)}
+.upload-icon{font-size:28px;color:var(--text3);margin-bottom:8px}
+.upload-text{font-size:13px;color:var(--text2)}
+.upload-sub{font-size:11px;color:var(--text3);margin-top:3px}
 .upload-progress{height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;margin-top:8px;display:none}
 .upload-progress-bar{height:100%;background:var(--accent);width:0;transition:width 0.3s ease}
-.file-list{display:flex;flex-direction:column;gap:6px;margin-top:12px}
-.file-item{
-  display:flex;align-items:center;gap:10px;
-  padding:8px 12px;background:var(--bg3);border-radius:var(--radius);
-}
-.file-name{font-size:13px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.file-size{font-size:11px;color:var(--text3)}
-.file-remove{color:var(--text3);cursor:pointer;padding:2px;border-radius:4px}
+.file-list{display:flex;flex-direction:column;gap:5px;margin-top:10px}
+.file-item{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg3);border-radius:var(--radius)}
+.file-name{font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono)}
+.file-size{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.file-remove{color:var(--text3);cursor:pointer;padding:2px;border-radius:3px}
 .file-remove:hover{color:var(--red)}
 
-/* ═══════════════════════════════════════════════
-   ADMIN PANEL
-   ═══════════════════════════════════════════════ */
-.admin-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px}
-.admin-tab{
-  padding:10px 16px;font-size:13px;font-weight:500;color:var(--text2);
-  cursor:pointer;border-bottom:2px solid transparent;transition:var(--trans);
-}
+/* ── ADMIN ── */
+.admin-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:18px}
+.admin-tab{padding:9px 14px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:var(--trans)}
 .admin-tab:hover{color:var(--text)}
 .admin-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 .admin-section{display:none}
 .admin-section.active{display:block}
 .admin-table{width:100%;border-collapse:collapse}
-.admin-table th{
-  text-align:left;font-size:11px;font-weight:600;color:var(--text3);
-  padding:8px 12px;border-bottom:1px solid var(--border);
-  text-transform:uppercase;letter-spacing:.05em;
-}
-.admin-table td{
-  padding:12px;font-size:13px;color:var(--text2);
-  border-bottom:1px solid var(--border);vertical-align:middle;
-}
+.admin-table th{text-align:left;font-size:10px;font-weight:600;color:var(--text3);padding:7px 10px;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.06em;font-family:var(--mono)}
+.admin-table td{padding:10px;font-size:12px;color:var(--text2);border-bottom:1px solid var(--border);vertical-align:middle}
 .admin-table tr:hover td{background:var(--bg3)}
 .admin-table tr:last-child td{border-bottom:none}
 
-/* ═══════════════════════════════════════════════
-   PROFILE
-   ═══════════════════════════════════════════════ */
+/* ── PROFILE ── */
 .profile-header{
-  display:flex;align-items:flex-start;gap:20px;margin-bottom:24px;
-  padding:24px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-xl);
+  display:flex;align-items:flex-start;gap:18px;margin-bottom:20px;
+  padding:20px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-xl);
 }
-.profile-info{flex:1}
-.profile-name{font-size:22px;font-weight:500;color:var(--text);margin-bottom:4px}
-.profile-role{font-size:14px;color:var(--text2);margin-bottom:12px}
-.profile-stats{display:flex;gap:24px}
+.profile-name{font-size:20px;font-weight:600;color:var(--text);margin-bottom:3px}
+.profile-role{font-size:12px;color:var(--text2);margin-bottom:10px;font-family:var(--mono)}
+.profile-stats{display:flex;gap:20px;flex-wrap:wrap}
 .profile-stat{text-align:center}
-.profile-stat-val{font-size:20px;font-weight:600;color:var(--accent)}
-.profile-stat-label{font-size:11px;color:var(--text3)}
+.profile-stat-val{font-size:18px;font-weight:700;color:var(--accent);font-family:var(--mono)}
+.profile-stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;font-family:var(--mono)}
 
-/* ═══════════════════════════════════════════════
-   NOTIFICATIONS & TOASTS
-   ═══════════════════════════════════════════════ */
-.toast-container{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+/* ── TOASTS ── */
+.toast-container{position:fixed;bottom:16px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:6px}
 .toast{
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--radius);padding:12px 16px;
-  font-size:13px;color:var(--text);max-width:320px;
-  box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:10px;
-  animation:slideIn .2s ease;
+  background:var(--bg3);border:1px solid var(--border2);
+  border-radius:var(--radius);padding:10px 14px;
+  font-size:13px;color:var(--text);max-width:300px;
+  box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:8px;
+  animation:slideIn .15s ease;
 }
-.toast.success{border-left:3px solid var(--accent)}
-.toast.error{border-left:3px solid var(--red)}
-.toast.info{border-left:3px solid var(--blue)}
-@keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}
-@keyframes fadeOut{to{opacity:0;transform:translateX(20px)}}
+.toast.success{border-left:2px solid var(--accent)}
+.toast.error{border-left:2px solid var(--red)}
+.toast.info{border-left:2px solid var(--accent2)}
+@keyframes slideIn{from{transform:translateX(16px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes fadeOut{to{opacity:0;transform:translateX(16px)}}
 
-/* ═══════════════════════════════════════════════
-   LOADING / SKELETON
-   ═══════════════════════════════════════════════ */
+/* ── MISC ── */
 .skeleton{background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%);background-size:200%;animation:shimmer 1.5s infinite;border-radius:var(--radius)}
 @keyframes shimmer{0%{background-position:200%}100%{background-position:-200%}}
-.sk-line{height:14px;border-radius:4px;margin-bottom:8px}
-.sk-line.short{width:40%}
-.sk-line.med{width:65%}
-.loading-spinner{
-  width:20px;height:20px;border:2px solid var(--border);
-  border-top-color:var(--accent);border-radius:50%;
-  animation:spin .6s linear infinite;display:inline-block;
-}
+.loading-spinner{width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .5s linear infinite;display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* ═══════════════════════════════════════════════
-   EMPTY STATE
-   ═══════════════════════════════════════════════ */
-.empty-state{text-align:center;padding:60px 20px;color:var(--text3)}
-.empty-icon{font-size:40px;margin-bottom:12px;opacity:.4}
-.empty-title{font-size:16px;font-weight:500;color:var(--text2);margin-bottom:6px}
-.empty-sub{font-size:13px}
-
-/* ═══════════════════════════════════════════════
-   DIVIDERS & HELPERS
-   ═══════════════════════════════════════════════ */
-.divider{height:1px;background:var(--border);margin:16px 0}
-.flex{display:flex}.items-center{align-items:center}.justify-between{justify-content:space-between}.gap-2{gap:8px}.gap-3{gap:12px}.gap-4{gap:16px}
-.mb-2{margin-bottom:8px}.mb-3{margin-bottom:12px}.mb-4{margin-bottom:16px}.mb-6{margin-bottom:24px}
-.mt-2{margin-top:8px}.mt-4{margin-top:16px}
-.text-sm{font-size:13px}.text-xs{font-size:12px}.text-2xl{font-size:24px}
-.text-muted{color:var(--text2)}.text-accent{color:var(--accent)}
-.font-medium{font-weight:500}
+.empty-state{text-align:center;padding:48px 20px;color:var(--text3)}
+.empty-icon{font-size:36px;margin-bottom:10px;opacity:.35}
+.empty-title{font-size:15px;font-weight:500;color:var(--text2);margin-bottom:5px}
+.empty-sub{font-size:12px}
+.divider{height:1px;background:var(--border);margin:14px 0}
+.flex{display:flex}.items-center{align-items:center}.justify-between{justify-content:space-between}
+.gap-2{gap:8px}.gap-3{gap:12px}
+.mb-2{margin-bottom:8px}.mb-3{margin-bottom:12px}.mb-4{margin-bottom:16px}.mb-5{margin-bottom:20px}
+.mt-2{margin-top:8px}.mt-3{margin-top:12px}
+.text-sm{font-size:13px}.text-xs{font-size:11px}
+.text-muted{color:var(--text2)}.text-accent{color:var(--accent)}.text-red{color:var(--red)}
+.font-medium{font-weight:500}.font-mono{font-family:var(--mono)}
 .truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .w-full{width:100%}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-
-/* ═══════════════════════════════════════════════
-   SIDEBAR OVERLAY (mobile backdrop)
-   ═══════════════════════════════════════════════ */
-.sidebar-overlay{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);
-  z-index:99;
-}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.bar-label{font-size:11px;color:var(--text2);width:110px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono)}
+.bar-track{flex:1;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .5s ease}
+.bar-val{font-size:11px;color:var(--text2);width:24px;text-align:right;font-family:var(--mono)}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99}
 .sidebar-overlay.visible{display:block}
-
-/* ═══════════════════════════════════════════════
-   RESPONSIVE — TABLET (≤ 900px)
-   ═══════════════════════════════════════════════ */
-@media(max-width:900px){
-  /* sidebar starts collapsed on tablet */
-  .sidebar{
-    position:fixed;top:0;left:0;height:100vh;
-    z-index:200;box-shadow:var(--shadow-lg);
-    transition:transform 0.2s ease;
-    transform:translateX(0);
-  }
-  .sidebar.collapsed{transform:translateX(-100%);width:240px;min-width:240px;overflow:auto}
-  .grid-2{grid-template-columns:1fr}
-  .search-box{width:180px}
-  .search-box:focus-within{width:220px}
-}
-
-/* ═══════════════════════════════════════════════
-   RESPONSIVE — MOBILE (≤ 640px)
-   ═══════════════════════════════════════════════ */
-@media(max-width:640px){
-  /* auth */
-  .auth-box{padding:28px 20px;border-radius:var(--radius-lg)}
-
-  /* content */
-  .content{padding:12px}
-  .page-header{margin-bottom:16px}
-  .page-header h2{font-size:18px}
-
-  /* stats 2 cols */
-  .stats-grid{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
-  .stat-value{font-size:20px}
-
-  /* grids */
-  .grid-2{grid-template-columns:1fr}
-  .grid-3{grid-template-columns:1fr 1fr}
-
-  /* subjects */
-  .subjects-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
-
-  /* topbar: hide text search, show icon only */
-  .search-box{display:none}
-  .topbar-title{font-size:14px}
-  .topbar{padding:0 8px 0 12px;gap:6px}
-  .btn-primary.btn-sm{padding:6px 10px;font-size:12px}
-
-  /* task cards */
-  .task-card{padding:12px 14px;gap:10px}
-  .task-card .task-actions{flex-direction:column;align-items:flex-end;gap:4px}
-
-  /* admin table: make scrollable */
-  .admin-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  .admin-table{min-width:580px}
-  .admin-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  .admin-tab{white-space:nowrap;font-size:12px;padding:8px 12px}
-
-  /* modal: full width bottom sheet feel */
-  .modal-overlay{padding:0;align-items:flex-end}
-  .modal{border-radius:var(--radius-xl) var(--radius-xl) 0 0;max-height:92vh;max-width:100%}
-  .modal-lg{max-width:100%}
-  .modal-body{padding:16px}
-  .modal-header{padding:16px 16px 12px}
-  .modal-footer{padding:12px 16px;flex-wrap:wrap}
-  .modal-footer .btn{flex:1;min-width:100px}
-
-  /* modal grid inside form */
-  .modal .grid-2{grid-template-columns:1fr}
-
-  /* profile */
-  .profile-header{flex-direction:column;align-items:center;text-align:center;padding:16px}
-  .profile-stats{justify-content:center;gap:16px}
-
-  /* leaderboard */
-  .lb-item{padding:10px 12px;gap:10px}
-  .lb-score{font-size:14px}
-
-  /* upload zone */
-  .upload-zone{padding:20px 16px}
-
-  /* mb-6 reduction */
-  .mb-6{margin-bottom:16px}
-}
-
-/* ═══════════════════════════════════════════════
-   RESPONSIVE — SMALL MOBILE (≤ 380px)
-   ═══════════════════════════════════════════════ */
-@media(max-width:380px){
-  .stats-grid{grid-template-columns:1fr 1fr}
-  .grid-3{grid-template-columns:1fr}
-  .subjects-grid{grid-template-columns:1fr 1fr}
-  .profile-stats{gap:10px}
-  .profile-stat-val{font-size:16px}
-}
-
-/* ═══════════════════════════════════════════════
-   DROPDOWN MENU
-   ═══════════════════════════════════════════════ */
-.dropdown{position:relative}
-.dropdown-menu{
-  position:absolute;
-  top:calc(100% + 6px);
-  right:0;
-
-  bottom:calc(100% + 8px);
-  top:auto;
-
-  background:var(--bg2);
-}
-.dropdown-menu.open{opacity:1;pointer-events:all;transform:translateY(0)}
-.dropdown-item{
-  display:flex;align-items:center;gap:8px;
-  padding:7px 10px;border-radius:6px;font-size:13px;
-  color:var(--text2);cursor:pointer;transition:var(--trans);
-}
-.dropdown-item:hover{background:var(--bg3);color:var(--text)}
-.dropdown-item.danger{color:var(--red)}
-.dropdown-item.danger:hover{background:var(--red-dim)}
-.dropdown-divider{height:1px;background:var(--border);margin:4px 0}
-
-/* ═══════════════════════════════════════════════
-   NOTIFICATIONS DOT
-   ═══════════════════════════════════════════════ */
-.notif-dot{
-  width:7px;height:7px;background:var(--accent);border-radius:50%;
-  position:absolute;top:3px;right:3px;
-}
-.relative{position:relative}
-
-/* textarea styles */
 .form-textarea{
-  width:100%;padding:10px 12px;
+  width:100%;padding:9px 11px;
   background:var(--bg);border:1px solid var(--border);
-  border-radius:var(--radius);font-size:14px;color:var(--text);
-  resize:vertical;min-height:90px;transition:var(--trans);
+  border-radius:var(--radius);font-size:13px;color:var(--text);
+  resize:vertical;min-height:80px;transition:var(--trans);
 }
 .form-textarea:focus{border-color:var(--accent)}
 .form-textarea::placeholder{color:var(--text3)}
 .form-select{
-  width:100%;padding:10px 12px;
+  width:100%;padding:9px 11px;
   background:var(--bg);border:1px solid var(--border);
-  border-radius:var(--radius);font-size:14px;color:var(--text);
-  cursor:pointer;
+  border-radius:var(--radius);font-size:13px;color:var(--text);cursor:pointer;
 }
 .form-select option{background:var(--bg2)}
+.detail-section{margin-bottom:20px}
+.detail-section h4{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;font-family:var(--mono)}
+.detail-row{display:flex;gap:10px;margin-bottom:6px}
+.detail-label{font-size:12px;color:var(--text3);width:110px;flex-shrink:0;font-family:var(--mono)}
+.detail-value{font-size:12px;color:var(--text2)}
+.comment-box{
+  background:var(--bg3);border:1px solid var(--border2);
+  border-radius:var(--radius);padding:10px 12px;
+  font-size:12px;color:var(--text2);margin-top:8px;
+  border-left:2px solid var(--yellow);
+}
 
-/* detail view */
-.detail-section{margin-bottom:24px}
-.detail-section h4{font-size:13px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
-.detail-row{display:flex;gap:12px;margin-bottom:8px}
-.detail-label{font-size:13px;color:var(--text3);width:120px;flex-shrink:0}
-.detail-value{font-size:13px;color:var(--text2)}
+/* ── ACHIEVEMENT POPUP ── */
+.achievement-popup{
+  position:fixed;top:16px;right:16px;z-index:9998;
+  background:var(--bg3);border:1px solid rgba(0,184,148,.3);
+  border-radius:var(--radius-lg);padding:12px 16px;
+  display:flex;align-items:center;gap:10px;
+  box-shadow:var(--shadow-lg);max-width:280px;
+  animation:popIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn{from{transform:translateY(-20px) scale(.9);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+.achievement-icon{font-size:24px;flex-shrink:0}
+.achievement-title{font-size:12px;font-weight:600;color:var(--accent);font-family:var(--mono);margin-bottom:2px}
+.achievement-desc{font-size:11px;color:var(--text2)}
 
-/* analytics bars */
-.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.bar-label{font-size:12px;color:var(--text2);width:120px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bar-track{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
-.bar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .5s ease}
-.bar-val{font-size:12px;color:var(--text2);width:30px;text-align:right}
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .sidebar{position:fixed;top:0;left:0;height:100vh;box-shadow:var(--shadow-lg)}
+  .sidebar.collapsed{transform:translateX(-100%)}
+  .grid-2{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .content{padding:10px}
+  .stats-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .search-box{display:none}
+  .modal-overlay{padding:0;align-items:flex-end}
+  .modal{border-radius:var(--radius-xl) var(--radius-xl) 0 0;max-height:92vh;max-width:100%}
+  .modal-lg{max-width:100%}
+  .modal-body{padding:14px}
+  .modal-header{padding:14px 14px 10px}
+  .modal-footer{padding:10px 14px;flex-wrap:wrap}
+  .profile-header{flex-direction:column;align-items:center;text-align:center}
+  .profile-stats{justify-content:center}
+  .admin-table-wrap{overflow-x:auto}
+  .admin-table{min-width:540px}
+  .modal .grid-2{grid-template-columns:1fr}
+  .task-card .task-actions{flex-direction:column;align-items:flex-end;gap:3px}
+}
 </style>
 </head>
 <body>
 
-<!-- ═══════ TOAST CONTAINER ═══════ -->
 <div class="toast-container" id="toasts"></div>
 
-<!-- ═══════ AUTH SCREEN ═══════ -->
+<!-- ═══ AUTH ═══ -->
 <div id="auth-screen">
   <div class="auth-box">
-    <div class="auth-logo">
+    <div class="auth-hero">
       <div class="logo-mark">E</div>
       <h1>EduPlatform</h1>
       <p>Plataforma académica colaborativa</p>
     </div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" onclick="switchAuthTab('login')">Iniciar sesión</button>
-      <button class="auth-tab" onclick="switchAuthTab('register')">Crear cuenta</button>
+    <div class="auth-body">
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchAuthTab('login')">Iniciar sesión</button>
+        <button class="auth-tab" onclick="switchAuthTab('register')">Crear cuenta</button>
+      </div>
+      <div class="auth-error" id="auth-error"></div>
+      <div class="auth-success" id="auth-success"></div>
+      <div class="form-group register-fields" id="reg-name-field">
+        <label class="form-label">Nombre completo</label>
+        <input class="form-input" id="reg-name" type="text" placeholder="Tu nombre" autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Usuario</label>
+        <input class="form-input" id="auth-user" type="text" placeholder="nombre_usuario" autocomplete="username" onkeydown="if(event.key==='Enter')handleAuth()">
+      </div>
+      <div class="form-group register-fields" id="reg-email-field">
+        <label class="form-label">Email</label>
+        <input class="form-input" id="reg-email" type="email" placeholder="tu@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input class="form-input" id="auth-pass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')handleAuth()">
+      </div>
+      <button class="btn btn-primary mb-2" id="auth-submit" onclick="handleAuth()">
+        <span id="auth-btn-text">Iniciar sesión</span>
+        <span id="auth-spinner" style="display:none"><div class="loading-spinner"></div></span>
+      </button>
+      <div style="font-size:11px;color:var(--text3);text-align:center;font-family:var(--mono)">
+        Admin: admin / admin123
+      </div>
     </div>
-    <div class="auth-error" id="auth-error"></div>
-    <div class="auth-success" id="auth-success"></div>
-    <div class="form-group register-fields" id="reg-name-field">
-      <label class="form-label">Nombre completo</label>
-      <input class="form-input" id="reg-name" type="text" placeholder="Tu nombre" autocomplete="name">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Usuario</label>
-      <input class="form-input" id="auth-user" type="text" placeholder="nombre_usuario" autocomplete="username" onkeydown="if(event.key==='Enter')handleAuth()">
-    </div>
-    <div class="form-group register-fields" id="reg-email-field">
-      <label class="form-label">Email</label>
-      <input class="form-input" id="reg-email" type="email" placeholder="tu@email.com">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Contraseña</label>
-      <input class="form-input" id="auth-pass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')handleAuth()">
-    </div>
-    <button class="btn btn-primary mb-3" id="auth-submit" onclick="handleAuth()">
-      <span id="auth-btn-text">Iniciar sesión</span>
-      <span id="auth-spinner" style="display:none"><div class="loading-spinner" style="width:14px;height:14px;border-width:1.5px"></div></span>
-    </button>
   </div>
 </div>
 
-<!-- ═══════ MAIN APP ═══════ -->
+<!-- ═══ APP ═══ -->
 <div id="app" style="display:none">
-
-  <!-- SIDEBAR BACKDROP (mobile) -->
   <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebarMobile()"></div>
 
-  <!-- SIDEBAR -->
   <aside class="sidebar collapsed" id="sidebar">
     <div class="sidebar-header">
       <div class="logo">
@@ -698,124 +547,106 @@ img{max-width:100%;display:block}
     <nav class="sidebar-nav">
       <div class="nav-section">
         <div class="nav-section-title">Principal</div>
-        <div class="nav-item active" onclick="navigate('dashboard')">
-          <span class="nav-icon">⊞</span> Dashboard
-        </div>
-        <div class="nav-item" onclick="navigate('explorer')">
-          <span class="nav-icon">◫</span> Explorar
-        </div>
+        <div class="nav-item active" onclick="navigate('dashboard')"><span class="nav-icon">⊞</span> Dashboard</div>
+        <div class="nav-item" onclick="navigate('explorer')"><span class="nav-icon">◫</span> Explorar</div>
         <div class="nav-item" onclick="navigate('my-tasks')">
           <span class="nav-icon">✓</span> Mis tareas
-          <span class="nav-badge gray" id="my-tasks-badge">0</span>
+          <span class="nav-badge gray" id="my-tasks-badge" style="display:none">0</span>
         </div>
-        <div class="nav-item" onclick="navigate('subjects')">
-          <span class="nav-icon">◈</span> Materias
-        </div>
-        <div class="nav-item" onclick="navigate('leaderboard')">
-          <span class="nav-icon">◆</span> Ranking
-        </div>
+        <div class="nav-item" onclick="navigate('subjects')"><span class="nav-icon">◈</span> Materias</div>
+        <div class="nav-item" onclick="navigate('leaderboard')"><span class="nav-icon">◆</span> Ranking</div>
       </div>
       <div class="nav-section" id="admin-nav" style="display:none">
-        <div class="nav-section-title">Administración</div>
+        <div class="nav-section-title">Admin</div>
         <div class="nav-item" onclick="navigate('admin')">
           <span class="nav-icon">⚙</span> Panel Admin
-          <span class="nav-badge" id="pending-badge">0</span>
+          <span class="nav-badge" id="pending-badge" style="display:none">0</span>
         </div>
-        <div class="nav-item" onclick="navigate('analytics')">
-          <span class="nav-icon">◉</span> Analytics
-        </div>
+        <div class="nav-item" onclick="navigate('analytics')"><span class="nav-icon">◉</span> Analytics</div>
       </div>
     </nav>
     <div class="sidebar-footer">
-      <div class="dropdown">
-        <div class="user-widget" onclick="toggleDropdown('user-dd', event)">
-          <div class="avatar" id="sidebar-avatar">?</div>
-          <div class="user-info">
-            <div class="user-name" id="sidebar-username">—</div>
-            <div class="user-role" id="sidebar-role">—</div>
-          </div>
-          <span style="color:var(--text3);font-size:14px">⋮</span>
+      <div class="user-widget" onclick="toggleUserDD(event)">
+        <div class="avatar" id="sidebar-avatar" style="background:var(--accent)">?</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebar-username">—</div>
+          <div class="user-role" id="sidebar-role">—</div>
         </div>
-        <div class="dropdown-menu open" id="user-dd">
-          <div class="dropdown-item" onclick="navigate('profile');toggleDropdown('user-dd')">
-            <span>◎</span> Mi perfil
-          </div>
-          <div class="dropdown-divider"></div>
-          <div class="dropdown-item danger" onclick="logout()">
-            <span>→</span> Cerrar sesión
-          </div>
+        <span style="color:var(--text3);font-size:12px">▲</span>
+        <div class="user-dd" id="user-dd">
+          <div class="dd-item" onclick="navigate('profile');closeUserDD()">◎ Mi perfil</div>
+          <div class="dd-divider"></div>
+          <div class="dd-item danger" onclick="logout()">→ Cerrar sesión</div>
         </div>
       </div>
     </div>
   </aside>
 
-  <!-- MAIN CONTENT -->
   <main class="main">
-
-    <!-- TOP BAR -->
     <div class="topbar">
       <button class="btn-ghost btn-icon" onclick="toggleSidebar()">☰</button>
       <span class="topbar-title" id="topbar-title">Dashboard</span>
       <div class="topbar-actions">
         <div class="search-box">
-          <span class="search-icon">⌕</span>
-          <input type="text" placeholder="Buscar tareas..." id="global-search" oninput="debounceSearch(this.value)">
+          <span style="color:var(--text3);font-size:13px">⌕</span>
+          <input type="text" placeholder="Buscar..." id="global-search" oninput="debounceSearch(this.value)">
         </div>
         <button class="btn btn-primary btn-sm" onclick="openUploadModal()">+ Nueva tarea</button>
       </div>
     </div>
 
-    <!-- ── PAGE: DASHBOARD ── -->
+    <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
       <div class="content">
         <div class="page-header">
           <h2 id="dashboard-greeting">Buen día</h2>
-          <p id="dashboard-sub">Aquí tenés un resumen de tu actividad</p>
+          <p id="dashboard-sub">Resumen de tu actividad</p>
         </div>
         <div class="stats-grid" id="dash-stats"></div>
-        <div class="grid-2 mb-6">
+        <div class="grid-2 mb-4">
           <div class="card">
-            <div class="flex items-center justify-between mb-4">
-              <span class="font-medium">Últimas tareas</span>
-              <span class="text-sm text-muted" style="cursor:pointer" onclick="navigate('explorer')">Ver todo →</span>
+            <div class="flex items-center justify-between mb-3">
+              <span class="font-medium" style="font-size:13px">Últimas tareas</span>
+              <span class="text-xs text-muted" style="cursor:pointer" onclick="navigate('explorer')">Ver todo →</span>
             </div>
             <div id="dash-recent-tasks"></div>
           </div>
           <div class="card">
-            <div class="flex items-center justify-between mb-4">
-              <span class="font-medium">Ranking actual</span>
-              <span class="text-sm text-muted" style="cursor:pointer" onclick="navigate('leaderboard')">Ver todo →</span>
+            <div class="flex items-center justify-between mb-3">
+              <span class="font-medium" style="font-size:13px">Top ranking</span>
+              <span class="text-xs text-muted" style="cursor:pointer" onclick="navigate('leaderboard')">Ver todo →</span>
             </div>
             <div id="dash-leaderboard"></div>
           </div>
         </div>
         <div class="card">
-          <div class="flex items-center justify-between mb-4">
-            <span class="font-medium">Actividad por materia</span>
+          <div class="flex items-center justify-between mb-3">
+            <span class="font-medium" style="font-size:13px">Tu progreso</span>
+            <span id="dash-level-badge"></span>
           </div>
-          <div id="subject-activity-bars"></div>
+          <div id="dash-progress"></div>
         </div>
       </div>
     </div>
 
-    <!-- ── PAGE: EXPLORER ── -->
+    <!-- EXPLORER -->
     <div class="page" id="page-explorer">
       <div class="content">
         <div class="page-header">
           <h2>Explorar tareas</h2>
-          <p>Todas las tareas aprobadas de la comunidad</p>
+          <p>Tareas aprobadas de la comunidad</p>
         </div>
         <div class="tasks-filters" id="explorer-filters"></div>
         <div id="explorer-tasks"></div>
       </div>
     </div>
 
-    <!-- ── PAGE: MY-TASKS ── -->
+    <!-- MY TASKS -->
     <div class="page" id="page-my-tasks">
       <div class="content">
         <div class="page-header">
           <h2>Mis tareas</h2>
-          <p>Historial de todas tus entregas</p>
+          <p>Historial completo de tus entregas</p>
         </div>
         <div class="tasks-filters">
           <button class="filter-chip active" onclick="filterMyTasks('all',this)">Todas</button>
@@ -827,26 +658,20 @@ img{max-width:100%;display:block}
       </div>
     </div>
 
-    <!-- ── PAGE: SUBJECTS ── -->
+    <!-- SUBJECTS -->
     <div class="page" id="page-subjects">
       <div class="content">
-        <div class="page-header">
-          <h2>Materias</h2>
-          <p>Explorá las tareas por materia</p>
-        </div>
+        <div class="page-header"><h2>Materias</h2><p>Explorá por materia</p></div>
         <div class="subjects-grid" id="subjects-grid"></div>
       </div>
     </div>
 
-    <!-- ── PAGE: LEADERBOARD ── -->
+    <!-- LEADERBOARD -->
     <div class="page" id="page-leaderboard">
       <div class="content">
-        <div class="page-header">
-          <h2>Ranking</h2>
-          <p>Los estudiantes con más puntos</p>
-        </div>
-        <div class="card mb-4">
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div class="page-header"><h2>Ranking</h2><p>Estudiantes con más puntos</p></div>
+        <div class="card mb-3">
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
             <button class="filter-chip active" onclick="filterLeaderboard('global',this)">Global</button>
             <button class="filter-chip" onclick="filterLeaderboard('weekly',this)">Esta semana</button>
             <button class="filter-chip" onclick="filterLeaderboard('monthly',this)">Este mes</button>
@@ -856,80 +681,57 @@ img{max-width:100%;display:block}
       </div>
     </div>
 
-    <!-- ── PAGE: ADMIN ── -->
+    <!-- ADMIN -->
     <div class="page" id="page-admin">
       <div class="content">
-        <div class="page-header">
-          <h2>Panel de administración</h2>
-          <p>Control total de la plataforma</p>
-        </div>
+        <div class="page-header"><h2>Panel de administración</h2></div>
         <div class="admin-tabs">
-          <div class="admin-tab active" id="admin-tab-tasks" onclick="switchAdminTab('tasks')">Tareas pendientes <span class="badge badge-pending ml-2" id="admin-pending-count">0</span></div>
+          <div class="admin-tab active" id="admin-tab-tasks" onclick="switchAdminTab('tasks')">
+            Pendientes <span class="badge badge-pending" id="admin-pending-count">0</span>
+          </div>
           <div class="admin-tab" id="admin-tab-users" onclick="switchAdminTab('users')">Usuarios</div>
           <div class="admin-tab" id="admin-tab-logs" onclick="switchAdminTab('logs')">Logs</div>
         </div>
-        <div class="admin-section active" id="admin-tasks">
-          <div id="admin-pending-list"></div>
-        </div>
+        <div class="admin-section active" id="admin-tasks"><div id="admin-pending-list"></div></div>
         <div class="admin-section" id="admin-users">
-          <div class="flex items-center gap-2 mb-4">
-            <input class="form-input" style="max-width:280px" type="text" placeholder="Buscar usuario..." oninput="filterAdminUsers(this.value)">
+          <div class="flex items-center gap-2 mb-3">
+            <input class="form-input" style="max-width:260px" type="text" placeholder="Buscar usuario..." oninput="filterAdminUsers(this.value)">
           </div>
           <div class="admin-table-wrap">
-          <table class="admin-table" id="admin-users-table">
-            <thead>
-              <tr>
-                <th>Usuario</th>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Rol</th>
-                <th>Tareas</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="admin-users-body"></tbody>
-          </table>
+            <table class="admin-table" id="admin-users-table">
+              <thead>
+                <tr>
+                  <th>Usuario</th><th>Nombre</th><th>Email</th><th>Nivel</th><th>Pts</th><th>Tareas</th><th>Estado</th><th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="admin-users-body"></tbody>
+            </table>
           </div>
         </div>
-        <div class="admin-section" id="admin-logs">
-          <div id="admin-logs-list"></div>
-        </div>
+        <div class="admin-section" id="admin-logs"><div id="admin-logs-list"></div></div>
       </div>
     </div>
 
-    <!-- ── PAGE: ANALYTICS ── -->
+    <!-- ANALYTICS -->
     <div class="page" id="page-analytics">
       <div class="content">
-        <div class="page-header">
-          <h2>Analytics</h2>
-          <p>Estadísticas de uso de la plataforma</p>
-        </div>
+        <div class="page-header"><h2>Analytics</h2></div>
         <div class="stats-grid" id="analytics-stats"></div>
         <div class="grid-2">
-          <div class="card">
-            <div class="font-medium mb-4">Tareas por materia</div>
-            <div id="analytics-by-subject"></div>
-          </div>
-          <div class="card">
-            <div class="font-medium mb-4">Estado de tareas</div>
-            <div id="analytics-by-status"></div>
-          </div>
+          <div class="card"><div class="font-medium mb-3" style="font-size:13px">Por materia</div><div id="analytics-by-subject"></div></div>
+          <div class="card"><div class="font-medium mb-3" style="font-size:13px">Por estado</div><div id="analytics-by-status"></div></div>
         </div>
       </div>
     </div>
 
-    <!-- ── PAGE: PROFILE ── -->
+    <!-- PROFILE -->
     <div class="page" id="page-profile">
-      <div class="content">
-        <div id="profile-content"></div>
-      </div>
+      <div class="content"><div id="profile-content"></div></div>
     </div>
-
   </main>
 </div>
 
-<!-- ═══════ MODAL: UPLOAD TASK ═══════ -->
+<!-- MODAL: UPLOAD TASK -->
 <div class="modal-overlay" id="upload-modal">
   <div class="modal modal-lg">
     <div class="modal-header">
@@ -974,7 +776,7 @@ img{max-width:100%;display:block}
         <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragleave="handleDragLeave(event)">
           <div class="upload-icon">⊕</div>
           <div class="upload-text">Arrastrá o hacé clic para adjuntar</div>
-          <div class="upload-sub">PDF, imágenes, documentos — máx 10 MB por archivo</div>
+          <div class="upload-sub">PDF, imágenes, docs — máx 10 MB c/u</div>
         </div>
         <div class="upload-progress" id="upload-progress"><div class="upload-progress-bar" id="upload-bar"></div></div>
         <div class="file-list" id="file-list"></div>
@@ -988,11 +790,11 @@ img{max-width:100%;display:block}
   </div>
 </div>
 
-<!-- ═══════ MODAL: TASK DETAIL ═══════ -->
+<!-- MODAL: TASK DETAIL -->
 <div class="modal-overlay" id="detail-modal">
   <div class="modal modal-lg">
     <div class="modal-header">
-      <h3 id="detail-modal-title">Detalle de tarea</h3>
+      <h3 id="detail-modal-title">Detalle</h3>
       <button class="btn-ghost btn-icon" onclick="closeModal('detail-modal')">✕</button>
     </div>
     <div class="modal-body" id="detail-modal-body"></div>
@@ -1000,15 +802,15 @@ img{max-width:100%;display:block}
   </div>
 </div>
 
-<!-- ═══════ MODAL: CONFIRM ═══════ -->
+<!-- MODAL: CONFIRM -->
 <div class="modal-overlay" id="confirm-modal">
-  <div class="modal" style="max-width:380px">
+  <div class="modal" style="max-width:360px">
     <div class="modal-header">
-      <h3 id="confirm-title">Confirmar acción</h3>
+      <h3 id="confirm-title">Confirmar</h3>
       <button class="btn-ghost btn-icon" onclick="closeModal('confirm-modal')">✕</button>
     </div>
     <div class="modal-body">
-      <p id="confirm-text" style="font-size:14px;color:var(--text2)"></p>
+      <p id="confirm-text" style="font-size:13px;color:var(--text2)"></p>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('confirm-modal')">Cancelar</button>
@@ -1018,81 +820,90 @@ img{max-width:100%;display:block}
 </div>
 
 <script>
-/* ═══════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
    CONFIG
-   ═══════════════════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════════ */
 const CONFIG = {
   JSONBIN_KEY: "$2a$10$ucM0OlKyXRD85828hDFs6uTS8srl1RM6v7vTjUhPMFwo0I9a4OCzq",
   USERS_BIN: "69fd0b97250b1311c31b6bac",
   TASKS_BIN: "69fd0bb5c0954111d8f07d2e",
-  LEADERBOARD_BIN: "69fd0bc7c0954111d8f07d7a",
-  CONFIG_BIN: "69fd0bd9adc21f119a6b39f4",
-  LOGS_BIN: "69fd0be5adc21f119a6b3a3c",
-  ANALYTICS_BIN: "69fd0bf7adc21f119a6b3a8c",
-
-  BINS_BY_SUBJECT: {
-    matematica: "69fd0c13250b1311c31b6dcb",
-    lengua: "69fd0c22250b1311c31b6e0c",
-    literatura: "69fd0c77250b1311c31b6f50",
-    historia: "69fd0c83c0954111d8f08075",
-    geografia: "69fd0c95c0954111d8f080b3",
-    fisica: "69fd0ca1250b1311c31b701d",
-    quimica: "69fd0cadadc21f119a6b3d95",
-    biologia: "69fd0cbbc0954111d8f0815d",
-    informatica: "69fd0ccb250b1311c31b70d4",
-    programacion: "69fd0cdac0954111d8f081f0",
-    electronica: "69fd0cef250b1311c31b7165",
-    dibujo_tecnico: "69fd0d02250b1311c31b71ac",
-    comunicacion: "69fd0d0e250b1311c31b71d8",
-    teatro: "69fd0d1badc21f119a6b3f76",
-    musica: "69fd0d25250b1311c31b723e",
-    ed_fisica: "69fd0d34c0954111d8f08334",
-    ingles: "69fd0d41250b1311c31b7293",
-    fec: "69fd0d4cc0954111d8f0839d",
-    filosofia: "69fd0d5cadc21f119a6b4065",
-    economia: "69fd0d69250b1311c31b7342",
-    psicologia: "69fd0d75250b1311c31b736b",
-    derecho: "69fd0d83250b1311c31b739a",
-    robotica: "69fd0d8e250b1311c31b73cb",
-  },
-
+  LOGS_BIN:  "69fd0be5adc21f119a6b3a3c",
   CLOUDINARY_CLOUD: "dmfnhnpje",
   CLOUDINARY_UPLOAD_PRESET: "Proyecto",
-
   ADMIN_USERNAME: "admin",
   ADMIN_PASSWORD: "admin123",
-
   MAX_FILE_SIZE_MB: 10,
   JSONBIN_BASE: "https://api.jsonbin.io/v3/b",
 };
 
 /* ═══════════════════════════════════════════════
+   SISTEMA DE NIVELES Y PUNTOS
+   — Puntos se ganan sólo cuando el admin APRUEBA una tarea
+   — Cada tipo de tarea vale distinto
+   — Los niveles desbloquean beneficios visibles
+   ═══════════════════════════════════════════════ */
+const POINT_VALUES = {
+  "Tarea": 10,
+  "Resumen": 12,
+  "Apunte": 15,
+  "Trabajo práctico": 20,
+  "Examen": 25,
+  "Proyecto": 35,
+  "": 10,  // default
+};
+
+const LEVELS = [
+  {min:0,    max:49,   name:"Principiante", icon:"○", color:"#888",        cls:"level-0"},
+  {min:50,   max:149,  name:"Estudiante",   icon:"◐", color:"#74b9ff",     cls:"level-1"},
+  {min:150,  max:349,  name:"Avanzado",     icon:"◑", color:"var(--accent)",cls:"level-2"},
+  {min:350,  max:699,  name:"Experto",      icon:"◕", color:"var(--yellow)",cls:"level-3"},
+  {min:700,  max:1199, name:"Maestro",      icon:"●", color:"var(--purple)",cls:"level-4"},
+  {min:1200, max:Infinity, name:"Leyenda",  icon:"★", color:"var(--orange)",cls:"level-5"},
+];
+
+function getLevel(points) {
+  return LEVELS.find(l => points >= l.min && points <= l.max) || LEVELS[0];
+}
+
+function getLevelProgress(points) {
+  const lvl = getLevel(points);
+  const idx = LEVELS.indexOf(lvl);
+  if (idx === LEVELS.length - 1) return 100;
+  const range = lvl.max - lvl.min + 1;
+  return Math.round(((points - lvl.min) / range) * 100);
+}
+
+function getLevelColor(points) {
+  return getLevel(points).cls;
+}
+
+/* ═══════════════════════════════════════════════
    SUBJECTS
    ═══════════════════════════════════════════════ */
 const SUBJECTS = [
-  {id:"matematica",     name:"Matemática",        icon:"∑",  color:"#4a9eff"},
-  {id:"lengua",         name:"Lengua",             icon:"Aa", color:"#10a37f"},
-  {id:"literatura",     name:"Literatura",         icon:"◈",  color:"#f5a623"},
-  {id:"historia",       name:"Historia",           icon:"◷",  color:"#a86af5"},
-  {id:"geografia",      name:"Geografía",          icon:"◎",  color:"#4ade80"},
-  {id:"fisica",         name:"Física",             icon:"⚡", color:"#facc15"},
-  {id:"quimica",        name:"Química",            icon:"⊕",  color:"#f97316"},
-  {id:"biologia",       name:"Biología",           icon:"◉",  color:"#22d3ee"},
-  {id:"informatica",    name:"Informática",        icon:"⊞",  color:"#818cf8"},
-  {id:"programacion",   name:"Programación",       icon:"{}",  color:"#34d399"},
-  {id:"electronica",    name:"Electrónica",        icon:"⊗",  color:"#fbbf24"},
-  {id:"dibujo_tecnico", name:"Dibujo Técnico",     icon:"△",  color:"#94a3b8"},
-  {id:"comunicacion",   name:"Comunicación Social",icon:"◌",  color:"#ec4899"},
-  {id:"teatro",         name:"Teatro",             icon:"◑",  color:"#c084fc"},
-  {id:"musica",         name:"Música",             icon:"♪",  color:"#38bdf8"},
-  {id:"ed_fisica",      name:"Ed. Física",         icon:"◐",  color:"#86efac"},
-  {id:"ingles",         name:"Inglés",             icon:"EN", color:"#67e8f9"},
-  {id:"fec",            name:"FEC",                icon:"€",  color:"#a3e635"},
-  {id:"filosofia",      name:"Filosofía",          icon:"Φ",  color:"#d8b4fe"},
-  {id:"economia",       name:"Economía",           icon:"$",  color:"#6ee7b7"},
-  {id:"psicologia",     name:"Psicología",         icon:"◇",  color:"#f9a8d4"},
-  {id:"derecho",        name:"Derecho",            icon:"⊖",  color:"#fcd34d"},
-  {id:"robotica",       name:"Robótica",           icon:"◫",  color:"#7dd3fc"},
+  {id:"matematica",     name:"Matemática",         icon:"∑",  color:"#4a9eff"},
+  {id:"lengua",         name:"Lengua",              icon:"Aa", color:"#10a37f"},
+  {id:"literatura",     name:"Literatura",          icon:"◈",  color:"#f5a623"},
+  {id:"historia",       name:"Historia",            icon:"◷",  color:"#a86af5"},
+  {id:"geografia",      name:"Geografía",           icon:"◎",  color:"#4ade80"},
+  {id:"fisica",         name:"Física",              icon:"⚡", color:"#facc15"},
+  {id:"quimica",        name:"Química",             icon:"⊕",  color:"#f97316"},
+  {id:"biologia",       name:"Biología",            icon:"◉",  color:"#22d3ee"},
+  {id:"informatica",    name:"Informática",         icon:"⊞",  color:"#818cf8"},
+  {id:"programacion",   name:"Programación",        icon:"{}",  color:"#34d399"},
+  {id:"electronica",    name:"Electrónica",         icon:"⊗",  color:"#fbbf24"},
+  {id:"dibujo_tecnico", name:"Dibujo Técnico",      icon:"△",  color:"#94a3b8"},
+  {id:"comunicacion",   name:"Comunicación Social", icon:"◌",  color:"#ec4899"},
+  {id:"teatro",         name:"Teatro",              icon:"◑",  color:"#c084fc"},
+  {id:"musica",         name:"Música",              icon:"♪",  color:"#38bdf8"},
+  {id:"ed_fisica",      name:"Ed. Física",          icon:"◐",  color:"#86efac"},
+  {id:"ingles",         name:"Inglés",              icon:"EN", color:"#67e8f9"},
+  {id:"fec",            name:"FEC",                 icon:"€",  color:"#a3e635"},
+  {id:"filosofia",      name:"Filosofía",           icon:"Φ",  color:"#d8b4fe"},
+  {id:"economia",       name:"Economía",            icon:"$",  color:"#6ee7b7"},
+  {id:"psicologia",     name:"Psicología",          icon:"◇",  color:"#f9a8d4"},
+  {id:"derecho",        name:"Derecho",             icon:"⊖",  color:"#fcd34d"},
+  {id:"robotica",       name:"Robótica",            icon:"◫",  color:"#7dd3fc"},
 ];
 
 /* ═══════════════════════════════════════════════
@@ -1126,20 +937,15 @@ const API = {
     };
   },
   async get(binId) {
-    if (!CONFIG.JSONBIN_KEY || !binId) throw new Error("Bin no configurado");
     const r = await fetch(`${CONFIG.JSONBIN_BASE}/${binId}/latest`, {headers: this.headers()});
-    if (!r.ok) throw new Error(`Error ${r.status}`);
-    const d = await r.json();
-    return d.record;
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return (await r.json()).record;
   },
   async set(binId, data) {
-    if (!CONFIG.JSONBIN_KEY || !binId) throw new Error("Bin no configurado");
     const r = await fetch(`${CONFIG.JSONBIN_BASE}/${binId}`, {
-      method: "PUT",
-      headers: this.headers(),
-      body: JSON.stringify(data),
+      method: "PUT", headers: this.headers(), body: JSON.stringify(data),
     });
-    if (!r.ok) throw new Error(`Error ${r.status}`);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
     return await r.json();
   },
 };
@@ -1149,11 +955,9 @@ const API = {
    ═══════════════════════════════════════════════ */
 const LS = {
   get(k, def = null) {
-    try { const v = localStorage.getItem("edu_"+k); return v ? JSON.parse(v) : def; } catch { return def; }
+    try { const v = localStorage.getItem("edu_" + k); return v ? JSON.parse(v) : def; } catch { return def; }
   },
-  set(k, v) {
-    try { localStorage.setItem("edu_"+k, JSON.stringify(v)); } catch {}
-  },
+  set(k, v) { try { localStorage.setItem("edu_" + k, JSON.stringify(v)); } catch {} },
 };
 
 function loadData() {
@@ -1161,10 +965,9 @@ function loadData() {
   STATE.tasks = LS.get("tasks", []);
   STATE.logs  = LS.get("logs",  []);
 }
-
 function saveUsers() { LS.set("users", STATE.users); }
 function saveTasks() { LS.set("tasks", STATE.tasks); }
-function saveLogs()  { LS.set("logs",  STATE.logs);  }
+function saveLogs()  { LS.set("logs",  STATE.logs); }
 
 async function syncToCloud(type) {
   if (!CONFIG.JSONBIN_KEY) return;
@@ -1172,20 +975,28 @@ async function syncToCloud(type) {
     if (type === "tasks" && CONFIG.TASKS_BIN) await API.set(CONFIG.TASKS_BIN, STATE.tasks);
     if (type === "users" && CONFIG.USERS_BIN) await API.set(CONFIG.USERS_BIN, STATE.users);
     if (type === "logs"  && CONFIG.LOGS_BIN)  await API.set(CONFIG.LOGS_BIN,  STATE.logs);
-  } catch (e) { console.warn("Cloud sync failed:", e.message); }
+  } catch (e) { console.warn("Sync failed:", e.message); }
 }
 
 async function loadFromCloud() {
-  if (!CONFIG.JSONBIN_KEY) return;
   try {
-    if (CONFIG.TASKS_BIN) { const t = await API.get(CONFIG.TASKS_BIN); if (Array.isArray(t)) { STATE.tasks = t; saveTasks(); } }
-    if (CONFIG.USERS_BIN) { const u = await API.get(CONFIG.USERS_BIN); if (Array.isArray(u)) { STATE.users = u; saveUsers(); } }
-    if (CONFIG.LOGS_BIN)  { const l = await API.get(CONFIG.LOGS_BIN);  if (Array.isArray(l)) { STATE.logs  = l; saveLogs();  } }
+    if (CONFIG.TASKS_BIN) {
+      const t = await API.get(CONFIG.TASKS_BIN);
+      if (Array.isArray(t) && t.length >= STATE.tasks.length) { STATE.tasks = t; saveTasks(); }
+    }
+    if (CONFIG.USERS_BIN) {
+      const u = await API.get(CONFIG.USERS_BIN);
+      if (Array.isArray(u) && u.length >= STATE.users.length) { STATE.users = u; saveUsers(); }
+    }
+    if (CONFIG.LOGS_BIN) {
+      const l = await API.get(CONFIG.LOGS_BIN);
+      if (Array.isArray(l)) { STATE.logs = l; saveLogs(); }
+    }
   } catch (e) { console.warn("Cloud load failed:", e.message); }
 }
 
 /* ═══════════════════════════════════════════════
-   AUTH
+   AUTH — SIN CIFRADO, texto plano
    ═══════════════════════════════════════════════ */
 function switchAuthTab(tab) {
   STATE.authTab = tab;
@@ -1194,71 +1005,90 @@ function switchAuthTab(tab) {
   );
   document.querySelectorAll(".register-fields").forEach(f => f.classList.toggle("show", tab === "register"));
   document.getElementById("auth-btn-text").textContent = tab === "login" ? "Iniciar sesión" : "Crear cuenta";
-  clearAuthMessages();
+  clearAuthMsgs();
 }
 
-function clearAuthMessages() {
+function clearAuthMsgs() {
   document.getElementById("auth-error").style.display = "none";
   document.getElementById("auth-success").style.display = "none";
 }
-
 function showAuthError(msg) {
   const el = document.getElementById("auth-error");
-  el.textContent = msg;
-  el.style.display = "block";
+  el.textContent = msg; el.style.display = "block";
 }
-
 function showAuthSuccess(msg) {
   const el = document.getElementById("auth-success");
-  el.textContent = msg;
-  el.style.display = "block";
+  el.textContent = msg; el.style.display = "block";
 }
 
-/* ═══════════════════════════════════════════════
-   SECURITY — simple password hashing
-   ═══════════════════════════════════════════════ */
-async function hashPassword(pass) {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pass + "edu_salt_2025"));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
-}
-
-/* FIX: added return after loginAs for admin branch so execution stops there */
 async function handleAuth() {
-  clearAuthMessages();
-  const username = document.getElementById("auth-user").value.trim();
+  clearAuthMsgs();
+  const username = document.getElementById("auth-user").value.trim().toLowerCase();
   const password = document.getElementById("auth-pass").value;
 
-  if (!username || !password) { showAuthError("Completá todos los campos."); return; }
+  if (!username) { showAuthError("Ingresá un nombre de usuario."); return; }
+  if (!password) { showAuthError("Ingresá una contraseña."); return; }
+
+  // Validaciones de username
+  if (STATE.authTab === "register") {
+    if (username.length < 3) { showAuthError("El usuario debe tener al menos 3 caracteres."); return; }
+    if (!/^[a-z0-9_]+$/.test(username)) { showAuthError("El usuario solo puede tener letras, números y guión bajo."); return; }
+    if (password.length < 4) { showAuthError("La contraseña debe tener al menos 4 caracteres."); return; }
+  }
 
   setAuthLoading(true);
 
   if (STATE.authTab === "login") {
+    // Admin hardcodeado
     if (username === CONFIG.ADMIN_USERNAME && password === CONFIG.ADMIN_PASSWORD) {
-      loginAs({ username: "admin", name: "Administrador", role: "admin", email: "admin@edu.com", points: 0, tasks: 0, joined: Date.now(), status: "active" });
+      loginAs({ username: "admin", name: "Administrador", role: "admin", email: "admin@edu.com", points: 0, tasks: 0, joined: Date.now(), status: "active", avatar: "A" });
       return;
     }
-    const hashed = await hashPassword(password);
-    const user = STATE.users.find(u => u.username === username && u.password === hashed);
-    if (!user) { setAuthLoading(false); showAuthError("Usuario o contraseña incorrectos."); return; }
-    if (user.status === "suspended") { setAuthLoading(false); showAuthError("Tu cuenta está suspendida. Contactá al administrador."); return; }
+    // Buscar usuario — contraseña en texto plano
+    const user = STATE.users.find(u => u.username === username && u.password === password);
+    if (!user) {
+      setAuthLoading(false);
+      showAuthError("Usuario o contraseña incorrectos.");
+      return;
+    }
+    if (user.status === "suspended") {
+      setAuthLoading(false);
+      showAuthError("Tu cuenta está suspendida. Contactá al administrador.");
+      return;
+    }
     loginAs(user);
   } else {
+    // Registro
     const name  = document.getElementById("reg-name").value.trim();
     const email = document.getElementById("reg-email").value.trim();
-    if (!name || !email) { setAuthLoading(false); showAuthError("Completá todos los campos."); return; }
-    if (STATE.users.find(u => u.username === username)) { setAuthLoading(false); showAuthError("Ese nombre de usuario ya está en uso."); return; }
-    const hashed = await hashPassword(password);
+    if (!name)  { setAuthLoading(false); showAuthError("Ingresá tu nombre completo."); return; }
+    if (!email) { setAuthLoading(false); showAuthError("Ingresá tu email."); return; }
+    if (!email.includes("@")) { setAuthLoading(false); showAuthError("Email inválido."); return; }
+    if (STATE.users.find(u => u.username === username)) {
+      setAuthLoading(false);
+      showAuthError("Ese nombre de usuario ya está en uso.");
+      return;
+    }
+
     const newUser = {
-      id: genId(), username, name, email, password: hashed,
-      role: "student", points: 0, tasks: 0,
-      joined: Date.now(), status: "active", avatar: name.charAt(0).toUpperCase(),
+      id: genId(),
+      username,
+      name,
+      email,
+      password,   // texto plano — sin cifrado
+      role: "student",
+      points: 0,
+      tasks: 0,
+      joined: Date.now(),
+      status: "active",
+      avatar: name.charAt(0).toUpperCase(),
     };
     STATE.users.push(newUser);
     saveUsers();
-    addLog("Registro de usuario: " + username);
-    await syncToCloud("users");
+    addLog("Registro: " + username);
+    syncToCloud("users");
     setAuthLoading(false);
-    showAuthSuccess("¡Cuenta creada! Ahora podés iniciar sesión.");
+    showAuthSuccess("¡Cuenta creada! Ya podés iniciar sesión.");
     switchAuthTab("login");
   }
 }
@@ -1275,18 +1105,16 @@ function logout() {
   STATE.user = null;
   STATE.uploadedFiles = [];
   STATE.editingTaskId = null;
-  // Cerrar sidebar overlay si estaba abierto en mobile
+  closeUserDD();
   document.getElementById("sidebar-overlay").classList.remove("visible");
   document.getElementById("sidebar").classList.add("collapsed");
-  // Ocultar nav de admin
   document.getElementById("admin-nav").style.display = "none";
-  // Cerrar cualquier modal abierto
   document.querySelectorAll(".modal-overlay.open").forEach(m => m.classList.remove("open"));
   document.getElementById("app").style.display = "none";
   document.getElementById("auth-screen").style.display = "flex";
   document.getElementById("auth-user").value = "";
   document.getElementById("auth-pass").value = "";
-  clearAuthMessages();
+  clearAuthMsgs();
 }
 
 function setAuthLoading(on) {
@@ -1301,24 +1129,41 @@ function setAuthLoading(on) {
 function showApp() {
   document.getElementById("auth-screen").style.display = "none";
   document.getElementById("app").style.display = "flex";
-
   const u = STATE.user;
-  document.getElementById("sidebar-avatar").textContent = (u.avatar || u.name.charAt(0)).toUpperCase();
+  const avatarEl = document.getElementById("sidebar-avatar");
+  avatarEl.textContent = (u.avatar || u.name.charAt(0)).toUpperCase();
+  // Color del avatar según nivel
+  const lvl = getLevel(u.points || 0);
+  avatarEl.style.background = u.role === "admin"
+    ? "linear-gradient(135deg,var(--accent),var(--accent2))"
+    : lvl.color;
   document.getElementById("sidebar-username").textContent = u.name || u.username;
-  document.getElementById("sidebar-role").textContent = u.role === "admin" ? "Administrador" : "Estudiante";
+  document.getElementById("sidebar-role").textContent = u.role === "admin" ? "admin" : "@" + u.username;
 
-  if (u.role === "admin") {
-    document.getElementById("admin-nav").style.display = "block";
-  }
-
-  // En desktop abre sidebar; en mobile la deja colapsada
-  if (!isMobile()) {
-    document.getElementById("sidebar").classList.remove("collapsed");
-  }
+  if (u.role === "admin") document.getElementById("admin-nav").style.display = "block";
+  if (!isMobile()) document.getElementById("sidebar").classList.remove("collapsed");
 
   populateSubjectSelect();
   navigate("dashboard");
-  loadFromCloud().then(() => renderCurrentPage());
+  loadFromCloud().then(() => {
+    // Sincronizar puntos del usuario logueado desde la fuente de verdad
+    if (u.role !== "admin") {
+      const freshUser = STATE.users.find(x => x.username === u.username);
+      if (freshUser) {
+        STATE.user = freshUser;
+        updateAvatarColor();
+      }
+    }
+    renderCurrentPage();
+    updateBadges();
+  });
+}
+
+function updateAvatarColor() {
+  const u = STATE.user;
+  if (!u || u.role === "admin") return;
+  const lvl = getLevel(u.points || 0);
+  document.getElementById("sidebar-avatar").style.background = lvl.color;
 }
 
 function tryAutoLogin() {
@@ -1326,7 +1171,7 @@ function tryAutoLogin() {
   const saved = LS.get("session");
   if (!saved) return;
   if (saved === CONFIG.ADMIN_USERNAME) {
-    loginAs({ username: "admin", name: "Administrador", role: "admin", email: "admin@edu.com", points: 0, tasks: 0, joined: Date.now(), status: "active" });
+    loginAs({ username: "admin", name: "Administrador", role: "admin", email: "admin@edu.com", points: 0, tasks: 0, joined: Date.now(), status: "active", avatar: "A" });
     return;
   }
   const user = STATE.users.find(u => u.username === saved);
@@ -1337,34 +1182,23 @@ function tryAutoLogin() {
    NAVIGATION
    ═══════════════════════════════════════════════ */
 const PAGE_TITLES = {
-  dashboard: "Dashboard",
-  explorer: "Explorar",
-  "my-tasks": "Mis tareas",
-  subjects: "Materias",
-  leaderboard: "Ranking",
-  admin: "Panel Admin",
-  analytics: "Analytics",
-  profile: "Mi perfil",
+  dashboard: "Dashboard", explorer: "Explorar", "my-tasks": "Mis tareas",
+  subjects: "Materias", leaderboard: "Ranking", admin: "Panel Admin",
+  analytics: "Analytics", profile: "Perfil",
 };
 
 function navigate(page) {
   STATE.currentPage = page;
   document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
   document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
-
   const pageEl = document.getElementById("page-" + page);
   if (pageEl) pageEl.classList.add("active");
-
   document.querySelectorAll(".nav-item").forEach(n => {
-    if (n.getAttribute("onclick") && n.getAttribute("onclick").includes("'" + page + "'")) {
-      n.classList.add("active");
-    }
+    if ((n.getAttribute("onclick") || "").includes("'" + page + "'")) n.classList.add("active");
   });
-
   document.getElementById("topbar-title").textContent = PAGE_TITLES[page] || page;
-  document.querySelectorAll(".dropdown-menu.open").forEach(m => m.classList.remove("open"));
+  closeUserDD();
   if (isMobile()) closeSidebarMobile();
-
   renderCurrentPage();
 }
 
@@ -1386,79 +1220,112 @@ function renderCurrentPage() {
    ═══════════════════════════════════════════════ */
 function renderDashboard() {
   const u = STATE.user;
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Buenos días" : hour < 19 ? "Buenas tardes" : "Buenas noches";
-  document.getElementById("dashboard-greeting").textContent = `${greeting}, ${u.name || u.username}`;
-  document.getElementById("dashboard-sub").textContent = new Date().toLocaleDateString("es-AR", {weekday:"long", day:"numeric", month:"long"});
+  // Refrescar datos del usuario
+  if (u.role !== "admin") {
+    const fresh = STATE.users.find(x => x.username === u.username);
+    if (fresh) Object.assign(STATE.user, fresh);
+  }
 
-  const myTasks = STATE.tasks.filter(t => t.author === u.username);
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? "Buenos días" : hour < 19 ? "Buenas tardes" : "Buenas noches";
+  document.getElementById("dashboard-greeting").textContent = `${greet}, ${u.name || u.username}`;
+  document.getElementById("dashboard-sub").textContent =
+    new Date().toLocaleDateString("es-AR", {weekday:"long", day:"numeric", month:"long"});
+
+  const myTasks  = STATE.tasks.filter(t => t.author === u.username);
   const approved = myTasks.filter(t => t.status === "approved");
   const pending  = myTasks.filter(t => t.status === "pending");
-  const totalTasks = STATE.tasks.filter(t => t.status === "approved").length;
-  const userRank = getRank(u.username);
+  const totalApp = STATE.tasks.filter(t => t.status === "approved").length;
+  const rank     = getRank(u.username);
+  const pts      = u.points || 0;
+  const lvl      = getLevel(pts);
 
   document.getElementById("dash-stats").innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Mis puntos</div>
+      <div class="stat-value stat-accent">${pts}</div>
+      <div class="stat-sub">${lvl.icon} ${lvl.name}</div>
+    </div>
     <div class="stat-card">
       <div class="stat-label">Mis tareas</div>
       <div class="stat-value">${myTasks.length}</div>
       <div class="stat-sub">${approved.length} aprobadas</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Mis puntos</div>
-      <div class="stat-value stat-accent">${u.points || 0}</div>
-      <div class="stat-sub">Rank #${userRank === -1 ? "—" : userRank + 1}</div>
-    </div>
-    <div class="stat-card">
       <div class="stat-label">Pendientes</div>
-      <div class="stat-value">${pending.length}</div>
+      <div class="stat-value" style="color:var(--yellow)">${pending.length}</div>
       <div class="stat-sub">En revisión</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Total plataforma</div>
-      <div class="stat-value">${totalTasks}</div>
-      <div class="stat-sub">Tareas aprobadas</div>
+      <div class="stat-label">Ranking</div>
+      <div class="stat-value">${rank === -1 ? "—" : "#" + (rank + 1)}</div>
+      <div class="stat-sub">${totalApp} tareas en plataforma</div>
     </div>
   `;
 
-  const recent = [...STATE.tasks].sort((a, b) => b.created - a.created).slice(0, 4);
+  // Últimas tareas
+  const recent = [...STATE.tasks].sort((a, b) => b.created - a.created).slice(0, 5);
   document.getElementById("dash-recent-tasks").innerHTML = recent.length
     ? recent.map(t => miniTaskCard(t)).join("")
-    : `<div class="empty-state"><div class="empty-icon">◫</div><div class="empty-title">Sin tareas aún</div></div>`;
+    : `<div class="empty-state" style="padding:20px 0"><div class="empty-icon">◫</div><div class="empty-title" style="font-size:13px">Sin tareas</div></div>`;
 
+  // Top 5 ranking
   const lb = getLeaderboard().slice(0, 5);
   document.getElementById("dash-leaderboard").innerHTML = lb.length
-    ? lb.map((entry, i) => `
-        <div class="flex items-center gap-2 mb-3">
+    ? lb.map((e, i) => {
+        const lvlE = getLevel(e.points);
+        return `<div class="flex items-center gap-2 mb-2" style="padding:5px 0">
           <div class="lb-rank ${i===0?"gold":i===1?"silver":i===2?"bronze":""}">${i+1}</div>
-          <div style="flex:1"><div class="text-sm font-medium">${esc(entry.name)}</div></div>
-          <div class="text-accent font-medium">${entry.points}</div>
-        </div>
-      `).join("")
-    : `<div class="text-muted text-sm">Sin datos aún</div>`;
-
-  const bySubject = {};
-  STATE.tasks.filter(t => t.status === "approved").forEach(t => { bySubject[t.subject] = (bySubject[t.subject] || 0) + 1; });
-  const maxVal = Math.max(...Object.values(bySubject), 1);
-  const sorted = Object.entries(bySubject).sort((a, b) => b[1] - a[1]).slice(0, 8);
-  document.getElementById("subject-activity-bars").innerHTML = sorted.length
-    ? sorted.map(([sid, cnt]) => {
-        const subj = SUBJECTS.find(s => s.id === sid);
-        return `<div class="bar-row">
-          <div class="bar-label truncate">${subj ? subj.name : sid}</div>
-          <div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt / maxVal * 100)}%"></div></div>
-          <div class="bar-val">${cnt}</div>
+          <div style="flex:1;min-width:0">
+            <div class="text-sm font-medium truncate">${esc(e.name)}</div>
+            <span class="level-badge ${lvlE.cls}" style="margin-top:2px">${lvlE.icon} ${lvlE.name}</span>
+          </div>
+          <div class="text-accent font-mono" style="font-size:14px;font-weight:700">${e.points}</div>
         </div>`;
       }).join("")
-    : `<div class="text-muted text-sm">Sin datos aún</div>`;
+    : `<div class="text-muted text-xs">Sin datos</div>`;
+
+  // Progreso de nivel
+  const progress = getLevelProgress(pts);
+  const nextLvl  = LEVELS[Math.min(LEVELS.indexOf(lvl) + 1, LEVELS.length - 1)];
+  const ptsToNext = LEVELS.indexOf(lvl) === LEVELS.length - 1 ? null : nextLvl.min - pts;
+
+  document.getElementById("dash-level-badge").innerHTML =
+    `<span class="level-badge ${lvl.cls}">${lvl.icon} ${lvl.name}</span>`;
+
+  document.getElementById("dash-progress").innerHTML = `
+    <div style="margin-bottom:12px">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs text-muted font-mono">${pts} pts</span>
+        ${ptsToNext ? `<span class="text-xs text-muted font-mono">Faltan ${ptsToNext} pts para ${nextLvl.name}</span>` : `<span class="text-xs text-accent font-mono">Nivel máximo alcanzado ★</span>`}
+      </div>
+      <div class="xp-bar-wrap">
+        <div class="xp-bar" style="width:${progress}%;background:${lvl.color}"></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px">
+      ${LEVELS.map(l => {
+        const reached = pts >= l.min;
+        return `<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;background:${reached?"var(--bg3)":"var(--bg)"};border:1px solid ${reached?"var(--border2)":"var(--border)"}">
+          <span style="font-size:16px;opacity:${reached?1:0.3}">${l.icon}</span>
+          <div>
+            <div style="font-size:12px;font-weight:500;color:${reached?l.color:"var(--text3)"}">${l.name}</div>
+            <div class="text-xs font-mono" style="color:var(--text3)">${l.min}+ pts</div>
+          </div>
+          ${pts === l.min || (pts >= l.min && pts <= l.max) ? `<span class="badge badge-approved" style="margin-left:auto">actual</span>` : ""}
+        </div>`;
+      }).join("")}
+    </div>
+  `;
 }
 
 function miniTaskCard(t) {
   const subj = SUBJECTS.find(s => s.id === t.subject);
-  return `<div class="flex items-center gap-2 mb-2 task-card card-sm" style="padding:10px 12px;cursor:pointer" onclick="openTaskDetail('${t.id}')">
-    <span style="font-size:18px">${subj ? subj.icon : "◫"}</span>
+  return `<div class="flex items-center gap-2 mb-2" style="padding:8px 10px;border-radius:8px;background:var(--bg3);cursor:pointer;transition:var(--trans)" onclick="openTaskDetail('${t.id}')">
+    <span style="font-size:16px">${subj ? subj.icon : "◫"}</span>
     <div style="flex:1;min-width:0">
       <div class="text-sm font-medium truncate">${esc(t.title)}</div>
-      <div class="text-xs text-muted">${subj ? subj.name : t.subject} · ${timeAgo(t.created)}</div>
+      <div class="text-xs text-muted font-mono">${subj ? subj.name : t.subject} · ${timeAgo(t.created)}</div>
     </div>
     <span class="badge badge-${t.status}">${statusLabel(t.status)}</span>
   </div>`;
@@ -1469,11 +1336,10 @@ function miniTaskCard(t) {
    ═══════════════════════════════════════════════ */
 function renderExplorer() {
   const filterEl = document.getElementById("explorer-filters");
-  /* FIX: pass 'all' value; chip activation handled inside setExplorerFilter safely */
   filterEl.innerHTML =
-    `<button class="filter-chip ${STATE.explorerFilter === "all" ? "active" : ""}" onclick="setExplorerFilter('all', this)">Todas</button>` +
+    `<button class="filter-chip ${STATE.explorerFilter === "all" ? "active" : ""}" onclick="setExplorerFilter('all',this)">Todas</button>` +
     SUBJECTS.map(s =>
-      `<button class="filter-chip ${STATE.explorerFilter === s.id ? "active" : ""}" onclick="setExplorerFilter('${s.id}', this)">${s.icon} ${s.name}</button>`
+      `<button class="filter-chip ${STATE.explorerFilter === s.id ? "active" : ""}" onclick="setExplorerFilter('${s.id}',this)">${s.icon} ${s.name}</button>`
     ).join("");
 
   let tasks = STATE.tasks.filter(t => t.status === "approved");
@@ -1486,10 +1352,9 @@ function renderExplorer() {
 
   document.getElementById("explorer-tasks").innerHTML = tasks.length
     ? `<div class="tasks-list">${tasks.map(t => taskCard(t, false)).join("")}</div>`
-    : `<div class="empty-state"><div class="empty-icon">◫</div><div class="empty-title">No hay tareas</div><div class="empty-sub">Todavía no hay tareas aprobadas para esta materia</div></div>`;
+    : `<div class="empty-state"><div class="empty-icon">◫</div><div class="empty-title">Sin tareas</div><div class="empty-sub">No hay tareas aprobadas para esta materia</div></div>`;
 }
 
-/* FIX: guard against null el parameter (called from subjects page) */
 function setExplorerFilter(val, el) {
   STATE.explorerFilter = val;
   if (el) {
@@ -1505,17 +1370,21 @@ function setExplorerFilter(val, el) {
 function renderMyTasks() {
   let tasks = STATE.tasks.filter(t => t.author === STATE.user.username);
   if (STATE.myTasksFilter !== "all") tasks = tasks.filter(t => t.status === STATE.myTasksFilter);
+  if (STATE.searchQuery) tasks = tasks.filter(t =>
+    t.title.toLowerCase().includes(STATE.searchQuery) ||
+    (t.description || "").toLowerCase().includes(STATE.searchQuery)
+  );
   tasks = [...tasks].sort((a, b) => b.created - a.created);
 
   document.getElementById("my-tasks-list").innerHTML = tasks.length
     ? `<div class="tasks-list">${tasks.map(t => taskCard(t, true)).join("")}</div>`
-    : `<div class="empty-state"><div class="empty-icon">✓</div><div class="empty-title">Sin tareas</div><div class="empty-sub">Subí tu primera tarea con el botón "+ Nueva tarea"</div></div>`;
+    : `<div class="empty-state"><div class="empty-icon">✓</div><div class="empty-title">Sin tareas</div><div class="empty-sub">Subí tu primera tarea con "+ Nueva tarea"</div></div>`;
 }
 
 function filterMyTasks(val, el) {
   STATE.myTasksFilter = val;
   document.querySelectorAll("#page-my-tasks .filter-chip").forEach(c => c.classList.remove("active"));
-  el.classList.add("active");
+  if (el) el.classList.add("active");
   renderMyTasks();
 }
 
@@ -1523,27 +1392,31 @@ function filterMyTasks(val, el) {
    TASK CARD
    ═══════════════════════════════════════════════ */
 function taskCard(t, showActions) {
-  const subj = SUBJECTS.find(s => s.id === t.subject);
+  const subj    = SUBJECTS.find(s => s.id === t.subject);
   const isOwner = t.author === STATE.user.username;
   const isAdmin = STATE.user.role === "admin";
+  const pts     = t.points || POINT_VALUES[t.type] || 10;
+
   return `<div class="task-card ${t.status}" onclick="openTaskDetail('${t.id}')">
-    <div style="font-size:24px;flex-shrink:0;margin-top:2px">${subj ? subj.icon : "◫"}</div>
+    <div style="font-size:22px;flex-shrink:0;margin-top:1px">${subj ? subj.icon : "◫"}</div>
     <div class="task-main">
       <div class="task-title">${esc(t.title)}</div>
       <div class="task-meta">
-        <span class="subject-tag">${subj ? subj.name : t.subject}</span>
-        ${t.year ? `<span class="text-xs text-muted">${t.year}</span>` : ""}
+        ${subj ? `<span class="subject-tag">${subj.name}</span>` : ""}
+        ${t.year ? `<span class="text-xs text-muted font-mono">${t.year}</span>` : ""}
         ${t.type ? `<span class="badge badge-gray">${t.type}</span>` : ""}
+        <span class="pts-tag">+${pts}pts</span>
         <span class="task-date">${timeAgo(t.created)}</span>
       </div>
       ${t.description ? `<div class="task-desc">${esc(t.description)}</div>` : ""}
+      ${t.adminComment ? `<div class="comment-box" style="margin-top:6px;font-size:11px">💬 ${esc(t.adminComment)}</div>` : ""}
     </div>
     <div class="task-actions" onclick="event.stopPropagation()">
       <span class="badge badge-${t.status}">${statusLabel(t.status)}</span>
-      ${((showActions && isOwner && t.status !== "approved") || isAdmin) ? `
+      ${(isAdmin || (isOwner && t.status !== "approved")) ? `
         <button class="btn btn-icon btn-ghost" onclick="event.stopPropagation();editTask('${t.id}')" title="Editar">✎</button>
       ` : ""}
-      ${((showActions && isOwner) || isAdmin) ? `
+      ${(isAdmin || isOwner) ? `
         <button class="btn btn-icon btn-ghost" style="color:var(--red)" onclick="event.stopPropagation();confirmDeleteTask('${t.id}')" title="Eliminar">✕</button>
       ` : ""}
     </div>
@@ -1551,14 +1424,15 @@ function taskCard(t, showActions) {
 }
 
 /* ═══════════════════════════════════════════════
-   SUBJECTS PAGE
+   SUBJECTS
    ═══════════════════════════════════════════════ */
 function renderSubjects() {
   const counts = {};
-  STATE.tasks.filter(t => t.status === "approved").forEach(t => { counts[t.subject] = (counts[t.subject] || 0) + 1; });
-  /* FIX: pass null as el safely — setExplorerFilter guards against null */
+  STATE.tasks.filter(t => t.status === "approved").forEach(t => {
+    counts[t.subject] = (counts[t.subject] || 0) + 1;
+  });
   document.getElementById("subjects-grid").innerHTML = SUBJECTS.map(s => `
-    <div class="subject-card" onclick="setExplorerFilter('${s.id}', null); navigate('explorer')">
+    <div class="subject-card" onclick="setExplorerFilter('${s.id}',null);navigate('explorer')">
       <div class="subject-icon" style="color:${s.color}">${s.icon}</div>
       <div class="subject-name">${s.name}</div>
       <div class="subject-count">${counts[s.id] || 0} tareas</div>
@@ -1570,46 +1444,58 @@ function renderSubjects() {
    LEADERBOARD
    ═══════════════════════════════════════════════ */
 function getLeaderboard() {
+  // El ranking usa puntos acumulados en el objeto usuario,
+  // filtrados por fecha según el filtro activo para las semanas/mes
+  if (STATE.lbFilter === "global") {
+    // Puntos totales del perfil
+    return STATE.users
+      .filter(u => u.points > 0)
+      .map(u => ({username: u.username, name: u.name || u.username, points: u.points || 0}))
+      .sort((a, b) => b.points - a.points);
+  }
+
+  // Para weekly/monthly: calcular desde tareas aprobadas en ese período
   const scores = {};
   const names  = {};
-  const filtered = STATE.tasks.filter(t => {
-    if (t.status !== "approved") return false;
-    if (STATE.lbFilter === "weekly")  return Date.now() - t.created < 7  * 24 * 3600 * 1000;
-    if (STATE.lbFilter === "monthly") return Date.now() - t.created < 30 * 24 * 3600 * 1000;
-    return true;
-  });
-  filtered.forEach(t => {
-    scores[t.author] = (scores[t.author] || 0) + (t.points || 10);
-    const u = STATE.users.find(x => x.username === t.author);
-    names[t.author] = u ? u.name : t.author;
-  });
+  const cutoff = STATE.lbFilter === "weekly" ? 7 * 86400000 : 30 * 86400000;
+  STATE.tasks
+    .filter(t => t.status === "approved" && t.reviewedAt && Date.now() - t.reviewedAt < cutoff)
+    .forEach(t => {
+      scores[t.author] = (scores[t.author] || 0) + (t.points || POINT_VALUES[t.type] || 10);
+      const u = STATE.users.find(x => x.username === t.author);
+      names[t.author] = u ? u.name : t.author;
+    });
   return Object.entries(scores)
     .map(([username, points]) => ({username, name: names[username] || username, points}))
     .sort((a, b) => b.points - a.points);
 }
 
 function getRank(username) {
-  return getLeaderboard().findIndex(e => e.username === username);
+  const lb = getLeaderboard();
+  const idx = lb.findIndex(e => e.username === username);
+  return idx;
 }
 
 function renderLeaderboard() {
   const lb = getLeaderboard();
   document.getElementById("leaderboard-list").innerHTML = lb.length
-    ? lb.map((entry, i) => `
-        <div class="lb-item">
+    ? lb.map((e, i) => {
+        const lvl = getLevel(e.points);
+        const isMe = e.username === STATE.user.username;
+        return `<div class="lb-item ${isMe ? "me" : ""}">
           <div class="lb-rank ${i===0?"gold":i===1?"silver":i===2?"bronze":""}">${i+1}</div>
-          <div class="avatar sm">${entry.name.charAt(0).toUpperCase()}</div>
+          <div class="avatar sm" style="background:${lvl.color}">${e.name.charAt(0).toUpperCase()}</div>
           <div class="lb-info">
-            <div class="lb-name">${esc(entry.name)}${entry.username === STATE.user.username ? " (vos)" : ""}</div>
-            <div class="lb-sub">${entry.username}</div>
+            <div class="lb-name">${esc(e.name)}${isMe?" <span style='color:var(--accent);font-size:10px'>(vos)</span>":""}</div>
+            <div class="lb-sub"><span class="level-badge ${lvl.cls}">${lvl.icon} ${lvl.name}</span></div>
           </div>
-          <div>
-            <div class="lb-score">${entry.points}</div>
-            <div class="lb-pts">puntos</div>
+          <div style="text-align:right">
+            <div class="lb-score">${e.points}</div>
+            <div class="text-xs font-mono" style="color:var(--text3)">pts</div>
           </div>
-        </div>
-      `).join("")
-    : `<div class="empty-state"><div class="empty-icon">◆</div><div class="empty-title">Sin datos aún</div></div>`;
+        </div>`;
+      }).join("")
+    : `<div class="empty-state"><div class="empty-icon">◆</div><div class="empty-title">Sin datos</div></div>`;
 }
 
 function filterLeaderboard(val, el) {
@@ -1625,27 +1511,29 @@ function filterLeaderboard(val, el) {
 function openTaskDetail(id) {
   const t = STATE.tasks.find(x => x.id === id);
   if (!t) return;
-  const subj   = SUBJECTS.find(s => s.id === t.subject);
+  const subj    = SUBJECTS.find(s => s.id === t.subject);
   const isAdmin = STATE.user.role === "admin";
   const isOwner = t.author === STATE.user.username;
   const author  = STATE.users.find(u => u.username === t.author);
+  const pts     = t.points || POINT_VALUES[t.type] || 10;
 
   document.getElementById("detail-modal-title").textContent = t.title;
   document.getElementById("detail-modal-body").innerHTML = `
     <div class="detail-section">
-      <div class="flex items-center gap-2 mb-3">
+      <div class="flex items-center gap-2 mb-3" style="flex-wrap:wrap">
         <span class="badge badge-${t.status}">${statusLabel(t.status)}</span>
         ${subj ? `<span class="subject-tag" style="color:${subj.color}">${subj.icon} ${subj.name}</span>` : ""}
         ${t.type ? `<span class="badge badge-gray">${t.type}</span>` : ""}
-        ${t.year ? `<span class="text-xs text-muted">${t.year}</span>` : ""}
+        ${t.year ? `<span class="text-xs text-muted font-mono">${t.year}</span>` : ""}
+        <span class="pts-tag">+${pts}pts si es aprobada</span>
       </div>
     </div>
-    ${t.description ? `<div class="detail-section"><h4>Descripción</h4><p style="font-size:14px;color:var(--text2);line-height:1.6">${esc(t.description)}</p></div>` : ""}
+    ${t.description ? `<div class="detail-section"><h4>Descripción</h4><p style="font-size:13px;color:var(--text2);line-height:1.65">${esc(t.description)}</p></div>` : ""}
     <div class="detail-section">
       <h4>Detalles</h4>
       <div class="detail-row"><span class="detail-label">Autor</span><span class="detail-value">${author ? esc(author.name) : esc(t.author)}</span></div>
       <div class="detail-row"><span class="detail-label">Publicado</span><span class="detail-value">${new Date(t.created).toLocaleDateString("es-AR",{day:"numeric",month:"long",year:"numeric"})}</span></div>
-      ${t.points ? `<div class="detail-row"><span class="detail-label">Puntos</span><span class="detail-value text-accent">${t.points}</span></div>` : ""}
+      ${t.reviewedAt ? `<div class="detail-row"><span class="detail-label">Revisado</span><span class="detail-value">${new Date(t.reviewedAt).toLocaleDateString("es-AR",{day:"numeric",month:"long",year:"numeric"})}</span></div>` : ""}
     </div>
     ${t.files && t.files.length ? `
       <div class="detail-section">
@@ -1655,21 +1543,26 @@ function openTaskDetail(id) {
             <span>📎</span>
             <span class="file-name">${esc(f.name)}</span>
             <span class="file-size">${formatSize(f.size)}</span>
-            ${f.url ? `<a href="${f.url}" target="_blank" class="btn btn-ghost btn-sm btn-icon" title="Descargar">↓</a>` : ""}
+            ${f.url ? `<a href="${f.url}" target="_blank" class="btn btn-ghost btn-sm" title="Abrir">↗</a>` : ""}
           </div>
         `).join("")}
       </div>
     ` : ""}
-    ${t.adminComment ? `<div class="detail-section"><h4>Comentario del admin</h4><p style="font-size:14px;color:var(--text2)">${esc(t.adminComment)}</p></div>` : ""}
+    ${t.adminComment ? `
+      <div class="detail-section">
+        <h4>Comentario del admin</h4>
+        <div class="comment-box">${esc(t.adminComment)}</div>
+      </div>
+    ` : ""}
   `;
 
   const footer = document.getElementById("detail-modal-footer");
   footer.innerHTML = "";
   if (isAdmin && t.status === "pending") {
     footer.innerHTML = `
-      <input class="form-input" style="flex:1" id="admin-comment-input" placeholder="Comentario (opcional)...">
-      <button class="btn btn-danger btn-sm" onclick="adminAction('${t.id}','rejected')">Rechazar</button>
-      <button class="btn btn-primary btn-sm" onclick="adminAction('${t.id}','approved')">Aprobar</button>
+      <input class="form-input" style="flex:1;min-width:0" id="admin-comment-input" placeholder="Comentario al estudiante (opcional)...">
+      <button class="btn btn-danger btn-sm" onclick="adminAction('${t.id}','rejected')">✕ Rechazar</button>
+      <button class="btn btn-primary btn-sm" onclick="adminAction('${t.id}','approved')">✓ Aprobar</button>
     `;
   } else if (isAdmin) {
     footer.innerHTML = `
@@ -1718,6 +1611,7 @@ function editTask(id) {
   document.getElementById("task-type").value    = t.type || "";
   renderFileList();
   document.getElementById("submit-task-btn").textContent = "Guardar cambios";
+  closeModal("detail-modal");
   openModal("upload-modal");
 }
 
@@ -1731,22 +1625,33 @@ async function submitTask() {
   if (!title)   { toast("El título es obligatorio", "error"); return; }
   if (!subject) { toast("Seleccioná una materia", "error"); return; }
 
+  // Verificar que no haya archivos aún cargando
+  if (STATE.uploadedFiles.some(f => f.uploading)) {
+    toast("Esperá a que terminen de subir los archivos", "error");
+    return;
+  }
+
   const btn = document.getElementById("submit-task-btn");
   const isEditing = !!STATE.editingTaskId;
   btn.disabled = true;
   btn.textContent = "Guardando...";
 
   try {
+    const pts = POINT_VALUES[type] || 10;
+
     if (isEditing) {
       const idx = STATE.tasks.findIndex(t => t.id === STATE.editingTaskId);
       if (idx > -1) {
         STATE.tasks[idx] = {
           ...STATE.tasks[idx],
           title, subject, description: desc, year, type,
+          points: pts,
           files: STATE.uploadedFiles,
           updated: Date.now(),
+          // Si se edita, vuelve a pending (para re-revisión)
+          status: STATE.tasks[idx].status === "rejected" ? "pending" : STATE.tasks[idx].status,
         };
-        addLog(`Tarea editada: ${title} (${STATE.user.username})`);
+        addLog(`Editada: "${title}" (${STATE.user.username})`);
       }
     } else {
       const task = {
@@ -1754,12 +1659,14 @@ async function submitTask() {
         author: STATE.user.username,
         status: STATE.user.role === "admin" ? "approved" : "pending",
         created: Date.now(),
-        points: 10,
+        points: pts,
         files: STATE.uploadedFiles,
       };
+      if (STATE.user.role === "admin") task.reviewedAt = Date.now();
       STATE.tasks.push(task);
-      addLog(`Nueva tarea: ${title} (${STATE.user.username})`);
+      addLog(`Nueva tarea: "${title}" (${STATE.user.username})`);
     }
+
     saveTasks();
     await syncToCloud("tasks");
     closeModal("upload-modal");
@@ -1767,7 +1674,7 @@ async function submitTask() {
     STATE.editingTaskId = null;
     renderCurrentPage();
     updateBadges();
-    toast(isEditing ? "Tarea actualizada" : "Tarea enviada — pendiente de aprobación", "success");
+    toast(isEditing ? "Tarea actualizada ✓" : `Tarea enviada — pendiente de aprobación (+${pts}pts si es aprobada)`, "success");
   } catch (e) {
     toast("Error al guardar: " + e.message, "error");
   } finally {
@@ -1791,95 +1698,143 @@ function renderAdmin() {
 
   renderAdminUsers(STATE.users);
 
-  const logs = [...STATE.logs].reverse().slice(0, 50);
+  const logs = [...STATE.logs].reverse().slice(0, 60);
   document.getElementById("admin-logs-list").innerHTML = logs.length
     ? logs.map(l => `
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">
+        <div style="padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;font-family:var(--mono)">
           <span class="text-muted" style="margin-right:8px">${new Date(l.ts).toLocaleString("es-AR")}</span>
           ${esc(l.msg)}
         </div>
       `).join("")
-    : `<div class="text-muted text-sm">Sin logs</div>`;
+    : `<div class="text-muted text-xs">Sin logs</div>`;
 }
 
 function adminTaskCard(t) {
   const subj   = SUBJECTS.find(s => s.id === t.subject);
   const author = STATE.users.find(u => u.username === t.author);
+  const pts    = t.points || POINT_VALUES[t.type] || 10;
   return `<div class="task-card pending" onclick="openTaskDetail('${t.id}')">
-    <div style="font-size:24px">${subj ? subj.icon : "◫"}</div>
+    <div style="font-size:22px">${subj ? subj.icon : "◫"}</div>
     <div class="task-main">
       <div class="task-title">${esc(t.title)}</div>
       <div class="task-meta">
         ${subj ? `<span class="subject-tag">${subj.name}</span>` : ""}
-        <span class="text-xs text-muted">por ${author ? esc(author.name) : esc(t.author)}</span>
+        <span class="text-xs text-muted font-mono">por ${author ? esc(author.name) : esc(t.author)}</span>
+        ${t.type ? `<span class="badge badge-gray">${t.type}</span>` : ""}
+        <span class="pts-tag">+${pts}pts</span>
         <span class="task-date">${timeAgo(t.created)}</span>
       </div>
+      ${t.description ? `<div class="task-desc">${esc(t.description)}</div>` : ""}
     </div>
     <div class="task-actions" onclick="event.stopPropagation()">
-      <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();adminAction('${t.id}','rejected')">✕ Rechazar</button>
-      <button class="btn btn-sm btn-primary"   onclick="event.stopPropagation();adminAction('${t.id}','approved')">✓ Aprobar</button>
+      <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();adminActionQuick('${t.id}','rejected')">✕</button>
+      <button class="btn btn-sm btn-primary"   onclick="event.stopPropagation();adminActionQuick('${t.id}','approved')">✓</button>
     </div>
   </div>`;
 }
 
+// Acción rápida desde la tarjeta (sin campo de comentario)
+async function adminActionQuick(taskId, action) {
+  const t = STATE.tasks.find(x => x.id === taskId);
+  if (!t) return;
+  await doAdminAction(t, action, "");
+  renderAdmin();
+  updateBadges();
+  toast(action === "approved" ? `Tarea aprobada ✓ (+${t.points}pts a ${t.author})` : "Tarea rechazada", action === "approved" ? "success" : "info");
+}
+
+// Acción desde el modal de detalle (con campo de comentario)
 async function adminAction(taskId, action) {
   const t = STATE.tasks.find(x => x.id === taskId);
   if (!t) return;
-  /* FIX: safely read comment input — it may not exist if called from task card buttons */
   const commentInput = document.getElementById("admin-comment-input");
   const comment = commentInput ? commentInput.value.trim() : "";
-  t.status      = action;
-  t.adminComment = comment;
-  t.reviewedAt  = Date.now();
+  await doAdminAction(t, action, comment);
+  closeModal("detail-modal");
+  renderCurrentPage();
+  updateBadges();
+  toast(action === "approved" ? `Tarea aprobada ✓ (+${t.points}pts a ${t.author})` : "Tarea rechazada", action === "approved" ? "success" : "info");
+}
 
-  if (action === "approved") {
+async function doAdminAction(t, action, comment) {
+  const prevStatus = t.status;
+  t.status       = action;
+  t.adminComment = comment || "";
+  t.reviewedAt   = Date.now();
+
+  if (action === "approved" && prevStatus !== "approved") {
+    // Sumar puntos al autor
     const author = STATE.users.find(u => u.username === t.author);
     if (author) {
       author.points = (author.points || 0) + (t.points || 10);
       author.tasks  = (author.tasks  || 0) + 1;
       saveUsers();
+      syncToCloud("users");
+      // Mostrar achievement si sube de nivel
+      checkLevelUp(author);
+    }
+  } else if (action === "rejected" && prevStatus === "approved") {
+    // Revertir puntos si se rechaza algo que ya estaba aprobado
+    const author = STATE.users.find(u => u.username === t.author);
+    if (author) {
+      author.points = Math.max(0, (author.points || 0) - (t.points || 10));
+      author.tasks  = Math.max(0, (author.tasks  || 0) - 1);
+      saveUsers();
+      syncToCloud("users");
     }
   }
 
   saveTasks();
   addLog(`Tarea "${t.title}" ${action === "approved" ? "aprobada" : "rechazada"} por admin`);
   await syncToCloud("tasks");
-  await syncToCloud("users");
-  closeModal("detail-modal");
-  renderAdmin();
-  updateBadges();
-  toast(action === "approved" ? "Tarea aprobada ✓" : "Tarea rechazada", action === "approved" ? "success" : "info");
+}
+
+function checkLevelUp(user) {
+  const lvl = getLevel(user.points || 0);
+  const prevLvl = getLevel((user.points || 0) - (user.lastApprovedPts || 10));
+  if (lvl.name !== prevLvl.name) {
+    showAchievement(`¡Subiste a ${lvl.name}!`, `${lvl.icon} ${user.name} alcanzó el nivel ${lvl.name}`);
+  }
+}
+
+function showAchievement(title, desc) {
+  const el = document.createElement("div");
+  el.className = "achievement-popup";
+  el.innerHTML = `<div class="achievement-icon">🏆</div><div><div class="achievement-title">${esc(title)}</div><div class="achievement-desc">${esc(desc)}</div></div>`;
+  document.body.appendChild(el);
+  setTimeout(() => { el.style.animation = "popIn .3s reverse"; setTimeout(() => el.remove(), 300); }, 4000);
 }
 
 function renderAdminUsers(users) {
   const body = document.getElementById("admin-users-body");
   if (!body) return;
   body.innerHTML = users.length
-    ? users.map(u => `
-        <tr>
-          <td><code style="font-size:12px;color:var(--text2)">${esc(u.username)}</code></td>
+    ? users.map(u => {
+        const lvl = getLevel(u.points || 0);
+        return `<tr>
+          <td><code class="font-mono" style="font-size:11px;color:var(--text2)">${esc(u.username)}</code></td>
           <td>${esc(u.name || "—")}</td>
-          <td style="color:var(--text3)">${esc(u.email || "—")}</td>
-          <td><span class="badge ${u.role === "admin" ? "badge-blue" : "badge-gray"}">${u.role}</span></td>
-          <td>${u.tasks || 0}</td>
+          <td class="font-mono" style="font-size:11px;color:var(--text3)">${esc(u.email || "—")}</td>
+          <td><span class="level-badge ${lvl.cls}">${lvl.icon} ${lvl.name}</span></td>
+          <td class="font-mono" style="color:var(--accent)">${u.points || 0}</td>
+          <td class="font-mono">${u.tasks || 0}</td>
           <td><span class="badge ${u.status === "suspended" ? "badge-rejected" : "badge-approved"}">${u.status === "suspended" ? "Suspendido" : "Activo"}</span></td>
           <td>
             <button class="btn btn-sm btn-ghost" onclick="toggleSuspend('${u.username}')">${u.status === "suspended" ? "Activar" : "Suspender"}</button>
-            <button class="btn btn-sm btn-ghost" style="color:var(--red)" onclick="confirmDeleteUser('${u.username}')">Eliminar</button>
+            <button class="btn btn-sm btn-ghost text-red" onclick="confirmDeleteUser('${u.username}')">Eliminar</button>
           </td>
-        </tr>
-      `).join("")
-    : `<tr><td colspan="7" class="text-muted" style="text-align:center;padding:20px">Sin usuarios</td></tr>`;
+        </tr>`;
+      }).join("")
+    : `<tr><td colspan="8" class="text-muted" style="text-align:center;padding:20px">Sin usuarios registrados</td></tr>`;
 }
 
 function filterAdminUsers(q) {
-  const lower    = q.toLowerCase();
-  const filtered = STATE.users.filter(u =>
+  const lower = q.toLowerCase();
+  renderAdminUsers(STATE.users.filter(u =>
     u.username.toLowerCase().includes(lower) ||
-    (u.name  || "").toLowerCase().includes(lower) ||
+    (u.name || "").toLowerCase().includes(lower) ||
     (u.email || "").toLowerCase().includes(lower)
-  );
-  renderAdminUsers(filtered);
+  ));
 }
 
 async function toggleSuspend(username) {
@@ -1887,18 +1842,18 @@ async function toggleSuspend(username) {
   if (!u) return;
   u.status = u.status === "suspended" ? "active" : "suspended";
   saveUsers();
-  addLog(`Usuario ${username} ${u.status === "suspended" ? "suspendido" : "activado"} por admin`);
+  addLog(`Usuario ${username} ${u.status === "suspended" ? "suspendido" : "activado"}`);
   await syncToCloud("users");
   renderAdmin();
   toast(`Usuario ${u.status === "suspended" ? "suspendido" : "activado"}`, "info");
 }
 
 function confirmDeleteUser(username) {
-  showConfirm(`¿Eliminar al usuario "${username}"? Esta acción no se puede deshacer.`, async () => {
+  showConfirm(`¿Eliminar al usuario "${username}"? Sus tareas también se borrarán.`, async () => {
     STATE.users = STATE.users.filter(u => u.username !== username);
-    STATE.tasks = STATE.tasks.filter(t => t.author  !== username);
+    STATE.tasks = STATE.tasks.filter(t => t.author !== username);
     saveUsers(); saveTasks();
-    addLog(`Usuario ${username} eliminado por admin`);
+    addLog(`Usuario ${username} eliminado`);
     await syncToCloud("users");
     await syncToCloud("tasks");
     renderAdmin();
@@ -1906,14 +1861,13 @@ function confirmDeleteUser(username) {
   });
 }
 
-/* FIX: switchAdminTab now uses element ids instead of fragile onclick-string matching */
 function switchAdminTab(tab) {
   STATE.adminTab = tab;
   ["tasks", "users", "logs"].forEach(t => {
-    const tabEl = document.getElementById("admin-tab-" + t);
-    if (tabEl) tabEl.classList.toggle("active", t === tab);
-    const secEl = document.getElementById("admin-" + t);
-    if (secEl) secEl.classList.toggle("active", t === tab);
+    const te = document.getElementById("admin-tab-" + t);
+    const se = document.getElementById("admin-" + t);
+    if (te) te.classList.toggle("active", t === tab);
+    if (se) se.classList.toggle("active", t === tab);
   });
 }
 
@@ -1926,17 +1880,19 @@ function renderAnalytics() {
   const approved = tasks.filter(t => t.status === "approved").length;
   const pending  = tasks.filter(t => t.status === "pending").length;
   const rejected = tasks.filter(t => t.status === "rejected").length;
+  const totalPts = STATE.users.reduce((s, u) => s + (u.points || 0), 0);
 
   document.getElementById("analytics-stats").innerHTML = `
     <div class="stat-card"><div class="stat-label">Total tareas</div><div class="stat-value">${tasks.length}</div></div>
     <div class="stat-card"><div class="stat-label">Aprobadas</div><div class="stat-value stat-accent">${approved}</div></div>
     <div class="stat-card"><div class="stat-label">Pendientes</div><div class="stat-value" style="color:var(--yellow)">${pending}</div></div>
     <div class="stat-card"><div class="stat-label">Usuarios</div><div class="stat-value">${STATE.users.length}</div></div>
+    <div class="stat-card"><div class="stat-label">Pts repartidos</div><div class="stat-value stat-accent font-mono">${totalPts}</div></div>
   `;
 
-  const bySubj   = {};
+  const bySubj = {};
   tasks.filter(t => t.status === "approved").forEach(t => { bySubj[t.subject] = (bySubj[t.subject] || 0) + 1; });
-  const maxSubj  = Math.max(...Object.values(bySubj), 1);
+  const maxSubj = Math.max(...Object.values(bySubj), 1);
   document.getElementById("analytics-by-subject").innerHTML = Object.entries(bySubj)
     .sort((a, b) => b[1] - a[1])
     .map(([sid, cnt]) => {
@@ -1946,16 +1902,16 @@ function renderAnalytics() {
         <div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt / maxSubj * 100)}%"></div></div>
         <div class="bar-val">${cnt}</div>
       </div>`;
-    }).join("") || `<div class="text-muted text-sm">Sin datos</div>`;
+    }).join("") || `<div class="text-muted text-xs">Sin datos</div>`;
 
   const total = tasks.length || 1;
   document.getElementById("analytics-by-status").innerHTML = [
     ["Aprobadas", approved, "var(--accent)"],
-    ["Pendientes", pending,  "var(--yellow)"],
+    ["Pendientes", pending, "var(--yellow)"],
     ["Rechazadas", rejected, "var(--red)"],
-  ].map(([label, cnt, color]) => `
+  ].map(([lbl, cnt, color]) => `
     <div class="bar-row">
-      <div class="bar-label">${label}</div>
+      <div class="bar-label">${lbl}</div>
       <div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt / total * 100)}%;background:${color}"></div></div>
       <div class="bar-val">${cnt}</div>
     </div>
@@ -1966,33 +1922,68 @@ function renderAnalytics() {
    PROFILE
    ═══════════════════════════════════════════════ */
 function renderProfile() {
-  const u       = STATE.user;
-  const myTasks = STATE.tasks.filter(t => t.author === u.username);
+  const u = STATE.user;
+  // Refrescar desde STATE.users
+  if (u.role !== "admin") {
+    const fresh = STATE.users.find(x => x.username === u.username);
+    if (fresh) Object.assign(STATE.user, fresh);
+  }
+
+  const myTasks  = STATE.tasks.filter(t => t.author === u.username);
   const approved = myTasks.filter(t => t.status === "approved");
   const rank     = getRank(u.username);
+  const pts      = u.points || 0;
+  const lvl      = getLevel(pts);
+  const progress = getLevelProgress(pts);
+
+  // Calcular streaks y stats extras
+  const subjCounts = {};
+  approved.forEach(t => { subjCounts[t.subject] = (subjCounts[t.subject] || 0) + 1; });
+  const topSubj = Object.entries(subjCounts).sort((a, b) => b[1] - a[1])[0];
+  const topSubjData = topSubj ? SUBJECTS.find(s => s.id === topSubj[0]) : null;
 
   document.getElementById("profile-content").innerHTML = `
     <div class="profile-header">
-      <div class="avatar lg">${(u.avatar || u.name || u.username).charAt(0).toUpperCase()}</div>
+      <div class="avatar lg" style="background:${lvl.color}">${(u.avatar || u.name || u.username).charAt(0).toUpperCase()}</div>
       <div class="profile-info">
         <div class="profile-name">${esc(u.name || u.username)}</div>
         <div class="profile-role">${u.role === "admin" ? "Administrador" : "Estudiante"} · @${u.username}</div>
+        ${u.email ? `<div class="text-xs text-muted font-mono mb-3">${esc(u.email)}</div>` : ""}
+        <div style="margin-bottom:10px">
+          <div class="flex items-center justify-between mb-1">
+            <span class="level-badge ${lvl.cls}">${lvl.icon} ${lvl.name}</span>
+            <span class="text-xs font-mono text-muted">${pts} pts</span>
+          </div>
+          <div class="xp-bar-wrap">
+            <div class="xp-bar" style="width:${progress}%;background:${lvl.color}"></div>
+          </div>
+        </div>
         <div class="profile-stats">
-          <div class="profile-stat"><div class="profile-stat-val">${u.points || 0}</div><div class="profile-stat-label">Puntos</div></div>
-          <div class="profile-stat"><div class="profile-stat-val">${myTasks.length}</div><div class="profile-stat-label">Tareas</div></div>
+          <div class="profile-stat"><div class="profile-stat-val">${pts}</div><div class="profile-stat-label">Puntos</div></div>
+          <div class="profile-stat"><div class="profile-stat-val">${myTasks.length}</div><div class="profile-stat-label">Subidas</div></div>
           <div class="profile-stat"><div class="profile-stat-val">${approved.length}</div><div class="profile-stat-label">Aprobadas</div></div>
-          <div class="profile-stat"><div class="profile-stat-val">#${rank === -1 ? "—" : rank + 1}</div><div class="profile-stat-label">Ranking</div></div>
+          <div class="profile-stat"><div class="profile-stat-val">${rank === -1 ? "—" : "#" + (rank+1)}</div><div class="profile-stat-label">Ranking</div></div>
         </div>
       </div>
     </div>
+    ${topSubjData ? `
+      <div class="card mb-4" style="display:flex;align-items:center;gap:12px">
+        <span style="font-size:28px">${topSubjData.icon}</span>
+        <div>
+          <div class="text-xs text-muted font-mono" style="margin-bottom:2px">Materia favorita</div>
+          <div class="font-medium" style="color:${topSubjData.color}">${topSubjData.name}</div>
+          <div class="text-xs text-muted">${topSubj[1]} tarea${topSubj[1] !== 1 ? "s" : ""} aprobada${topSubj[1] !== 1 ? "s" : ""}</div>
+        </div>
+      </div>
+    ` : ""}
     <div class="card">
-      <div class="flex items-center justify-between mb-4">
-        <span class="font-medium">Historial de tareas</span>
-        <span class="text-xs text-muted">${myTasks.length} en total</span>
+      <div class="flex items-center justify-between mb-3">
+        <span class="font-medium" style="font-size:13px">Mis tareas</span>
+        <span class="text-xs text-muted font-mono">${myTasks.length} en total</span>
       </div>
       ${myTasks.length
         ? `<div class="tasks-list">${[...myTasks].sort((a, b) => b.created - a.created).map(t => taskCard(t, true)).join("")}</div>`
-        : `<div class="empty-state" style="padding:30px 0"><div class="empty-icon" style="font-size:24px">◫</div><div class="empty-title">Sin tareas aún</div></div>`
+        : `<div class="empty-state" style="padding:24px 0"><div class="empty-icon" style="font-size:24px">◫</div><div class="empty-title" style="font-size:13px">Sin tareas aún</div></div>`
       }
     </div>
   `;
@@ -2003,33 +1994,18 @@ function renderProfile() {
    ═══════════════════════════════════════════════ */
 function handleFileSelect(files) {
   Array.from(files).forEach(f => addFile(f));
-  /* FIX: reset file input so the same file can be re-selected after removal */
   document.getElementById("file-input").value = "";
 }
-
-function handleDragOver(e) {
-  e.preventDefault();
-  document.getElementById("upload-zone").classList.add("dragover");
-}
-function handleDragLeave() {
-  document.getElementById("upload-zone").classList.remove("dragover");
-}
-function handleDrop(e) {
-  e.preventDefault();
-  document.getElementById("upload-zone").classList.remove("dragover");
-  handleFileSelect(e.dataTransfer.files);
-}
+function handleDragOver(e) { e.preventDefault(); document.getElementById("upload-zone").classList.add("dragover"); }
+function handleDragLeave() { document.getElementById("upload-zone").classList.remove("dragover"); }
+function handleDrop(e) { e.preventDefault(); document.getElementById("upload-zone").classList.remove("dragover"); handleFileSelect(e.dataTransfer.files); }
 
 function addFile(file) {
   const maxMB = CONFIG.MAX_FILE_SIZE_MB;
-  if (file.size > maxMB * 1024 * 1024) {
-    toast(`"${file.name}" supera el límite de ${maxMB} MB`, "error");
-    return;
-  }
+  if (file.size > maxMB * 1024 * 1024) { toast(`"${file.name}" supera ${maxMB} MB`, "error"); return; }
   const entry = {name: file.name, size: file.size, url: null, uploading: true, id: genId()};
   STATE.uploadedFiles.push(entry);
   renderFileList();
-
   if (CONFIG.CLOUDINARY_CLOUD && CONFIG.CLOUDINARY_UPLOAD_PRESET) {
     uploadToCloudinary(file, entry);
   } else {
@@ -2043,34 +2019,29 @@ async function uploadToCloudinary(file, entry) {
   const fd = new FormData();
   fd.append("file", file);
   fd.append("upload_preset", CONFIG.CLOUDINARY_UPLOAD_PRESET);
-
-  const bar  = document.getElementById("upload-bar");
+  const bar = document.getElementById("upload-bar");
   const prog = document.getElementById("upload-progress");
   prog.style.display = "block";
-
   try {
     const result = await new Promise((res, rej) => {
       const xhr = new XMLHttpRequest();
       xhr.upload.addEventListener("progress", e => {
         if (e.lengthComputable) bar.style.width = Math.round(e.loaded / e.total * 100) + "%";
       });
-      xhr.onload  = () => {
-        try { res(JSON.parse(xhr.responseText)); }
-        catch { rej(new Error("Respuesta inválida del servidor")); }
-      };
+      xhr.onload  = () => { try { res(JSON.parse(xhr.responseText)); } catch { rej(new Error("Respuesta inválida")); } };
       xhr.onerror = () => rej(new Error("Error de red"));
       xhr.open("POST", `https://api.cloudinary.com/v1_1/${CONFIG.CLOUDINARY_CLOUD}/upload`);
       xhr.send(fd);
     });
-    entry.url       = result.secure_url;
+    entry.url = result.secure_url;
     entry.uploading = false;
     toast("Archivo subido ✓", "success");
   } catch (e) {
     STATE.uploadedFiles = STATE.uploadedFiles.filter(f => f.id !== entry.id);
-    toast("Error al subir archivo: " + e.message, "error");
+    toast("Error al subir: " + e.message, "error");
   } finally {
     prog.style.display = "none";
-    bar.style.width    = "0";
+    bar.style.width = "0";
     renderFileList();
   }
 }
@@ -2086,63 +2057,10 @@ function renderFileList() {
       <span>📎</span>
       <span class="file-name">${esc(f.name)}</span>
       <span class="file-size">${formatSize(f.size)}</span>
-      ${f.uploading ? `<div class="loading-spinner" style="width:14px;height:14px;border-width:1.5px"></div>` : ""}
+      ${f.uploading ? `<div class="loading-spinner"></div>` : ""}
       <span class="file-remove" onclick="removeFile('${f.id}')">✕</span>
     </div>
   `).join("");
-}
-
-/* ═══════════════════════════════════════════════
-   UTILITIES
-   ═══════════════════════════════════════════════ */
-function genId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-}
-
-function esc(str) {
-  if (str == null) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
-function timeAgo(ts) {
-  if (!ts) return "";
-  const diff = Date.now() - ts;
-  if (diff < 60000)     return "hace un momento";
-  if (diff < 3600000)   return `hace ${Math.floor(diff / 60000)}m`;
-  if (diff < 86400000)  return `hace ${Math.floor(diff / 3600000)}h`;
-  if (diff < 2592000000)return `hace ${Math.floor(diff / 86400000)}d`;
-  return new Date(ts).toLocaleDateString("es-AR");
-}
-
-function formatSize(bytes) {
-  if (!bytes) return "";
-  if (bytes < 1024)    return bytes + " B";
-  if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
-  return (bytes / 1048576).toFixed(1) + " MB";
-}
-
-function statusLabel(s) {
-  return {pending: "Pendiente", approved: "Aprobada", rejected: "Rechazada"}[s] || s;
-}
-
-function addLog(msg) {
-  STATE.logs.push({ts: Date.now(), msg, user: STATE.user ? STATE.user.username : "?"});
-  if (STATE.logs.length > 200) STATE.logs = STATE.logs.slice(-200);
-  saveLogs();
-  syncToCloud("logs");
-}
-
-function updateBadges() {
-  const pending = STATE.tasks.filter(t => t.status === "pending").length;
-  const myTasks = STATE.tasks.filter(t => t.author === STATE.user?.username).length;
-  const pb = document.getElementById("pending-badge");
-  const mb = document.getElementById("my-tasks-badge");
-  if (pb) { pb.textContent = pending; pb.style.display = pending > 0 ? "inline" : "none"; }
-  if (mb) { mb.textContent = myTasks; mb.style.display = myTasks > 0 ? "inline" : "none"; }
 }
 
 /* ═══════════════════════════════════════════════
@@ -2151,17 +2069,13 @@ function updateBadges() {
 function openModal(id)  { document.getElementById(id).classList.add("open"); }
 function closeModal(id) { document.getElementById(id).classList.remove("open"); }
 
-// Listener único: maneja cierre de modal-overlay Y cierre de dropdowns
 document.addEventListener("click", e => {
-  // Cerrar modal al click en el fondo
   if (e.target.classList.contains("modal-overlay")) {
-    closeModal(e.target.id);
+    e.target.classList.remove("open");
     return;
   }
-  // Cerrar dropdowns al click fuera de ellos
-  if (!e.target.closest(".dropdown")) {
-    document.querySelectorAll(".dropdown-menu.open").forEach(m => m.classList.remove("open"));
-  }
+  // Cerrar user dropdown al click fuera
+  if (!e.target.closest(".user-widget")) closeUserDD();
 });
 
 function showConfirm(text, onConfirm) {
@@ -2171,8 +2085,19 @@ function showConfirm(text, onConfirm) {
 }
 
 async function confirmDeleteTask(id) {
-  showConfirm("¿Eliminar esta tarea? Esta acción no se puede deshacer.", async () => {
-    STATE.tasks = STATE.tasks.filter(t => t.id !== id);
+  showConfirm("¿Eliminar esta tarea? No se puede deshacer.", async () => {
+    // Si la tarea estaba aprobada, restar puntos al autor
+    const t = STATE.tasks.find(x => x.id === id);
+    if (t && t.status === "approved") {
+      const author = STATE.users.find(u => u.username === t.author);
+      if (author) {
+        author.points = Math.max(0, (author.points || 0) - (t.points || 10));
+        author.tasks  = Math.max(0, (author.tasks  || 0) - 1);
+        saveUsers();
+        syncToCloud("users");
+      }
+    }
+    STATE.tasks = STATE.tasks.filter(x => x.id !== id);
     saveTasks();
     addLog("Tarea eliminada id:" + id);
     await syncToCloud("tasks");
@@ -2181,6 +2106,15 @@ async function confirmDeleteTask(id) {
     toast("Tarea eliminada", "success");
   });
 }
+
+/* ═══════════════════════════════════════════════
+   USER DROPDOWN
+   ═══════════════════════════════════════════════ */
+function toggleUserDD(e) {
+  e.stopPropagation();
+  document.getElementById("user-dd").classList.toggle("open");
+}
+function closeUserDD() { document.getElementById("user-dd")?.classList.remove("open"); }
 
 /* ═══════════════════════════════════════════════
    TOASTS
@@ -2192,8 +2126,8 @@ function toast(msg, type = "info") {
   t.innerHTML = `<span>${msg}</span>`;
   c.appendChild(t);
   setTimeout(() => {
-    t.style.animation = "fadeOut .2s ease forwards";
-    setTimeout(() => t.remove(), 200);
+    t.style.animation = "fadeOut .15s ease forwards";
+    setTimeout(() => t.remove(), 150);
   }, 3500);
 }
 
@@ -2211,20 +2145,16 @@ function debounceSearch(val) {
 }
 
 /* ═══════════════════════════════════════════════
-   SIDEBAR / DROPDOWN
+   SIDEBAR
    ═══════════════════════════════════════════════ */
-function isMobile() {
-  return window.innerWidth <= 900;
-}
+function isMobile() { return window.innerWidth <= 900; }
 
 function toggleSidebar() {
   const sb = document.getElementById("sidebar");
   const ov = document.getElementById("sidebar-overlay");
-  const isCollapsed = sb.classList.contains("collapsed");
+  const willOpen = sb.classList.contains("collapsed");
   sb.classList.toggle("collapsed");
-  if (isMobile()) {
-    ov.classList.toggle("visible", isCollapsed);
-  }
+  if (isMobile()) ov.classList.toggle("visible", willOpen);
 }
 
 function closeSidebarMobile() {
@@ -2234,12 +2164,16 @@ function closeSidebarMobile() {
   }
 }
 
-function toggleDropdown(id, event) {
-  if (event) event.stopPropagation();
-  const el = document.getElementById(id);
-  const wasOpen = el.classList.contains("open");
-  document.querySelectorAll(".dropdown-menu.open").forEach(m => m.classList.remove("open"));
-  if (!wasOpen) el.classList.add("open");
+/* ═══════════════════════════════════════════════
+   BADGES
+   ═══════════════════════════════════════════════ */
+function updateBadges() {
+  const pending = STATE.tasks.filter(t => t.status === "pending").length;
+  const myCount = STATE.user ? STATE.tasks.filter(t => t.author === STATE.user.username).length : 0;
+  const pb = document.getElementById("pending-badge");
+  const mb = document.getElementById("my-tasks-badge");
+  if (pb) { pb.textContent = pending; pb.style.display = pending > 0 ? "inline" : "none"; }
+  if (mb) { mb.textContent = myCount; mb.style.display = myCount > 0 ? "inline" : "none"; }
 }
 
 /* ═══════════════════════════════════════════════
@@ -2252,24 +2186,66 @@ function populateSubjectSelect() {
 }
 
 /* ═══════════════════════════════════════════════
+   UTILITIES
+   ═══════════════════════════════════════════════ */
+function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+function esc(str) {
+  if (str == null) return "";
+  return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function timeAgo(ts) {
+  if (!ts) return "";
+  const diff = Date.now() - ts;
+  if (diff < 60000)      return "ahora";
+  if (diff < 3600000)    return `${Math.floor(diff / 60000)}m`;
+  if (diff < 86400000)   return `${Math.floor(diff / 3600000)}h`;
+  if (diff < 2592000000) return `${Math.floor(diff / 86400000)}d`;
+  return new Date(ts).toLocaleDateString("es-AR");
+}
+
+function formatSize(bytes) {
+  if (!bytes) return "";
+  if (bytes < 1024)    return bytes + " B";
+  if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
+  return (bytes / 1048576).toFixed(1) + " MB";
+}
+
+function statusLabel(s) {
+  return {pending:"Pendiente", approved:"Aprobada", rejected:"Rechazada"}[s] || s;
+}
+
+function addLog(msg) {
+  STATE.logs.push({ts: Date.now(), msg, user: STATE.user ? STATE.user.username : "?"});
+  if (STATE.logs.length > 200) STATE.logs = STATE.logs.slice(-200);
+  saveLogs();
+  syncToCloud("logs");
+}
+
+/* ═══════════════════════════════════════════════
    DEMO DATA
    ═══════════════════════════════════════════════ */
 function loadDemoData() {
   if (STATE.tasks.length > 0) return;
+  const now = Date.now();
   const demos = [
-    {title:"Ecuaciones de segundo grado",     subject:"matematica",  description:"Resolución completa con fórmula cuadrática y ejemplos prácticos.", year:"4° año", type:"Trabajo práctico", points:15},
-    {title:"Análisis literario: Borges",       subject:"literatura",  description:"Análisis del cuento 'El Aleph' con estructura narrativa y simbolismo.", year:"5° año", type:"Trabajo práctico", points:20},
-    {title:"Revolución Francesa",              subject:"historia",    description:"Resumen completo con cronología y mapa conceptual.", year:"3° año", type:"Resumen", points:10},
-    {title:"Introducción a Python",            subject:"programacion",description:"Variables, tipos de datos, condicionales y bucles. Ejercicios resueltos.", year:"4° año", type:"Apunte", points:12},
-    {title:"Circuitos eléctricos — Ley de Ohm",subject:"electronica", description:"Teoría y resolución de ejercicios con ley de Ohm y Kirchhoff.", year:"5° año", type:"Trabajo práctico", points:18},
-    {title:"Biomas del mundo",                 subject:"geografia",   description:"Clasificación, ubicación y características principales de cada bioma.", year:"2° año", type:"Resumen", points:8},
+    {title:"Ecuaciones de segundo grado", subject:"matematica", description:"Resolución completa con fórmula cuadrática y ejemplos prácticos.", year:"4° año", type:"Trabajo práctico"},
+    {title:"Análisis de El Aleph — Borges", subject:"literatura", description:"Análisis narrativo, simbolismo y estructura del cuento.", year:"5° año", type:"Trabajo práctico"},
+    {title:"Revolución Francesa — cronología", subject:"historia", description:"Resumen completo con mapa conceptual.", year:"3° año", type:"Resumen"},
+    {title:"Python para principiantes", subject:"programacion", description:"Variables, tipos de datos, condicionales y bucles. Ejercicios resueltos.", year:"4° año", type:"Apunte"},
+    {title:"Ley de Ohm y circuitos", subject:"electronica", description:"Teoría y ejercicios con Ohm y Kirchhoff.", year:"5° año", type:"Trabajo práctico"},
+    {title:"Biomas del mundo", subject:"geografia", description:"Clasificación, ubicación y características.", year:"2° año", type:"Resumen"},
   ];
   demos.forEach((d, i) => {
+    const pts = POINT_VALUES[d.type] || 10;
     STATE.tasks.push({
       id: genId(), ...d,
       author: "demo_user",
       status: "approved",
-      created: Date.now() - i * 86400000 * 3,
+      created: now - i * 86400000 * 3,
+      reviewedAt: now - i * 86400000 * 2,
+      points: pts,
       files: [],
     });
   });
@@ -2288,7 +2264,7 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("keydown", e => {
   if (e.key === "Escape") {
     document.querySelectorAll(".modal-overlay.open").forEach(m => m.classList.remove("open"));
-    document.querySelectorAll(".dropdown-menu.open").forEach(m => m.classList.remove("open"));
+    closeUserDD();
   }
   if ((e.ctrlKey || e.metaKey) && e.key === "k") {
     e.preventDefault();
@@ -2296,13 +2272,10 @@ document.addEventListener("keydown", e => {
   }
 });
 
-// Al pasar a desktop, remover overlay y abrir sidebar si estaba colapsada por mobile
 window.addEventListener("resize", () => {
-  if (!isMobile()) {
+  if (!isMobile() && STATE.user) {
     document.getElementById("sidebar-overlay").classList.remove("visible");
-    if (STATE.user) {
-      document.getElementById("sidebar").classList.remove("collapsed");
-    }
+    document.getElementById("sidebar").classList.remove("collapsed");
   }
 });
 </script>
